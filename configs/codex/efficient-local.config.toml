@@ -1,0 +1,45 @@
+# Local Codex efficiency example.
+#
+# IMPORTANT: this is NOT a "better than Codex defaults" profile.
+# Start with current Codex defaults and add only overrides that solve a concrete
+# problem in your environment. Settings below are examples, mostly commented out.
+
+# Environment integration: useful when Cursor is the editor.
+file_opener = "cursor"
+
+# -----------------------------------------------------------------------------
+# OPTIONAL, workload-dependent overrides
+# -----------------------------------------------------------------------------
+
+# Limit retained model-visible output only if noisy commands are actually filling
+# context. Prefer wrappers that save the full log and emit a concise summary first.
+# Do not truncate diagnostics blindly.
+# tool_output_token_limit = 4000
+
+# Bound project documentation only if a large instruction chain is materially
+# consuming context or causing instruction conflicts. The upstream default is the
+# baseline and may improve over time.
+# project_doc_max_bytes = 16384
+
+# Use cached web search only where freshness is not required.
+# web_search = "cached"
+
+# Keep the shell environment policy at the platform default unless reproducibility
+# or security requirements justify an override.
+# [shell_environment_policy]
+# inherit = "core"
+# ignore_default_excludes = false
+
+# A smaller skill catalog may save context in installations with many skills, but
+# can reduce skill discovery. Change only after observing a real problem.
+# [skills]
+# max_context_tokens = 2000
+
+# Do not impose a concurrency cap merely because fan-out can be expensive. If the
+# platform's normal behavior is appropriate, keep it. Add a cap only for a concrete
+# quota/rate-limit/coordination problem and revisit it when Codex changes.
+# [agents]
+# max_concurrent_threads_per_session = 2
+
+# Do not disable stable platform caches/snapshots without a specific reason.
+# Prefer inheriting future upstream improvements automatically.

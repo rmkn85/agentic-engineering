@@ -1,0 +1,9 @@
+# Local agent/runtime state
+.codex-cache/
+.agent-cache/
+
+# Common transient files
+.DS_Store
+*.log
+*.tmp
+.agent-bench/

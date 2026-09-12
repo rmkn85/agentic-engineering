@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+TAIL_LINES="${QUIET_RUN_TAIL_LINES:-80}"
+LOG_DIR="${QUIET_RUN_LOG_DIR:-.agent-cache/logs}"
+
+if [[ "${1:-}" == "--" ]]; then shift; fi
+if [[ $# -eq 0 ]]; then
+  echo "usage: quiet-run -- command [args...]" >&2
+  exit 64
+fi
+
+mkdir -p "$LOG_DIR"
+stamp="$(date -u +%Y%m%dT%H%M%SZ)"
+base="$(basename "$1" | tr -cs 'A-Za-z0-9._-' '_')"
+log="$LOG_DIR/${stamp}-${base}-$$.log"
+start_ns="$(date +%s%N)"
+
+set +e
+"$@" >"$log" 2>&1
+code=$?
+set -e
+end_ns="$(date +%s%N)"
+elapsed_ms=$(( (end_ns - start_ns) / 1000000 ))
+bytes=$(wc -c <"$log" | tr -d ' ')
+lines=$(wc -l <"$log" | tr -d ' ')
+
+if [[ $code -eq 0 ]]; then
+  printf 'PASS code=0 elapsed_ms=%s log_bytes=%s log_lines=%s log=%s\n' "$elapsed_ms" "$bytes" "$lines" "$log"
+else
+  printf 'FAIL code=%s elapsed_ms=%s log_bytes=%s log_lines=%s log=%s\n' "$code" "$elapsed_ms" "$bytes" "$lines" "$log"
+  echo "--- last ${TAIL_LINES} lines ---"
+  tail -n "$TAIL_LINES" "$log"
+fi
+exit "$code"
