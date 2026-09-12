@@ -17,7 +17,7 @@ Do not prescribe project goals, product architecture, backlog structure, or doma
 - Treat current platform/tool defaults as the baseline. Any override should state the concrete inefficiency it addresses and why the change is expected to help.
 - Use measurement or benchmarking when a tradeoff is non-obvious, consequential, or workload-dependent; do not turn benchmarking into ceremony.
 - Keep always-loaded guidance concise. Optional procedures belong in skills or referenced docs.
-- Treat explicit broad delegation as a costed optimization. Do not override platform delegation defaults in either direction without a workload-specific reason.
+- Apply the [executor-routing checkpoint](docs/local-codex/subagents.md#executor-routing-checkpoint) before substantial batches: exact tools first, sufficiently capable smaller workers for authorized independent work, orchestrator for synthesis/integration. Make the executor/model choice explicit in existing work context; merely reading efficiency guidance is not applying it. Preserve platform permissions and justify both extra fan-out and keeping a large routine batch on the orchestrator.
 
 ## Quality bar for a practice
 

@@ -4,6 +4,34 @@ Subagents are useful. They also duplicate model calls, context, tool use, and co
 
 The current platform behavior is the baseline. Intervene only when the workload gives a reason.
 
+## Executor-routing checkpoint
+
+Before a substantial batch of reading, editing, or validation, choose who performs it. A one-line choice in the existing plan is enough; this is not a new planning document or a pause for approval.
+
+| Work | Preferred executor when applicable | Return / acceptance |
+| --- | --- | --- |
+| File inventory, hashes, exact search, formatting, known command batch | Deterministic tool/script | Machine-readable result, exit status, retained logs |
+| Independent source extraction, routine edits, command selection and failure triage | Bounded worker using a sufficiently capable smaller model, where authorized | Findings with source locations, changes, checks, failures and uncertainties |
+| Conflicting evidence, semantic ownership, risky boundary decisions, integration | Orchestrator or appropriately capable specialist | Decision supported by original evidence and accepted integration |
+
+Reading a complete corpus does not ordinarily require the orchestrator to ingest every byte: independent readers can cover defined portions, preserve contradictions and cite original evidence. Instructions that explicitly require the main agent's own read still take precedence. Do not substitute a summary for required source coverage or let a worker silently omit difficult material.
+
+Choose an outcome-sized assignment, not one agent per command or document. Keep the immediate tightly coupled decision local and start useful independent work before continuing it. For a large routine batch retained locally, state the actual reason: required direct inspection, no authorized worker/tool, coupling, transfer overhead, or demonstrated worker unreliability. "Defaults" alone does not explain ignoring an available independent split after the user requested efficient delegation.
+
+Model choice is separate from spawning. Where the platform and user allow selection, choose a supported tier and effort appropriate to the task; record the requested tier and the resolved tier if the harness reports it. An omitted model that inherits the orchestrator is not evidence of lower-cost delegation. Do not invent model availability, bypass selection permissions, or silently replace an unavailable requested tier. Reuse a worker's relevant context when that is useful; avoid restarting completed work just to change its model.
+
+Give workers only the necessary context and disjoint write scopes. Require compact evidence rather than a prose dump: result, source locations or log/artifact paths, validation, limitations, and unresolved choices. The orchestrator reviews decision-bearing source and spot-checks routine work. It does not systematically replay every read and command. Failed coverage or unreliable results justify deeper inspection and escalation.
+
+Revisit the choice at integration boundaries or when actual quality, cost, rate-limit, or collision evidence changes it. Do not narrate a routing choice before every tool call. A short direct command often has less overhead than any subagent.
+
+## Failure this checkpoint addresses
+
+Observation and correction reviewed 2026-09-12.
+
+Observed failure pattern: an agent loaded efficiency guidance, performed a long sequence of routine reading and commands itself, and delegated only after human correction. Its first worker also inherited the expensive orchestrator model. The guidance emphasized avoiding excessive fan-out, but did not require an early executor/model choice. This is an anonymized qualitative observation, not a measured comparison or proof that smaller models always win.
+
+The correction makes the choice observable at the point of work and aligns the skill, template, and contributor guide. Prompt instructions alone cannot guarantee compliance. Validate with [behavioral scenarios](../../experiments/delegation-adherence.md), and use harness-enforced routing only if repeated observed failures justify that additional machinery. No pricing or savings claim follows from a worker count.
+
 ## Two different deviations
 
 ### Explicitly increasing fan-out

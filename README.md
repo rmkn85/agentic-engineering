@@ -20,6 +20,7 @@ Treat the model as the expensive probabilistic component inside a mostly determi
 - Use deterministic local tools for exact search, indexing, hashing, moving, formatting, compilation, testing, filtering, and measurement.
 - Cache semantic work and deterministic work independently.
 - Keep model-visible output short; keep full evidence on disk and fetch it only when needed.
+- Before substantial work, apply the [executor-routing checkpoint](docs/local-codex/subagents.md#executor-routing-checkpoint): choose exact tools, an authorized sufficiently capable smaller worker, or the orchestrator, and make that choice observable before the batch starts.
 - Choose **model capability, execution surface, and usage pool independently**; the same model can have very different system economics in Chat, Work, local Codex, cloud Codex, or API use.
 - Treat current platform defaults as a strong baseline; do not tune merely because a knob exists.
 - Prefer mechanically favorable optimizations such as valid caching, warm deterministic state, concise model-visible logs, and exact local tools.

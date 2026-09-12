@@ -27,7 +27,7 @@ Examples:
 
 - prefer deterministic tools for exact operations
 - keep shell output concise and retain full logs on disk
-- avoid subagents unless measured benefit is plausible
+- choose tools, a bounded worker, or the orchestrator before substantial batches; use smaller workers where authorized and adequate
 - do not repeat passing broad validation without invalidation
 
 Keep this deliberately short. See `templates/global-AGENTS-efficient.md`.
@@ -101,10 +101,15 @@ A supposedly helpful instruction can make things worse by:
 - causing unnecessary planning or confirmations
 - triggering broad testing on trivial changes
 - triggering subagents by default
+- acknowledging delegation guidance while the orchestrator still consumes every routine batch
+- launching workers with the inherited expensive model while claiming cheaper delegation
+- rereading all worker inputs and erasing the context saving
 - forcing the model to narrate work instead of doing it
 - narrowing the model into a slower procedure when a simpler one exists
 
 GPT-6 Astra is documented as especially sensitive to skills and `AGENTS.md`; audit conflicting instruction sources rather than stacking more instructions to compensate.
+
+Test instruction adherence through observed routing and completed outputs, not a keyword check on the instruction file. Use the [delegation-adherence cases](../../experiments/delegation-adherence.md); distinguish a written rule, a dry-run decision, live execution, and measured savings.
 
 ## References
 
