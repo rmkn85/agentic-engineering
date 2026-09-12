@@ -33,3 +33,11 @@ An independently prompted worker (requested `gpt-5.6-luna`, medium effort) ran t
 A targeted recheck then kept the typo local and routed independent corpus batches to workers while retaining reconciliation on the orchestrator; skill and whitespace checks still passed. This recheck was not blind because the worker had seen the correction.
 
 These are structural and dry-run observations. They do not establish live long-task adherence, resolved-model billing, or resource savings. The representative live cases and economic comparison remain unmeasured.
+
+## Subsequent qualitative outcome-preservation observation
+
+In a later authorized multi-domain editorial task, the orchestrator used explicit smaller-model domain assignments, early representative artifact review, independent reader questions and a separate source-to-result sample audit. The reader tasks used the resulting reference rather than reconstructing missing answers from its source archive. They exposed shallow leaf references, missing integrated explanation, non-runnable example setup and implementation/prose mismatches. Those findings caused additional writing and focused corrections before final integration.
+
+This is evidence of the mechanism being exercised in one real task, not only stated in a plan. It also shows why successful worker handoffs and structural checks were insufficient: useful defects remained after both. Some reviewer demands concerned intentionally product-owned decisions rather than missing reference content; the integrator had to distinguish those from real omissions rather than implement every reviewer suggestion.
+
+The observation is anonymized and qualitative. No billing-level resolved-model evidence, controlled baseline, total-resource comparison, universal content-completeness claim or percentage saving was measured. Earlier dry-run results remain limited to their original scope. The outcome-preservation case now has one live observation; the full regression matrix and economic comparison remain unmeasured.
