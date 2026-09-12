@@ -32,8 +32,6 @@ Observed failure pattern: an agent loaded efficiency guidance, performed a long 
 
 The correction makes the choice observable at the point of work and aligns the skill, template, and contributor guide. Prompt instructions alone cannot guarantee compliance. Validate with [behavioral scenarios](../../experiments/delegation-adherence.md), and use harness-enforced routing only if repeated observed failures justify that additional machinery. No pricing or savings claim follows from a worker count.
 
-## Two different deviations
-
 ## Outcome-preserving delegation
 
 A second observed failure was substitution of a convenient proxy for the requested result: a substantial knowledge consolidation produced brief summaries and successful discovery checks, while substantive synthesis remained in the source corpus. Delegation happened, but assignments and final acceptance were too narrow. This does not establish that the workers or smaller models caused the failure; the orchestrator owned the scope and acceptance error.
@@ -45,6 +43,8 @@ Give each worker the actual reader/user outcome, representative questions, sourc
 Review an early representative artifact before multiplying the pattern. At integration, use independent reader tasks on the deliverable itself and reconcile the whole source-to-result coverage. Structural checks remain necessary but separate. If the result is a foundation rather than the requested final product, report it as partial and continue within scope; do not relabel the foundation as complete.
 
 This correction is a decision rule, not evidence of reliable adherence or measured savings. A small direct edit does not need a coverage matrix or independent review. Keep coverage in the task's existing plan/evidence rather than creating a permanent second tracker.
+
+## Two different deviations
 
 ### Explicitly increasing fan-out
 
