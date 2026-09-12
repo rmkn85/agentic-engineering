@@ -9,6 +9,7 @@ The repository is organized around execution efficiency rather than project meth
 ## General principles
 
 - [Context economics](principles/context-economics.md)
+- [Execution surfaces and usage pools](execution/surface-and-pool-selection.md) — choose model capability, Chat/Work/Codex/API surface, and allowance independently.
 - [Caching and prefetching](execution/caching-and-prefetching.md)
 - [Local-first execution](execution/local-first.md)
 - [Read-once/write-once and invalidation](execution/read-once-write-once.md)
