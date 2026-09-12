@@ -20,6 +20,7 @@ Treat the model as the expensive probabilistic component inside a mostly determi
 - Use deterministic local tools for exact search, indexing, hashing, moving, formatting, compilation, testing, filtering, and measurement.
 - Cache semantic work and deterministic work independently.
 - Keep model-visible output short; keep full evidence on disk and fetch it only when needed.
+- Choose **model capability, execution surface, and usage pool independently**; the same model can have very different system economics in Chat, Work, local Codex, cloud Codex, or API use.
 - Treat current platform defaults as a strong baseline; do not tune merely because a knob exists.
 - Prefer mechanically favorable optimizations such as valid caching, warm deterministic state, concise model-visible logs, and exact local tools.
 - Deviate from defaults only for a concrete reason; benchmark only when the tradeoff is non-obvious, consequential, or workload-dependent.
@@ -29,7 +30,9 @@ Treat the model as the expensive probabilistic component inside a mostly determi
 
 The first concrete methodology is the [Local Codex Efficiency Stack](docs/local-codex/README.md), designed for Linux Mint + Cursor (including AppImage) but largely editor- and model-independent.
 
-It includes:
+Before choosing that surface for a task, see [execution surfaces and usage pools](docs/execution/surface-and-pool-selection.md): Chat, Work, local Codex, cloud Codex, and API usage can offer similar model capability while differing substantially in repository state, tool affordances, and which allowance pays for the work.
+
+The local stack includes:
 
 - [workstation setup](docs/local-codex/linux-mint-cursor-appimage.md)
 - [context and cache economics](docs/local-codex/context-caching.md)
@@ -47,7 +50,7 @@ It includes:
 ## Repository map
 
 - `docs/principles/` — durable concepts
-- `docs/execution/` — execution mechanisms
+- `docs/execution/` — execution mechanisms and surface/resource selection
 - `docs/local-codex/` — concrete local Codex efficiency methodology
 - `docs/collaboration/` — concurrency and ownership
 - `docs/measurement/` — reusable metrics
