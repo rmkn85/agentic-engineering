@@ -34,6 +34,18 @@ The correction makes the choice observable at the point of work and aligns the s
 
 ## Two different deviations
 
+## Outcome-preserving delegation
+
+A second observed failure was substitution of a convenient proxy for the requested result: a substantial knowledge consolidation produced brief summaries and successful discovery checks, while substantive synthesis remained in the source corpus. Delegation happened, but assignments and final acceptance were too narrow. This does not establish that the workers or smaller models caused the failure; the orchestrator owned the scope and acceptance error.
+
+For a broad transformation, partition the complete input scope into owned deliverables and explicit dispositions (synthesize, retain, merge, retire, or unresolved). Preserve exceptions and contradictions. A source inventory is not proof that the source's useful substance reached the result.
+
+Give each worker the actual reader/user outcome, representative questions, source boundaries, expected depth and evidence needs, and disjoint write ownership. Ask for a compact handoff **about** the substantive artifact, not a compact artifact unless the user requested one. For knowledge work, useful acceptance can require the reader to make a decision, follow a worked example, understand failure cases and locate evidence without reconstructing the answer from outbound links. Do not impose arbitrary length or illustration quotas; those can become another proxy.
+
+Review an early representative artifact before multiplying the pattern. At integration, use independent reader tasks on the deliverable itself and reconcile the whole source-to-result coverage. Structural checks remain necessary but separate. If the result is a foundation rather than the requested final product, report it as partial and continue within scope; do not relabel the foundation as complete.
+
+This correction is a decision rule, not evidence of reliable adherence or measured savings. A small direct edit does not need a coverage matrix or independent review. Keep coverage in the task's existing plan/evidence rather than creating a permanent second tracker.
+
 ### Explicitly increasing fan-out
 
 Justify this when work is genuinely independent and critical-path wall time or independent review quality matters enough to pay for duplicated model usage.

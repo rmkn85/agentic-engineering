@@ -18,6 +18,8 @@ Use the [efficiency skill](../skills/efficient-execution/SKILL.md) and [routing 
 
 ## How to evaluate
 
+Add a substance-preservation case: provide a multi-domain source collection and ask for a practical consolidated reference with worked examples. Evaluate the resulting artifacts with questions requiring explanation, decisions and application, including an awkward source exception. Reject an output that merely routes to the sources, even if its schema, links and retrieval budget pass. Check that the orchestrator owns uncovered scope and distinguishes a partial foundation from completion. This is a proposed regression case, not a recorded passing experiment.
+
 For a cheap pre-publication check, an independent agent may return the first executor choices and handoff contracts for selected cases. Label that a **dry-run routing check**; it does not establish live delegation or savings. A document/link/frontmatter check establishes only structural validity.
 
 For behavioral acceptance, run a representative case in an isolated authorized fixture with normal collaboration tools. Inspect actual calls and resulting artifacts. Verify source coverage and the original acceptance, requested/resolved worker models where visible, evidence quality, duplicate reads, idle coordination, and whether a human had to remind the agent to delegate. A stated intention without the corresponding action fails that case.

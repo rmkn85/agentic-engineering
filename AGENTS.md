@@ -21,6 +21,8 @@ Do not prescribe project goals, product architecture, backlog structure, or doma
 
 ## Quality bar for a practice
 
+Efficiency preserves substantive scope. For broad delegated transformations, require owned coverage and inspect representative deliverables against the original user outcome; worker counts, compact handoffs and structural tests are not substitutes for content acceptance. See [outcome-preserving delegation](docs/local-codex/subagents.md#outcome-preserving-delegation).
+
 A useful entry should answer most of:
 
 1. What resource inefficiency does this address?
