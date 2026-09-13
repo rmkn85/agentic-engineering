@@ -65,7 +65,19 @@ route: worker/smaller — independent routine inspection batch
 
 This is a phase-boundary control, not narration before every command. If a lightweight orchestrator repeatedly ignores the checkpoint, test the behavior and escalate placement/enforcement/model capability instead of adding paragraphs of synonyms.
 
-## 7. Benchmark only the uncertain decisions
+## 7. Make new and touched source weak-reader legible
+
+Do **not** start by rewriting the repository.
+
+For source directories, add/adapt the compact [`../../templates/source-AGENTS-agent-legible.md`](../../templates/source-AGENTS-agent-legible.md) as a scoped/nested rule where the harness supports it. Then apply one invariant to every new or touched unit:
+
+> A fresh weaker coding model should be able to predict representative behavior from the unit plus a small explicit contract/dependency context.
+
+When touching code, cheaply remove obvious local obstacles such as hidden dependencies/state, gratuitous indirection, needless branching, swallowed errors, or tests coupled to implementation details. Do not broaden the task into unrelated cleanup.
+
+If a 15-line function still needs six wrappers and several hidden collaborators to explain, making it shorter is not the quick win. Reduce the **semantic-hop/context radius** instead.
+
+## 8. Benchmark only the uncertain decisions
 
 If an optimization is mechanically favorable and preserves the outcome, use it. If the tradeoff is workload/model dependent, compare the smallest useful alternatives with the same task and acceptance criteria.
 
@@ -78,7 +90,7 @@ python tools/codex-bench.py \
   --eval-command './test-or-acceptance-check'
 ```
 
-Then change **one meaningful variable**: model tier, instruction variant, delegation split, tool/config layer, or context placement.
+Then change **one meaningful variable**: model tier, instruction variant, delegation split, tool/config layer, code-structure hypothesis, or context placement.
 
 ## Decision order
 
@@ -88,6 +100,9 @@ Is the work exact/mechanical?
 else
 Is the problem repeated reading/log/context noise?
   -> cache, reduce, scope, or isolate context
+else
+Am I writing/touching source?
+  -> keep the local mental model bounded for a weak/fresh reader
 else
 Is a persistent instruction causing/solving behavior?
   -> behavioral baseline + smallest rule + pressure test
