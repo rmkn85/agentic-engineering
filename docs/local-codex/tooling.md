@@ -36,9 +36,10 @@ Full logs belong on disk. Model-visible output should answer:
 
 - did it succeed?
 - what failed?
-- where is the full evidence?
+- what compact evidence should be inspected next?
+- where is the full evidence if deeper inspection is needed?
 
-`tools/quiet-run` implements that pattern:
+`tools/quiet-run` implements a minimal layered version of that pattern:
 
 ```bash
 tools/quiet-run -- pytest -q
@@ -46,9 +47,42 @@ tools/quiet-run -- cargo test
 tools/quiet-run -- npm test
 ```
 
-On success it prints one compact line. On failure it prints a compact header and a bounded tail while retaining the full output under `.agent-cache/logs/`.
+Each run writes a small bundle under `.agent-cache/logs/`:
 
-The agent can then inspect the log selectively with `rg`, `sed`, or a targeted parser.
+```text
+<run>/
+  manifest.json
+  failure-excerpt.log   # failures only
+  full.log
+```
+
+On success it prints one compact line. On failure it still prints one compact line, pointing to the manifest, retained failure excerpt and full log. The excerpt is **not** pasted automatically into model context unless `QUIET_RUN_INLINE_FAILURE=1` is explicitly set.
+
+The agent should inspect progressively:
+
+```text
+status / manifest
+-> failure excerpt if needed
+-> targeted `rg`/`sed`/parser slice of full log
+-> whole full log only when necessary
+```
+
+For processes that can terminate completely, use the same idea at larger scale: [`../runtime/postmortem-bundles.md`](../runtime/postmortem-bundles.md) defines a manifest that can link to focused stack/event/environment/trace artifacts and then to minidumps/cores/heap dumps/full logs without requiring the dead process to answer queries.
+
+## Prefer native structured protocols over terminal scraping
+
+If a tool already emits a stable machine-readable protocol, use it before parsing styled console output.
+
+Examples include:
+
+- compiler/linter JSON diagnostics;
+- JUnit or equivalent structured test reports;
+- SARIF static-analysis findings;
+- Bazel Build Event Protocol / build-event services;
+- OTLP/OpenTelemetry telemetry;
+- profiler/dump query tools that can extract top/relevant records without rendering the whole artifact.
+
+Reduce structured output deterministically to stable failed identities, locations, codes, counts and artifact references before involving a model.
 
 ## Prefer structured summaries
 
@@ -68,7 +102,7 @@ git diff
 rg 'SymbolName' .
 ```
 
-For compiler/test tools, prefer machine-readable or terse modes and locally reduce them to `file:line:code:message` where possible.
+For compiler/test tools, prefer machine-readable or terse modes and locally reduce them to `file:line:code:message` or another project-stable schema where possible.
 
 ## Validation ladder
 
@@ -94,8 +128,9 @@ For each benchmark, record at least:
 - number of command executions
 - bytes of raw stdout/stderr saved locally
 - bytes/lines actually emitted back to the model where measurable
+- number and total size of diagnostic artifacts opened by the model
 - failed command count
 - repeated identical commands
 - repeated broad test runs
 
-A tuned system should often increase local log bytes while **decreasing model-visible log tokens**. That is a win: evidence is preserved without forcing the model to ingest it.
+A tuned system should often increase local retained evidence while **decreasing model-visible diagnostic tokens**. That is a win when diagnosis/acceptance remains non-inferior: evidence is preserved without forcing the model to ingest it.
