@@ -14,8 +14,9 @@ Goal: reduce the module's future context/change radius without hiding the same c
 5. **Reduce required traversal.** Co-locate things that change together; remove accidental cycles/indirection; keep stable public contracts narrow; avoid generic abstraction layers that couple unrelated concepts.
 6. **Keep representative flows visible.** Sample key entry points and ensure a weak reader can follow their main/error paths through a small number of explicit dependencies. Do not optimize module metrics while making each path span more files.
 7. **Strengthen independent evidence at the boundary.** Use contract/behavior tests for the public surface, focused unit tests for diagnostic precision, and structural checks for dependency/cycle/public-surface rules when useful.
-8. **Check edit radius, not just code shape.** Exercise at least one representative future change or bug scenario. The refactor should reduce or preserve source/context expansion, changed-file count, validation effort, and recovery work.
-9. **Run weak-reader samples before declaring success.** A fresh weaker model should model representative entry points at least as accurately with no more context/reasoning than before.
+8. **Preserve the diagnostic boundary too.** If the module owns external I/O, long-running/concurrent state, retries/fallbacks, resource limits or operationally important work, map existing telemetry/correlation/recovery evidence before moving code. Load `instrumenting-runtime-feedback` only when the refactor materially changes how failures should be observed or persisted.
+9. **Check edit radius, not just code shape.** Exercise at least one representative future change or bug scenario. The refactor should reduce or preserve source/context expansion, changed-file count, validation effort, and recovery work.
+10. **Run weak-reader samples before declaring success.** A fresh weaker model should model representative entry points at least as accurately with no more context/reasoning than before.
 
 Do not recursively rewrite neighboring modules unless their boundary is part of the diagnosed problem. If a new independent ownership boundary is the actual solution, use `designing-module-boundary` for that new boundary.
 
