@@ -23,6 +23,7 @@ Treat the model as the expensive probabilistic component inside a mostly determi
 - Before substantial work, apply the [executor-routing checkpoint](docs/local-codex/subagents.md#executor-routing-checkpoint): choose exact tools, an authorized sufficiently capable smaller worker, or the orchestrator, and make that choice observable before the batch starts.
 - Treat **instruction/context residency** as a resource decision: always-loaded rules must earn their recurring context cost; use scoped rules, on-demand skills, isolated worker context, or retrievable references when they are sufficient.
 - Treat **source code as future agent context**: a fresh weaker coding model should be able to build a useful bounded mental model of touched code from the unit plus a small explicit contract/dependency context.
+- Treat **runtime/build/test evidence as future agent context**: emit compact structured diagnostic state first, preserve deeper evidence behind stable references, and support offline postmortem navigation when the target is dead.
 - Choose **model capability, execution surface, and usage pool independently**; the same model can have very different system economics in Chat, Work, local Codex, cloud Codex, or API use.
 - Treat current platform defaults as a strong baseline; do not tune merely because a knob exists.
 - Prefer mechanically favorable optimizations such as valid caching, warm deterministic state, concise model-visible logs, and exact local tools.
@@ -40,6 +41,28 @@ That usually favors semantic locality, cohesive functions/modules, information-h
 Use [`templates/source-AGENTS-agent-legible.md`](templates/source-AGENTS-agent-legible.md) as a compact source-tree rule set when the harness supports scoped/nested instructions. The deeper research remains out of the normal runtime path.
 
 Claims about agent savings should be tested on representative maintenance work. [`experiments/agent-legibility.md`](experiments/agent-legibility.md) includes a weak-reader semantic test plus localization context, dependency hops, edit radius, turns/tools, validation/recovery effort, and the same outcome gate.
+
+## Runtime evidence is persistent context too
+
+Even correct code runs inside changing environments and eventually emits failures, warnings, build/test output, traces, profiles and crash artifacts that another agent must inspect.
+
+The runtime-feedback methodology in [`docs/runtime/`](docs/runtime/README.md) applies the same context economics to that evidence:
+
+```text
+compact outcome / beacon
+        ↓
+structured diagnostic capsule or postmortem manifest
+        ↓
+focused correlated evidence
+        ↓
+retained raw artifact
+```
+
+Do not delete raw evidence merely to save tokens. Make it **progressively addressable** so an agent opens only what the current hypothesis needs.
+
+A crashed target is a first-class case. [`docs/runtime/postmortem-bundles.md`](docs/runtime/postmortem-bundles.md) defines an offline evidence bundle whose manifest links to progressively deeper files such as application-stack slices, recent structured events, environment deltas, traces, minidumps, cores, heap dumps and full logs. Live queries can help when available but are never assumed.
+
+Use [`skills/instrumenting-runtime-feedback/SKILL.md`](skills/instrumenting-runtime-feedback/SKILL.md) when designing the producer and [`skills/diagnosing-runtime-failure/SKILL.md`](skills/diagnosing-runtime-failure/SKILL.md) when consuming failure evidence. [`experiments/diagnostic-feedback.md`](experiments/diagnostic-feedback.md) compares raw-first and progressive evidence at the same diagnostic quality bar.
 
 ## Two knowledge layers
 
@@ -75,10 +98,12 @@ The local stack includes:
 - [prompt / AGENTS.md / rule / skill discipline](docs/local-codex/prompts-skills-agents.md)
 - [cost-aware delegation and subagent economics](docs/local-codex/subagents.md)
 - [agent-legible code](docs/code/agent-legible-code.md)
+- [runtime diagnostic feedback](docs/runtime/README.md)
 - [defaults before overrides](docs/principles/defaults-before-overrides.md)
 - [measurement and benchmarking as decision aids](docs/local-codex/benchmarking.md)
 - [instruction/context adherence protocol](experiments/instruction-context-adherence.md)
 - [agent-legibility comparison protocol](experiments/agent-legibility.md)
+- [diagnostic-feedback comparison protocol](experiments/diagnostic-feedback.md)
 - [optional experiment matrix](experiments/local-codex-efficiency-matrix.md)
 - [sample Codex config](configs/codex/efficient-local.config.toml)
 - [minimal global AGENTS.md](templates/global-AGENTS-efficient.md)
@@ -90,6 +115,7 @@ The local stack includes:
 
 - `docs/agent-corpus/` — small default reading corpus for execution agents
 - `docs/code/` — source-structure guidance for cheap future agent maintenance
+- `docs/runtime/` — runtime/build/test diagnostic feedback and offline postmortem evidence
 - `docs/principles/` — durable concepts
 - `docs/execution/` — execution mechanisms and surface/resource selection
 - `docs/local-codex/` — concrete local Codex efficiency methodology
