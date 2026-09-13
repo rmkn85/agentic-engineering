@@ -1,15 +1,24 @@
 ---
 name: efficient-execution
-description: Execute long, repository-heavy or tool-heavy engineering tasks with minimal redundant model work, noisy context, repeated validation, and unnecessary agent fan-out while preserving the requested result and quality.
+description: Use when executing long, repository-heavy or tool-heavy engineering work where repeated model work, noisy context, unnecessary fan-out, or broad revalidation may materially increase cost or wall time.
 ---
 
-1. Establish the required outcome and acceptance checks; do not reduce them to save tokens. For broad transformations, map the whole requested scope to owned deliverables before dispatch. Distinguish artifact/content acceptance from structural checks: navigable files, metadata coverage, worker completion and green tests do not alone prove the requested substance. Small retrieved context must not mean shallow stored knowledge.
-2. Before a substantial reading, implementation, or validation batch, choose its executor: deterministic tool, bounded worker, or orchestrator. Use exact tools for mechanical work. A small known edit or direct command stays local; do not spawn a worker merely to satisfy this checkpoint. When delegation is available and authorized, assign independent extraction, straightforward edit batches, and validation/triage to a sufficiently capable smaller model where permitted; keep synthesis, ambiguous decisions, and integration with the orchestrator. Record the choice and concrete reason in the existing plan or a short update, not a new ledger. Do this before consuming the batch, not after a user notices under-delegation.
-3. Keep full logs/evidence on disk and expose terse summaries to model context; inspect detailed excerpts only when needed.
-4. Treat completed semantic work as cached until an input that can affect it changes. Record enough state to know what is valid or dirty.
-5. Use targeted validation after local changes; perform broader validation at integration boundaries and final completion, not reflexively after every edit.
-6. Delegate an outcome-sized batch, not every file read or shell command. Give each worker a bounded question/write scope, acceptance checks, and a compact evidence return contract (findings, file/line or artifact references, failures, uncertainty). Select and record the model/effort when permitted: an inherited orchestrator model is not a cheaper-model optimization. If a requested tier is unavailable, disclose the fallback. Continue useful non-overlapping work instead of waiting or duplicating the worker's inspection. Review decision-bearing evidence and spot-check routine results; do not routinely reread the entire worker input. Reassess routing at integration boundaries or on actual cost, quality, or coordination failures; do not impose a fixed fan-out or benchmark every obvious assignment.
-7. Prefer stable instructions/context and on-demand references. Do not repeat large task descriptions or repo summaries already available in files. Keep worker handoffs compact, not the requested deliverable. Before scaling a repetitive assignment, inspect one representative artifact against the user's actual outcome; revise deficient assignments before multiplying them. At integration, reconcile uncovered scope and independently exercise representative user questions against the artifacts, not merely their links or labels.
-8. For repeatable work, capture `codex exec --json` metrics and compare against the applicable baseline.
+# Efficient execution
 
-For delegation tradeoffs, exception cases, and behavioral acceptance, use [cost-aware delegation](../../docs/local-codex/subagents.md). Direct reads required by higher-priority instructions remain the orchestrator's responsibility. Smaller workers must not weaken source coverage, privacy boundaries, permissions, or acceptance; escalate ambiguity rather than guessing.
+1. **Preserve the outcome.** Keep the requested scope, acceptance, evidence, permissions, and quality. For broad transformations, map the requested scope to owned deliverables; structural success is not substantive acceptance.
+
+2. **Route substantial batches before consuming them.** Choose the cheapest adequate executor: deterministic tool, bounded worker, or orchestrator. Keep small/tightly coupled work local. Use exact tools for exact work; use smaller workers only where authorized, supported, and sufficiently capable; keep ambiguous synthesis/integration on an adequate orchestrator.
+
+3. **Keep context lean.** Store full logs/evidence outside model context and expose terse status/failure excerpts first. Do not load large procedures/reference material until relevant. A worker can isolate a large temporary working set when the orchestrator only needs its evidence-backed result.
+
+4. **Reuse valid work.** Treat completed semantic work and deterministic artifacts as cached until an input that can affect them changes. Do not reread, regenerate, or revalidate merely to demonstrate activity.
+
+5. **Validate proportionally.** Run targeted checks after local changes and broader acceptance at integration/final boundaries. Before scaling a repeated assignment, inspect one representative result against the user's actual outcome.
+
+6. **Delegate outcome-sized work, not commands.** Give workers bounded scope, acceptance, and a compact return contract: result, source/artifact locations, validation, failures, uncertainty. Do not routinely reread all worker inputs. Record requested/resolved worker tier when visible; inherited orchestrator models are not evidence of cheaper delegation.
+
+7. **Treat instructions as a costed resource.** If this skill conflicts with other persistent guidance or repeatedly fails under realistic context, fix placement/decision boundaries or escalate enforcement/model capability instead of adding unlimited prose.
+
+8. **Measure only when the decision is uncertain.** For repeatable material tradeoffs, capture `codex exec --json` (or equivalent) usage plus substantive acceptance. Do not claim savings from worker counts, prompt length, or one anecdote.
+
+For routing exceptions and outcome-preserving delegation, read [`docs/local-codex/subagents.md`](../../docs/local-codex/subagents.md). For instruction/context placement and adherence tests, read [`docs/local-codex/prompts-skills-agents.md`](../../docs/local-codex/prompts-skills-agents.md) and [`experiments/instruction-context-adherence.md`](../../experiments/instruction-context-adherence.md) only when that decision is relevant.
