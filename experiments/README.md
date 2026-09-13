@@ -1,16 +1,28 @@
 # Experiments
 
-This directory is for reproducible comparisons of agent-development techniques.
+This directory is for reproducible comparisons of agent-development techniques. Experiments are decision aids, not a requirement to benchmark every obvious optimization.
 
-Useful experiment dimensions include:
+Useful dimensions include:
 
-- model choice at fixed operation mode
-- local vs cloud at fixed model and task
-- reasoning level
-- single agent vs delegated workers
-- cold vs warm dependency/build caches
-- raw tool output vs reduced diagnostics
-- semantic index vs ad-hoc repeated search
-- read-once/invalidation workflow vs repeated global review
+- model choice at fixed operation mode;
+- local vs cloud at fixed model and task;
+- reasoning level;
+- single agent vs delegated workers;
+- cold vs warm dependency/build caches;
+- raw tool output vs reduced diagnostics;
+- semantic index vs ad-hoc repeated search;
+- read-once/invalidation workflow vs repeated global review;
+- instruction present vs absent/scoped/on-demand;
+- instruction rule alone vs normal complete stack;
+- representative vs high legitimate context pressure;
+- thin vs stronger orchestrator for instruction/control reliability.
 
-An experiment should define workload, environment, success criteria, model/settings, measured resources, quality checks, and limitations.
+An experiment should define workload, environment, success criteria, model/settings, measured resources, substantive quality checks, and limitations. Change the smallest number of variables needed to answer the decision.
+
+## Current protocols
+
+- [`instruction-context-adherence.md`](instruction-context-adherence.md) — RED/GREEN/refactor, ablation, instruction interference, context pressure, and escalation.
+- [`delegation-adherence.md`](delegation-adherence.md) — behavioral routing/outcome-preservation regression cases.
+- [`local-codex-efficiency-matrix.md`](local-codex-efficiency-matrix.md) — optional broader local Codex comparisons.
+
+Do not report resource savings from an instruction/model/delegation variant unless the required outcome remains non-inferior.
