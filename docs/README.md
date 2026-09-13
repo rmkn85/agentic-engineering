@@ -17,9 +17,11 @@ Do **not** treat the documentation tree as a startup checklist. In particular, [
 
 - [Local Codex Efficiency Stack](local-codex/README.md) — local-first Codex setup, context/cache discipline, deterministic tooling, instruction/skill benchmarking, bounded delegation, and metrics.
 
-## Code as future agent context
+## Code and runtime feedback
 
-- [Agent-legible code](code/agent-legible-code.md) — structure source so future agents can localize, understand, change, validate, and debug it with a small context/edit radius. Load this when writing or refactoring code; it is not part of the always-read startup corpus.
+- [Agent-legible code](code/agent-legible-code.md) — source structured for bounded mental-model construction by a fresh weaker coding model.
+- [Runtime feedback](runtime/README.md) — progressive logging/telemetry/diagnostic evidence, postmortem bundles, self-monitoring and failure diagnosis.
+- [Postmortem bundles](runtime/postmortem-bundles.md) — offline crash evidence graphs: compact manifest first, deeper immutable artifacts behind links.
 
 ## General principles
 
@@ -44,4 +46,6 @@ Do **not** treat the documentation tree as a startup checklist. In particular, [
 
 - [Instruction and context adherence](../experiments/instruction-context-adherence.md)
 - [Agent legibility](../experiments/agent-legibility.md)
+- [Diagnostic feedback](../experiments/diagnostic-feedback.md)
+- [Skill routing](../experiments/skill-routing.md)
 - [Local Codex efficiency matrix](../experiments/local-codex-efficiency-matrix.md)
