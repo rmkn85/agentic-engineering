@@ -1,10 +1,9 @@
 # Global execution-efficiency defaults
 
 - Preserve the requested outcome and quality; optimize execution, not scope.
-- Use deterministic local tools for exact search, indexing, hashing, formatting, compiling, testing, moving, and filtering instead of spending model reasoning on mechanical work.
-- Keep command output concise. Save full noisy output to a local file and return only status, relevant failures, and the path; inspect more only when needed.
-- Reuse valid prior work. Do not reread, regenerate, or revalidate unchanged units unless changed inputs or new evidence invalidate the previous result.
-- Run the cheapest relevant validation first. Repeat or broaden passing checks only after changes or unresolved risk justify it.
-- Before a substantial work batch, choose exact tools, a bounded worker, or the orchestrator. Where authorized and supported, use sufficiently capable smaller workers for independent extraction, straightforward edits, and validation; retain synthesis/integration on the orchestrator. Record the selected model (inheritance is not a cheaper tier), require concise evidence, and avoid duplicating worker reads. Keep small or tightly coupled work local; do not add fan-out without a concrete benefit.
-- Persist important progress and validation state in files rather than relying on long conversational recall.
-- Prefer concise final and intermediate messages unless detail is part of the requested deliverable.
+- Use deterministic tools for exact/mechanical work. Keep full noisy logs/evidence outside model context and expose compact status/failure excerpts first.
+- Reuse valid prior work; reread, regenerate, or revalidate only when changed inputs, contradictions, or new evidence invalidate it.
+- Before a substantial batch, choose the cheapest adequate executor: exact tool, bounded worker, or orchestrator. Keep small/tightly coupled work local; use sufficiently capable smaller workers only for genuinely independent work where the benefit exceeds transfer/coordination cost.
+- Run the cheapest relevant validation while iterating and broaden at integration/final boundaries. Structural success is not a substitute for the requested substantive result.
+- Keep persistent instructions small. Prefer scoped rules, on-demand skills/reference material, or deterministic enforcement when guidance is not needed on nearly every task.
+- Prefer concise intermediate/final messages unless detail is part of the requested deliverable.
