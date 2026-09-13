@@ -3,6 +3,7 @@ set -uo pipefail
 
 TAIL_LINES="${QUIET_RUN_TAIL_LINES:-80}"
 LOG_DIR="${QUIET_RUN_LOG_DIR:-.agent-cache/logs}"
+INLINE_FAILURE="${QUIET_RUN_INLINE_FAILURE:-0}"
 
 if [[ "${1:-}" == "--" ]]; then shift; fi
 if [[ $# -eq 0 ]]; then
@@ -13,7 +14,11 @@ fi
 mkdir -p "$LOG_DIR"
 stamp="$(date -u +%Y%m%dT%H%M%SZ)"
 base="$(basename "$1" | tr -cs 'A-Za-z0-9._-' '_')"
-log="$LOG_DIR/${stamp}-${base}-$$.log"
+bundle="$LOG_DIR/${stamp}-${base}-$$"
+mkdir -p "$bundle"
+log="$bundle/full.log"
+excerpt="$bundle/failure-excerpt.log"
+manifest="$bundle/manifest.json"
 start_ns="$(date +%s%N)"
 
 set +e
@@ -26,10 +31,39 @@ bytes=$(wc -c <"$log" | tr -d ' ')
 lines=$(wc -l <"$log" | tr -d ' ')
 
 if [[ $code -eq 0 ]]; then
-  printf 'PASS code=0 elapsed_ms=%s log_bytes=%s log_lines=%s log=%s\n' "$elapsed_ms" "$bytes" "$lines" "$log"
+  status="PASS"
+  excerpt_ref="null"
 else
-  printf 'FAIL code=%s elapsed_ms=%s log_bytes=%s log_lines=%s log=%s\n' "$code" "$elapsed_ms" "$bytes" "$lines" "$log"
-  echo "--- last ${TAIL_LINES} lines ---"
-  tail -n "$TAIL_LINES" "$log"
+  status="FAIL"
+  tail -n "$TAIL_LINES" "$log" >"$excerpt"
+  excerpt_ref='"failure-excerpt.log"'
+fi
+
+cat >"$manifest" <<EOF
+{
+  "schema": "quiet-run-diagnostic-v1",
+  "status": "$status",
+  "command": "$base",
+  "exit_code": $code,
+  "elapsed_ms": $elapsed_ms,
+  "full_log_bytes": $bytes,
+  "full_log_lines": $lines,
+  "evidence": {
+    "failure_excerpt": $excerpt_ref,
+    "full_log": "full.log"
+  }
+}
+EOF
+
+if [[ $code -eq 0 ]]; then
+  printf 'PASS code=0 elapsed_ms=%s log_bytes=%s log_lines=%s manifest=%s log=%s\n' \
+    "$elapsed_ms" "$bytes" "$lines" "$manifest" "$log"
+else
+  printf 'FAIL code=%s elapsed_ms=%s log_bytes=%s log_lines=%s manifest=%s excerpt=%s log=%s\n' \
+    "$code" "$elapsed_ms" "$bytes" "$lines" "$manifest" "$excerpt" "$log"
+  if [[ "$INLINE_FAILURE" == "1" ]]; then
+    echo "--- requested failure excerpt: last ${TAIL_LINES} lines ---"
+    cat "$excerpt"
+  fi
 fi
 exit "$code"
