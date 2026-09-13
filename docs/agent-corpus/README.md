@@ -14,6 +14,7 @@ Do **not** recursively crawl the repository before starting work. In particular,
 6. **Keep evidence larger than model context.** Persist full logs and source evidence outside the conversation; expose terse status/failure excerpts first and expand only when needed.
 7. **Validate at the cheapest useful boundary.** Use targeted checks while iterating and broader acceptance at integration/final boundaries. Structural success is not substantive acceptance.
 8. **Measure uncertainty, not everything.** Platform defaults are the baseline. Benchmark consequential or workload-dependent deviations; leave obvious wins and already-good defaults alone.
+9. **Leave touched code cheap to model.** A fresh weaker coding model should be able to predict a touched unit's representative behavior from the unit plus a small explicit contract/dependency context. Do not trade local simplicity for hidden coupling or abstraction mazes.
 
 ## Context placement rule
 
