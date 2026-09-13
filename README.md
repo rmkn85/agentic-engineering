@@ -22,11 +22,20 @@ Treat the model as the expensive probabilistic component inside a mostly determi
 - Keep model-visible output short; keep full evidence on disk and fetch it only when needed.
 - Before substantial work, apply the [executor-routing checkpoint](docs/local-codex/subagents.md#executor-routing-checkpoint): choose exact tools, an authorized sufficiently capable smaller worker, or the orchestrator, and make that choice observable before the batch starts.
 - Treat **instruction/context residency** as a resource decision: always-loaded rules must earn their recurring context cost; use scoped rules, on-demand skills, isolated worker context, or retrievable references when they are sufficient.
+- Treat **source code as future agent context**: prefer semantic locality, explicit contracts/dependencies/state, independent behavioral tests, and mechanically enforced invariants so later changes need less repository reconstruction.
 - Choose **model capability, execution surface, and usage pool independently**; the same model can have very different system economics in Chat, Work, local Codex, cloud Codex, or API use.
 - Treat current platform defaults as a strong baseline; do not tune merely because a knob exists.
 - Prefer mechanically favorable optimizations such as valid caching, warm deterministic state, concise model-visible logs, and exact local tools.
 - Deviate from defaults only for a concrete reason; benchmark only when the tradeoff is non-obvious, consequential, or workload-dependent.
 - Treat explicit large-scale orchestration and fan-out as costed choices, not signals of sophistication.
+
+## Code is persistent context
+
+For coding/refactoring tasks, see [`docs/code/agent-legible-code.md`](docs/code/agent-legible-code.md). It distills practices that make future work cheaper to localize, understand, modify, validate, and debug without turning “AI-friendly code” into another style religion.
+
+The key distinction is **semantic locality, not smallest LOC**. Small cohesive functions/modules, information-hiding boundaries, explicit dependency direction and state, analyzable control flow, resilient behavior-level tests, useful diagnostics, and conventional machine-enforced formatting can reduce future context/edit radius. Excessive micro-functions, speculative interfaces, reflection, hidden dependency injection, brittle mocks, and duplicated comments can do the opposite.
+
+Claims about agent savings should be tested on representative maintenance work. [`experiments/agent-legibility.md`](experiments/agent-legibility.md) compares source structures using localization context, dependency hops, edit radius, turns/tools, validation/recovery effort, and the same outcome gate.
 
 ## Two knowledge layers
 
@@ -61,9 +70,11 @@ The local stack includes:
 - [deterministic repo tooling and concise logs](docs/local-codex/tooling.md)
 - [prompt / AGENTS.md / rule / skill discipline](docs/local-codex/prompts-skills-agents.md)
 - [cost-aware delegation and subagent economics](docs/local-codex/subagents.md)
+- [agent-legible code](docs/code/agent-legible-code.md)
 - [defaults before overrides](docs/principles/defaults-before-overrides.md)
 - [measurement and benchmarking as decision aids](docs/local-codex/benchmarking.md)
 - [instruction/context adherence protocol](experiments/instruction-context-adherence.md)
+- [agent-legibility comparison protocol](experiments/agent-legibility.md)
 - [optional experiment matrix](experiments/local-codex-efficiency-matrix.md)
 - [sample Codex config](configs/codex/efficient-local.config.toml)
 - [minimal global AGENTS.md](templates/global-AGENTS-efficient.md)
@@ -73,6 +84,7 @@ The local stack includes:
 ## Repository map
 
 - `docs/agent-corpus/` — small default reading corpus for execution agents
+- `docs/code/` — source-structure guidance for cheap future agent maintenance
 - `docs/principles/` — durable concepts
 - `docs/execution/` — execution mechanisms and surface/resource selection
 - `docs/local-codex/` — concrete local Codex efficiency methodology
