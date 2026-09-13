@@ -21,8 +21,9 @@ An experiment should define workload, environment, success criteria, model/setti
 
 ## Current protocols
 
-- [`instruction-context-adherence.md`](instruction-context-adherence.md) — RED/GREEN/refactor, ablation, instruction interference, context pressure, and escalation.
-- [`delegation-adherence.md`](delegation-adherence.md) — behavioral routing/outcome-preservation regression cases.
+- [`instruction-context-adherence.md`](instruction-context-adherence.md) — RED/GREEN/refactor, ablation, instruction interference, context pressure, delegation/routing adherence, and escalation.
 - [`local-codex-efficiency-matrix.md`](local-codex-efficiency-matrix.md) — optional broader local Codex comparisons.
+
+Historical observations that no longer need to be active protocols belong under [`../references/`](../references/), not here.
 
 Do not report resource savings from an instruction/model/delegation variant unless the required outcome remains non-inferior.
