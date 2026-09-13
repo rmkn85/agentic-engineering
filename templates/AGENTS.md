@@ -21,3 +21,5 @@ Document deterministic commands and the cheapest useful validation sequence.
 
 ## Local overrides
 Document project-specific constraints here rather than modifying shared engineering guidance.
+
+For source-code subtrees, prefer a small scoped/nested instruction such as [`source-AGENTS-agent-legible.md`](source-AGENTS-agent-legible.md) instead of adding code-writing detail to every repository-wide agent turn.
