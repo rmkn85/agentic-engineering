@@ -13,8 +13,9 @@ fi
 
 mkdir -p "$LOG_DIR"
 stamp="$(date -u +%Y%m%dT%H%M%SZ)"
-base="$(basename "$1" | tr -cs 'A-Za-z0-9._-' '_')"
-bundle="$LOG_DIR/${stamp}-${base}-$$"
+base="$(printf '%s' "$(basename "$1")" | tr -cs 'A-Za-z0-9._-' '_')"
+bundle_id="${stamp}-${base}-$$"
+bundle="$LOG_DIR/$bundle_id"
 mkdir -p "$bundle"
 log="$bundle/full.log"
 excerpt="$bundle/failure-excerpt.log"
@@ -32,28 +33,63 @@ lines=$(wc -l <"$log" | tr -d ' ')
 
 if [[ $code -eq 0 ]]; then
   status="PASS"
-  excerpt_ref="null"
-else
-  status="FAIL"
-  tail -n "$TAIL_LINES" "$log" >"$excerpt"
-  excerpt_ref='"failure-excerpt.log"'
-fi
-
-cat >"$manifest" <<EOF
+  cat >"$manifest" <<EOF
 {
-  "schema": "quiet-run-diagnostic-v1",
+  "schema": "quiet-run-diagnostic-v2",
+  "bundle_id": "$bundle_id",
   "status": "$status",
   "command": "$base",
   "exit_code": $code,
   "elapsed_ms": $elapsed_ms,
-  "full_log_bytes": $bytes,
-  "full_log_lines": $lines,
-  "evidence": {
-    "failure_excerpt": $excerpt_ref,
-    "full_log": "full.log"
-  }
+  "evidence": [
+    {
+      "id": "full-log",
+      "kind": "log",
+      "ref": "full.log",
+      "bytes": $bytes,
+      "lines": $lines,
+      "priority": 9,
+      "use_when": "detailed command output is explicitly needed"
+    }
+  ]
 }
 EOF
+else
+  status="FAIL"
+  tail -n "$TAIL_LINES" "$log" >"$excerpt"
+  excerpt_bytes=$(wc -c <"$excerpt" | tr -d ' ')
+  excerpt_lines=$(wc -l <"$excerpt" | tr -d ' ')
+  cat >"$manifest" <<EOF
+{
+  "schema": "quiet-run-diagnostic-v2",
+  "bundle_id": "$bundle_id",
+  "status": "$status",
+  "command": "$base",
+  "exit_code": $code,
+  "elapsed_ms": $elapsed_ms,
+  "evidence": [
+    {
+      "id": "failure-excerpt",
+      "kind": "log-slice",
+      "ref": "failure-excerpt.log",
+      "bytes": $excerpt_bytes,
+      "lines": $excerpt_lines,
+      "priority": 1,
+      "use_when": "the compact status is insufficient to classify the command failure"
+    },
+    {
+      "id": "full-log",
+      "kind": "log",
+      "ref": "full.log",
+      "bytes": $bytes,
+      "lines": $lines,
+      "priority": 9,
+      "use_when": "the failure excerpt or targeted filtering is insufficient"
+    }
+  ]
+}
+EOF
+fi
 
 if [[ $code -eq 0 ]]; then
   printf 'PASS code=0 elapsed_ms=%s log_bytes=%s log_lines=%s manifest=%s log=%s\n' \
