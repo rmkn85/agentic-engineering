@@ -24,17 +24,9 @@ Give workers only the necessary context and disjoint write scopes. Require compa
 
 Revisit the choice at integration boundaries or when actual quality, cost, rate-limit, or collision evidence changes it. Do not narrate a routing choice before every tool call. A short direct command often has less overhead than any subagent.
 
-## Failure this checkpoint addresses
-
-Observation and correction reviewed 2026-09-12.
-
-Observed failure pattern: an agent loaded efficiency guidance, performed a long sequence of routine reading and commands itself, and delegated only after human correction. Its first worker also inherited the expensive orchestrator model. The guidance emphasized avoiding excessive fan-out, but did not require an early executor/model choice. This is an anonymized qualitative observation, not a measured comparison or proof that smaller models always win.
-
-The correction makes the choice observable at the point of work and aligns the skill, template, and contributor guide. Prompt instructions alone cannot guarantee compliance. Validate with [behavioral scenarios](../../experiments/delegation-adherence.md), and use harness-enforced routing only if repeated observed failures justify that additional machinery. No pricing or savings claim follows from a worker count.
+For behavioral regression and instruction-pressure testing, use [`../../experiments/instruction-context-adherence.md`](../../experiments/instruction-context-adherence.md). Historical delegation-specific observations are retained under [`../../references/delegation-adherence-2026-09.md`](../../references/delegation-adherence-2026-09.md), outside the normal reading path.
 
 ## Outcome-preserving delegation
-
-A second observed failure was substitution of a convenient proxy for the requested result: a substantial knowledge consolidation produced brief summaries and successful discovery checks, while substantive synthesis remained in the source corpus. Delegation happened, but assignments and final acceptance were too narrow. This does not establish that the workers or smaller models caused the failure; the orchestrator owned the scope and acceptance error.
 
 For a broad transformation, partition the complete input scope into owned deliverables and explicit dispositions (synthesize, retain, merge, retire, or unresolved). Preserve exceptions and contradictions. A source inventory is not proof that the source's useful substance reached the result.
 
@@ -42,7 +34,7 @@ Give each worker the actual reader/user outcome, representative questions, sourc
 
 Review an early representative artifact before multiplying the pattern. At integration, use independent reader tasks on the deliverable itself and reconcile the whole source-to-result coverage. Structural checks remain necessary but separate. If the result is a foundation rather than the requested final product, report it as partial and continue within scope; do not relabel the foundation as complete.
 
-This correction is a decision rule, not evidence of reliable adherence or measured savings. A small direct edit does not need a coverage matrix or independent review. Keep coverage in the task's existing plan/evidence rather than creating a permanent second tracker.
+A small direct edit does not need a coverage matrix or independent review. Keep coverage in the task's existing plan/evidence rather than creating a permanent second tracker.
 
 ## Two different deviations
 
