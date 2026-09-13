@@ -14,3 +14,8 @@
 - Added a compact source-scoped `AGENTS.md` router plus four focused source-work skills: new module boundary, new unit inside a module, changing/refactoring a local unit, and refactoring a whole module/boundary.
 - Added a skill-granularity experiment to test whether focused-skill context/adherence gains exceed discovery and routing overhead.
 - Added code-legibility research spanning batch/punch-card systems, structured programming, information hiding, JPL/NASA, airborne/real-time assurance, repository-level LLM retrieval, SemBench/LongCodeU/CodeGlance/CodeSense, and agent-first engineering.
+- Added agent-efficient runtime diagnostic guidance based on progressive disclosure: compact outcome/capsule first, correlated focused evidence next, retained raw artifacts last.
+- Added offline postmortem bundles so crashes remain diagnosable after the target process is dead: a small manifest indexes progressively deeper stack/event/environment/trace/dump/log artifacts.
+- Added focused skills for producing runtime feedback and consuming failure evidence, plus a diagnostic-feedback experiment covering dead targets, environmental failures, duplicate storms, CI/build failures, partial telemetry and self-healing attempts.
+- Updated `quiet-run` to emit a structured layered diagnostic bundle instead of automatically pasting a fixed failure tail into agent context.
+- Preserved diagnostic-feedback research covering Deep Space 1 beacon/fault protection, syslog, minidumps/crash reports, supervision/crash-only/autonomic systems, delta debugging, Dapper/SRE/OpenTelemetry, Kubernetes, structured build/static-analysis protocols, and modern LLM-facing observability.
