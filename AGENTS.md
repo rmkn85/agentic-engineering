@@ -1,36 +1,46 @@
 # AGENTS.md
 
-This repository is a public professional knowledge base about making agentic engineering execution more efficient while preserving the task, required result, and quality bar.
+This repository is a public knowledge base about executing the **same authorized engineering work** with less model usage, wall time, repeated computation, retries, and human effort while preserving the requested result and quality.
 
-## Scope invariant
+## Normal reading boundary
 
-Do not prescribe project goals, product architecture, backlog structure, or domain methodology here. Optimize *how the same authorized engineering work is executed*: model usage, context, tools, caching, validation, concurrency, wall time, compute, retries, and human effort.
+For ordinary work, use this file plus [`docs/agent-corpus/README.md`](docs/agent-corpus/README.md) as the default operating corpus. Load deeper operational docs only when the current decision needs them.
+
+**Do not recursively crawl `references/`.** It preserves external research, provenance, competing ideas, and historical rationale for maintainers improving this methodology. Read it only for methodology research/audit work.
+
+## Execution invariants
+
+- Preserve the task, success criteria, source coverage, permissions, and quality bar; optimize execution, not scope.
+- Prefer deterministic tools for exact/mechanical work. Keep full noisy evidence outside model context and expose compact status/failure excerpts first.
+- Before a substantial batch, choose the cheapest adequate executor: exact tool, bounded worker, or orchestrator. Keep tightly coupled judgment/integration with an adequate orchestrator; do not add fan-out without a concrete benefit.
+- Treat context as a working set. Keep always-loaded guidance small; prefer path-scoped rules, on-demand skills, isolated worker context, and retrievable references when they are sufficient.
+- Reuse valid semantic and deterministic work until an input that can affect it changes.
+- Use targeted validation while iterating and broader acceptance at integration/final boundaries. Structural checks, worker completion, and green links/tests are not substitutes for the requested substantive outcome.
+- Treat platform defaults as the baseline. Benchmark consequential or workload-dependent deviations; do not turn benchmarking into ceremony.
+
+## Instruction discipline
+
+A persistent instruction is recurring context. Before adding one, ask what observed failure it addresses, whether it matters to nearly every task, and whether code/config/test/path scoping/on-demand loading can solve it more cheaply.
+
+For important behavior changes, establish the baseline when practical, add the smallest intervention, then test the behavior inside the normal instruction stack. Repeated non-adherence should trigger better scoping, deterministic enforcement, or a more capable orchestrator before unlimited prompt growth. See [`experiments/instruction-context-adherence.md`](experiments/instruction-context-adherence.md).
 
 ## Contribution rules
 
-- Keep guidance domain-neutral unless a section is explicitly a case study.
-- Never copy private repository content, proprietary code, credentials, internal URLs, or confidential project details into this public repository.
-- Distinguish documented behavior, measured evidence, and engineering hypotheses.
+- Keep guidance domain-neutral unless explicitly a case study.
+- Never copy private repository content, proprietary code, credentials, internal URLs, or confidential project details here.
+- Distinguish **documented behavior**, **measured result**, and **engineering hypothesis**.
 - Prefer mechanisms and decision rules over vendor-specific prompt folklore.
-- When documenting vendor/model behavior that may change, include the review date and authoritative source where practical.
-- Do not turn a local workaround into a universal rule without scope and counterexamples.
-- Treat current platform/tool defaults as the baseline. Any override should state the concrete inefficiency it addresses and why the change is expected to help.
-- Use measurement or benchmarking when a tradeoff is non-obvious, consequential, or workload-dependent; do not turn benchmarking into ceremony.
-- Keep always-loaded guidance concise. Optional procedures belong in skills or referenced docs.
-- Apply the [executor-routing checkpoint](docs/local-codex/subagents.md#executor-routing-checkpoint) before substantial batches: exact tools first, sufficiently capable smaller workers for authorized independent work, orchestrator for synthesis/integration. Make the executor/model choice explicit in existing work context; merely reading efficiency guidance is not applying it. Preserve platform permissions and justify both extra fan-out and keeping a large routine batch on the orchestrator.
+- For vendor/model behavior that may change, include a review date and authoritative source where practical.
+- Do not turn a local workaround or anecdote into a universal rule without scope, counterexamples, and appropriate evidence.
+- Keep runtime guidance concise; preserve deeper research and rationale under `references/` instead of deleting it.
 
 ## Quality bar for a practice
 
-Efficiency preserves substantive scope. For broad delegated transformations, require owned coverage and inspect representative deliverables against the original user outcome; worker counts, compact handoffs and structural tests are not substitutes for content acceptance. See [outcome-preserving delegation](docs/local-codex/subagents.md#outcome-preserving-delegation).
+A useful practice should make clear:
 
-A useful entry should answer most of:
-
-1. What resource inefficiency does this address?
-2. What mechanism causes the inefficiency?
-3. What change is proposed?
-4. What can it save and what can it cost?
-5. When should it not be used?
-6. How can the same outcome/quality be verified?
-7. Which metrics demonstrate the improvement?
-8. What evidence supports it?
-9. What result would invalidate or revise it?
+1. what inefficiency/failure it addresses;
+2. the mechanism and proposed change;
+3. what it may save and what it may cost;
+4. when not to use it;
+5. how the same outcome/quality is verified;
+6. what evidence supports it and what would revise it.
