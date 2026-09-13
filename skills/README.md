@@ -22,3 +22,12 @@ Choose the smallest scope that contains the task. If work reveals that the real 
 This split is intentionally small. Add another specialized skill only when its trigger is cheap/unambiguous and its workflow differs enough that loading a general skill would repeatedly waste context or reduce adherence.
 
 The shared invariant is defined in [`../docs/code/agent-legible-code.md`](../docs/code/agent-legible-code.md): touched code should remain cheap for a fresh weaker coding model to mentally model from a bounded local context.
+
+## Runtime feedback and diagnosis
+
+These are orthogonal to the code-shape skills and should load only when the task actually concerns telemetry or failure diagnosis:
+
+- [`instrumenting-runtime-feedback`](instrumenting-runtime-feedback/SKILL.md) — add/change logging, telemetry, health checks, crash reporting, self-monitoring, recovery reporting, or build/test diagnostic output so future agents get progressive structured evidence instead of raw-output floods.
+- [`diagnosing-runtime-failure`](diagnosing-runtime-failure/SKILL.md) — diagnose crashes, exceptions, failing jobs/tests/builds, degraded services, dumps, traces or noisy logs by starting from the smallest trustworthy index and following evidence links only as needed.
+
+A code-writing task that merely adds ordinary business logic should not load these skills. A crash/diagnosis task should not load all four source-structure skills unless it actually modifies source afterward.
