@@ -22,7 +22,7 @@ Treat the model as the expensive probabilistic component inside a mostly determi
 - Keep model-visible output short; keep full evidence on disk and fetch it only when needed.
 - Before substantial work, apply the [executor-routing checkpoint](docs/local-codex/subagents.md#executor-routing-checkpoint): choose exact tools, an authorized sufficiently capable smaller worker, or the orchestrator, and make that choice observable before the batch starts.
 - Treat **instruction/context residency** as a resource decision: always-loaded rules must earn their recurring context cost; use scoped rules, on-demand skills, isolated worker context, or retrievable references when they are sufficient.
-- Treat **source code as future agent context**: prefer semantic locality, explicit contracts/dependencies/state, independent behavioral tests, and mechanically enforced invariants so later changes need less repository reconstruction.
+- Treat **source code as future agent context**: a fresh weaker coding model should be able to build a useful bounded mental model of touched code from the unit plus a small explicit contract/dependency context.
 - Choose **model capability, execution surface, and usage pool independently**; the same model can have very different system economics in Chat, Work, local Codex, cloud Codex, or API use.
 - Treat current platform defaults as a strong baseline; do not tune merely because a knob exists.
 - Prefer mechanically favorable optimizations such as valid caching, warm deterministic state, concise model-visible logs, and exact local tools.
@@ -31,11 +31,15 @@ Treat the model as the expensive probabilistic component inside a mostly determi
 
 ## Code is persistent context
 
-For coding/refactoring tasks, see [`docs/code/agent-legible-code.md`](docs/code/agent-legible-code.md). It distills practices that make future work cheaper to localize, understand, modify, validate, and debug without turning “AI-friendly code” into another style religion.
+For coding/refactoring tasks, see [`docs/code/agent-legible-code.md`](docs/code/agent-legible-code.md). It distills practices that make future work cheaper to localize, mentally model, modify, validate, and debug without turning “AI-friendly code” into another style religion.
 
-The key distinction is **semantic locality, not smallest LOC**. Small cohesive functions/modules, information-hiding boundaries, explicit dependency direction and state, analyzable control flow, resilient behavior-level tests, useful diagnostics, and conventional machine-enforced formatting can reduce future context/edit radius. Excessive micro-functions, speculative interfaces, reflection, hidden dependency injection, brittle mocks, and duplicated comments can do the opposite.
+The primary target is **bounded mental-model construction**, not smallest LOC and not formal proof. A weak/fresh coding model should be able to predict representative paths, state changes, results, side effects, failures, and important dependencies without repository archaeology or a large reasoning budget.
 
-Claims about agent savings should be tested on representative maintenance work. [`experiments/agent-legibility.md`](experiments/agent-legibility.md) compares source structures using localization context, dependency hops, edit radius, turns/tools, validation/recovery effort, and the same outcome gate.
+That usually favors semantic locality, cohesive functions/modules, information-hiding boundaries, explicit dependency direction and state, mentally enumerable control flow, resilient behavior-level tests, useful diagnostics, and conventional machine-enforced formatting. Excessive micro-functions, speculative interfaces, reflection, hidden dependency injection, brittle mocks, duplicated comments, and long semantic-hop chains can do the opposite.
+
+Use [`templates/source-AGENTS-agent-legible.md`](templates/source-AGENTS-agent-legible.md) as a compact source-tree rule set when the harness supports scoped/nested instructions. The deeper research remains out of the normal runtime path.
+
+Claims about agent savings should be tested on representative maintenance work. [`experiments/agent-legibility.md`](experiments/agent-legibility.md) includes a weak-reader semantic test plus localization context, dependency hops, edit radius, turns/tools, validation/recovery effort, and the same outcome gate.
 
 ## Two knowledge layers
 
@@ -78,6 +82,7 @@ The local stack includes:
 - [optional experiment matrix](experiments/local-codex-efficiency-matrix.md)
 - [sample Codex config](configs/codex/efficient-local.config.toml)
 - [minimal global AGENTS.md](templates/global-AGENTS-efficient.md)
+- [source-scoped agent-legibility template](templates/source-AGENTS-agent-legible.md)
 - [optional efficiency skill](skills/efficient-execution/SKILL.md)
 - tools for [quiet command execution](tools/quiet-run), [repo inventory](tools/repo-index.py), [instruction-footprint inventory](tools/instruction-footprint.py), and [Codex JSONL benchmark capture](tools/codex-bench.py)
 
@@ -94,7 +99,7 @@ The local stack includes:
 - `docs/adoption/` — low-friction adoption and local overlays
 - `experiments/` — behavioral and economic comparisons
 - `configs/` — conservative configuration examples
-- `templates/` — small reusable instruction templates
+- `templates/` — small reusable instruction templates, including source-scoped code guidance
 - `skills/` — optional on-demand workflows
 - `tools/` — deterministic helpers that keep work out of the LLM
 - `references/` — external research/provenance; not normal runtime context
