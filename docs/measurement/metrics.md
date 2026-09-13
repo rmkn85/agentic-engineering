@@ -36,6 +36,28 @@ Do not treat a nominal context-window size as a measure of effective instruction
 
 [`../../tools/instruction-footprint.py`](../../tools/instruction-footprint.py) inventories common file-based instruction sources. Its character-based token estimate is only a stable comparison proxy; prefer native harness context accounting when available.
 
+## Code-maintenance / agent-legibility metrics
+
+When code structure itself is the optimization, measure the **future maintenance task**, not just static code style.
+
+Useful observations include:
+
+- files/symbols opened before the correct change location is identified;
+- unique source context loaded before/through the accepted edit;
+- search/index/LSP calls and dependency hops followed;
+- wrong candidate implementations inspected;
+- files/modules changed for one conceptual change (**edit radius**);
+- unrelated files changed because of coupling;
+- model turns/tool calls before a passing edit;
+- tests rewritten by a behavior-preserving refactor;
+- validation wall time and breadth;
+- retries/reverts/human corrections;
+- time/context required to diagnose a seeded or real failure.
+
+Static measures such as cyclomatic/cognitive complexity, dependency cycles/fan-out, public surface size, function/module size, global mutable state, and duplication can help explain results. They are proxies, not the objective: extracting ten tiny helpers can improve line-count metrics while making agent navigation worse.
+
+See [`../../experiments/agent-legibility.md`](../../experiments/agent-legibility.md) for the comparison protocol and [`../code/agent-legible-code.md`](../code/agent-legible-code.md) for operational guidance.
+
 ## Cross-surface metrics
 
 For cross-surface comparisons, also record:
@@ -75,7 +97,9 @@ vs
 change in accepted behavior / human correction rate
 ```
 
-Do not collapse those into a universal “instruction value score” unless a workload gives a meaningful weighting. A 40-token rule that prevents an expensive recurring failure may be extremely valuable; a 700-token explanation that changes nothing may belong in a reference instead.
+For source-structure experiments, useful workload-specific ratios include localization context, edit radius, turns, and validation/recovery effort relative to the baseline. Do not combine them into a universal “agent legibility score” unless the workload provides defensible weights.
+
+Do not collapse instruction dimensions into a universal “instruction value score” either. A 40-token rule that prevents an expensive recurring failure may be extremely valuable; a 700-token explanation that changes nothing may belong in a reference instead.
 
 ## Recovery cost
 
@@ -93,4 +117,4 @@ effective workflow cost =
 
 Use actual surfaced units where possible; otherwise report the components rather than inventing a currency conversion.
 
-See [`../local-codex/benchmarking.md`](../local-codex/benchmarking.md) for the concrete Codex protocol, [`../../experiments/instruction-context-adherence.md`](../../experiments/instruction-context-adherence.md) for behavioral instruction testing, [`../principles/metering-units-and-amortization.md`](../principles/metering-units-and-amortization.md) for metering granularity, [`../execution/surface-and-pool-selection.md`](../execution/surface-and-pool-selection.md) for cross-surface resource selection, and [`../../tools/codex-bench.py`](../../tools/codex-bench.py) for capture tooling.
+See [`../local-codex/benchmarking.md`](../local-codex/benchmarking.md) for the concrete Codex protocol, [`../../experiments/instruction-context-adherence.md`](../../experiments/instruction-context-adherence.md) for behavioral instruction testing, [`../../experiments/agent-legibility.md`](../../experiments/agent-legibility.md) for code-structure comparisons, [`../principles/metering-units-and-amortization.md`](../principles/metering-units-and-amortization.md) for metering granularity, [`../execution/surface-and-pool-selection.md`](../execution/surface-and-pool-selection.md) for cross-surface resource selection, and [`../../tools/codex-bench.py`](../../tools/codex-bench.py) for capture tooling.
