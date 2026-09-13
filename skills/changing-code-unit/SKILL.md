@@ -13,8 +13,9 @@ Goal: make the requested change while leaving the unit no harder for a fresh wea
 4. **Simplify one conceptual decision at a time.** Prefer direct flow, explicit intermediate state, guard clauses where useful, and helpers that name actual concepts. Do not move complexity behind factories/wrappers and declare victory.
 5. **Keep the external surface stable unless the task requires change.** If callers, ownership, or dependency direction need coordinated restructuring, escalate to `refactoring-module`.
 6. **Keep tests independent of internals.** Preserve/extend behavioral or invariant evidence. A behavior-preserving refactor should not require broad test rewrites merely because private structure moved.
-7. **Validate locally first.** Run the focused checks that cover the changed unit, then broaden only where the affected dependency boundary/risk requires it.
-8. **Run the weak-reader check.** Given the changed unit and immediate declared contracts/dependencies, can a fresh weaker model predict representative paths, results, state/effects, failures, and bounds with no more context/reasoning than before?
+7. **Preserve or improve material runtime evidence.** If the touched code participates in external I/O, concurrency/state machines, retries/fallbacks, resource limits or an historically opaque failure path, check that the change does not make diagnosis harder. Load `instrumenting-runtime-feedback` only if telemetry/diagnostic design itself needs work.
+8. **Validate locally first.** Run the focused checks that cover the changed unit, then broaden only where the affected dependency boundary/risk requires it.
+9. **Run the weak-reader check.** Given the changed unit and immediate declared contracts/dependencies, can a fresh weaker model predict representative paths, results, state/effects, failures, and bounds with no more context/reasoning than before?
 
 If a local refactor reveals that the real problem is the module's public surface, ownership, cycles, or dependency graph, stop widening the local patch and use `refactoring-module`.
 
