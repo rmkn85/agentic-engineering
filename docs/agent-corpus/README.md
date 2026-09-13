@@ -62,6 +62,7 @@ See [instruction/context adherence experiments](../../experiments/instruction-co
 
 | Decision | Read |
 | --- | --- |
+| Writing/refactoring source for cheap future agent maintenance | [`../code/agent-legible-code.md`](../code/agent-legible-code.md) |
 | Context, prompt, `AGENTS.md`, skills, instruction placement | [`../local-codex/prompts-skills-agents.md`](../local-codex/prompts-skills-agents.md) and [`../principles/context-economics.md`](../principles/context-economics.md) |
 | Delegation, workers, model routing, fan-out | [`../local-codex/subagents.md`](../local-codex/subagents.md) |
 | Benchmarks and resource comparisons | [`../local-codex/benchmarking.md`](../local-codex/benchmarking.md) |
