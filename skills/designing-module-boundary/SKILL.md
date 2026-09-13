@@ -14,7 +14,8 @@ Goal: create a boundary whose representative behavior and dependencies a fresh w
 5. **Prefer direct implementation until volatility earns abstraction.** Do not create interfaces/factories/adapters for hypothetical future implementations. Add a seam when it isolates a real changing decision or external boundary.
 6. **Make representative flows mentally enumerable.** A weak reader should be able to follow normal and important error paths with few semantic hops. Split real decisions, not arbitrary line counts.
 7. **Create independent contract evidence.** Add behavior/invariant/boundary tests whose expected results do not reproduce the implementation algorithm. Add structural checks for dependency direction or cycles when valuable.
-8. **Run the weak-reader check.** Given the public contract plus the key implementation unit, can a fresh weaker model predict representative results, state/effects, failures, and influencing dependencies without repository archaeology?
+8. **Check runtime uncertainty.** If the boundary introduces external I/O, long-running/concurrent state, retries/fallbacks, process/service boundaries, resource limits, or another failure mode that will be hard to reconstruct after the fact, decide whether runtime feedback is sufficient. Load `instrumenting-runtime-feedback` only when this is material; do not instrument pure/local logic by default.
+9. **Run the weak-reader check.** Given the public contract plus the key implementation unit, can a fresh weaker model predict representative results, state/effects, failures, and influencing dependencies without repository archaeology?
 
 If the new code clearly belongs inside an existing boundary without changing that boundary's responsibility, use `adding-code-unit` instead.
 
