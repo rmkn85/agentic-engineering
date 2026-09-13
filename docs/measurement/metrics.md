@@ -40,10 +40,16 @@ Do not treat a nominal context-window size as a measure of effective instruction
 
 When code structure itself is the optimization, measure the **future maintenance task**, not just static code style.
 
+The primary question is whether a fresh weaker coding model can build an accurate enough mental model of the touched unit from a deliberately bounded local context.
+
 Useful observations include:
 
+- weak-reader semantic-answer accuracy on representative paths/data dependencies/state/effects/errors/bounds;
+- false-confidence rate on semantic questions;
+- additional files/context requested before the weak reader can answer correctly;
+- unique extra source bytes/tokens loaded beyond the claimed local boundary;
+- reasoning/model turns needed before the reader reaches a stable correct prediction;
 - files/symbols opened before the correct change location is identified;
-- unique source context loaded before/through the accepted edit;
 - search/index/LSP calls and dependency hops followed;
 - wrong candidate implementations inspected;
 - files/modules changed for one conceptual change (**edit radius**);
@@ -54,7 +60,7 @@ Useful observations include:
 - retries/reverts/human corrections;
 - time/context required to diagnose a seeded or real failure.
 
-Static measures such as cyclomatic/cognitive complexity, dependency cycles/fan-out, public surface size, function/module size, global mutable state, and duplication can help explain results. They are proxies, not the objective: extracting ten tiny helpers can improve line-count metrics while making agent navigation worse.
+Static measures such as cyclomatic/cognitive complexity, dependency cycles/fan-out, public surface size, function/module size, global mutable state, and duplication can help explain results. They are proxies, not the objective: extracting ten tiny helpers can improve line-count metrics while making agent navigation or semantic prediction worse.
 
 See [`../../experiments/agent-legibility.md`](../../experiments/agent-legibility.md) for the comparison protocol and [`../code/agent-legible-code.md`](../code/agent-legible-code.md) for operational guidance.
 
@@ -97,9 +103,16 @@ vs
 change in accepted behavior / human correction rate
 ```
 
-For source-structure experiments, useful workload-specific ratios include localization context, edit radius, turns, and validation/recovery effort relative to the baseline. Do not combine them into a universal “agent legibility score” unless the workload provides defensible weights.
+For source-structure experiments, useful workload-specific measures include:
 
-Do not collapse instruction dimensions into a universal “instruction value score” either. A 40-token rule that prevents an expensive recurring failure may be extremely valuable; a 700-token explanation that changes nothing may belong in a reference instead.
+```text
+semantic_accuracy_delta = candidate_weak_reader_accuracy - baseline_weak_reader_accuracy
+context_expansion_ratio = candidate_extra_context / baseline_extra_context
+edit_radius_ratio       = candidate_changed_files / baseline_changed_files
+turn_ratio              = candidate_model_turns / baseline_model_turns
+```
+
+Do not combine these into a universal “agent legibility score” unless the workload provides defensible weights. Likewise, do not collapse instruction dimensions into a universal “instruction value score.” A 40-token rule that prevents an expensive recurring failure may be extremely valuable; a 700-token explanation that changes nothing may belong in a reference instead.
 
 ## Recovery cost
 
