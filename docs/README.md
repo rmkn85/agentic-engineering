@@ -17,6 +17,10 @@ Do **not** treat the documentation tree as a startup checklist. In particular, [
 
 - [Local Codex Efficiency Stack](local-codex/README.md) — local-first Codex setup, context/cache discipline, deterministic tooling, instruction/skill benchmarking, bounded delegation, and metrics.
 
+## Code as future agent context
+
+- [Agent-legible code](code/agent-legible-code.md) — structure source so future agents can localize, understand, change, validate, and debug it with a small context/edit radius. Load this when writing or refactoring code; it is not part of the always-read startup corpus.
+
 ## General principles
 
 - [Context economics](principles/context-economics.md) — context residency, instruction cost, progressive disclosure, context pressure, and lower-bound footprint auditing.
@@ -39,5 +43,5 @@ Do **not** treat the documentation tree as a startup checklist. In particular, [
 ## Behavioral experiments
 
 - [Instruction and context adherence](../experiments/instruction-context-adherence.md)
-- [Delegation adherence](../experiments/delegation-adherence.md)
+- [Agent legibility](../experiments/agent-legibility.md)
 - [Local Codex efficiency matrix](../experiments/local-codex-efficiency-matrix.md)
