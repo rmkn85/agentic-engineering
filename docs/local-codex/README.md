@@ -19,15 +19,17 @@ Start from current Codex defaults. This methodology adds mechanisms around them 
 ## Efficiency stack
 
 1. **Warm local environment** — repo, dependencies, compiler caches, services, and tools already available.
-2. **Stable model context** — small durable global instructions; dynamic task data late and on demand.
-3. **Progressive disclosure** — `AGENTS.md` for universal operating rules; skills for workflows only when selected; source/logs only when required.
+2. **Small resident context** — keep cross-cutting instructions compact; inspect what actually loads and do not confuse “fits in the context window” with “is useful to keep resident.”
+3. **Progressive disclosure** — use scoped rules, skills, source files, diagnostics, and reference material only when the task needs them. Moving text to another file is not a saving if the harness still force-loads it.
 4. **Deterministic indexing** — Git, ripgrep, ctags/LSP/language-native dependency tools before model-driven rediscovery.
 5. **Quiet tools** — full output saved to disk; model receives a terse success summary or only the relevant failure excerpts.
 6. **Incremental invalidation** — do not repeat expensive semantic work unless inputs affecting that result changed.
 7. **Targeted validation** — cheapest relevant checks first; broaden only when justified; one final integration pass.
-8. **Cost-aware delegation** — respect sensible platform defaults; explicitly increase or constrain fan-out only for a concrete workload reason.
-9. **Proportionate instrumentation** — capture useful operational metrics cheaply; add deeper tracing only when investigating an inefficiency.
-10. **A/B evaluation when needed** — use controlled comparisons to resolve non-obvious or consequential choices, not as a prerequisite for every practice.
+8. **Observable executor routing** — before a substantial batch, choose exact tooling, a bounded worker, or the orchestrator. Model selection is separate from spawning; inherited orchestrator models are not automatically cheaper workers.
+9. **Instruction behavior checks** — when a persistent rule materially affects execution, test the actual behavior under the normal instruction stack and realistic context pressure rather than checking only that the rule exists.
+10. **Proportionate instrumentation** — capture useful operational metrics cheaply; add deeper tracing or A/B comparisons only when investigating an uncertain/consequential tradeoff.
+
+For the compact default policy, start with the [agent operating corpus](../agent-corpus/README.md). For instruction placement and evaluation, see [prompts-skills-agents.md](prompts-skills-agents.md) and the [instruction/context adherence protocol](../../experiments/instruction-context-adherence.md).
 
 ## What “efficient” means
 
@@ -45,7 +47,7 @@ Among qualifying runs, compare:
 - validation duplication
 - agent/subagent count
 - wall-clock duration
-- human interventions
-- final acceptance result
+- human interventions/corrections
+- final substantive acceptance result
 
 See [benchmarking.md](benchmarking.md).
