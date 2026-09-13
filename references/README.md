@@ -18,6 +18,7 @@ The operational docs should therefore contain the **current decision rule**. Thi
 ## Contents
 
 - [`context-and-instruction-engineering-2026-09.md`](context-and-instruction-engineering-2026-09.md) — research behind the current instruction/context design, including OpenAI, Anthropic/Claude Code, Cursor, GitHub Copilot, LangChain, Promptfoo, DSPy, ACE, long-context research, BMAD, and Superpowers.
+- [`agent-legible-code-history-2026-09.md`](agent-legible-code-history-2026-09.md) — historical and modern research behind code designed for cheap future agent localization, reasoning, refactoring, verification, and debugging: punch cards/batch systems, structured programming, Parnas, Cleanroom, JPL/NASA, MISRA, Ravenscar, cFS, Linux, Google testing/review, repository-level LLM research, and agent-first production experience.
 - [`repository-evolution-2026-09.md`](repository-evolution-2026-09.md) — what the repository's early live failures taught about routing checkpoints, proxy acceptance, instruction structure, and behavioral regression tests.
 - [`delegation-adherence-2026-09.md`](delegation-adherence-2026-09.md) — archived delegation-specific regression cases and qualitative observations retained after the active protocol was generalized.
 
