@@ -108,6 +108,71 @@ The number 32K should **not** become an Agentic Engineering threshold. The paper
 
 ---
 
+## CodeGlance (ICPC 2026): semantic hops and trace length matter
+
+Sources:
+
+- ICPC 2026 research-track page: https://conf.researchr.org/details/icpc-2026/icpc-2026-research/22/CodeGlance-Understanding-Code-Reasoning-Challenges-in-LLMs-through-Multi-Scenario-An
+- Preprint: https://arxiv.org/abs/2602.13962
+
+CodeGlance evaluates LLM code reasoning across intrinsic logic, API interactions, and unseen-function scenarios. Its feature analysis is unusually relevant to source design because it identifies concrete properties that increase reasoning difficulty:
+
+- execution-trace length;
+- number of API invocations;
+- control-flow complexity;
+- unfamiliar/unseen functions.
+
+The reported results show particularly severe degradation for smaller models when functions/APIs are unfamiliar.
+
+### What this suggests here
+
+A code unit's mental-model budget is not simply its line count or token count. It also contains **semantic hops**:
+
+```text
+mental-model burden ≈
+  local logic
+  + execution-path depth
+  + external call/contract count
+  + hidden state/runtime wiring
+  + unfamiliar semantics
+  + concurrency/error/retry alternatives
+```
+
+This is not proposed as a numerical metric. It is a design decomposition that explains why a 12-line wrapper around many opaque collaborators can be harder than a direct 40-line transformation.
+
+It supports optimizing for:
+
+- fewer required semantic hops;
+- familiar/direct interaction patterns;
+- explicit local contracts for unavoidable external calls;
+- decomposition along actual semantic decisions rather than LOC thresholds.
+
+---
+
+## CodeSense (ICLR 2026): real-world fine-grained semantic reasoning remains weak
+
+Source:
+
+- Microsoft Research, *CodeSense: a Real-World Benchmark and Dataset for Code Semantic Reasoning*: https://www.microsoft.com/en-us/research/publication/codesense-a-real-world-benchmark-and-dataset-for-code-semantic-reasoning/
+
+CodeSense constructs fine-grained semantic-reasoning tasks from execution traces in real Python, C, and Java repositories. The authors report a clear gap on these real-world reasoning tasks; chain-of-thought and in-context learning help, but do not remove the underlying semantic limitations.
+
+### What this suggests here
+
+The weak-reader test should use **fine-grained deterministic or execution-backed questions**, not ask a model whether code “looks clean” or whether it can summarize it fluently.
+
+Execution traces, tests, and compiler/static-analysis facts can provide independent ground truth for questions about:
+
+- paths/state transitions;
+- dependencies;
+- side effects;
+- reachable behavior;
+- invariants.
+
+This makes agent legibility experimentally testable rather than a style opinion.
+
+---
+
 ## Code semantics equivalence benchmark (2026)
 
 Source:
@@ -157,7 +222,7 @@ For a target code unit and a representative weaker coding model:
 
 1. provide only the unit plus the contracts/types that the design claims should be sufficient;
 2. ask deterministic semantic questions about representative paths, dependencies, state, effects, errors, and bounds;
-3. compare answers with tests, static analysis, or hand-verified ground truth;
+3. compare answers with tests, static analysis, execution traces, or hand-verified ground truth;
 4. record accuracy;
 5. record how often the model asks for/needs additional files;
 6. record added source context, searches, model turns, and reasoning budget needed to reach an accepted answer;
@@ -198,6 +263,7 @@ weak/fresh model can build an accurate bounded mental model
 
 SUPPORTING DESIGN MECHANISMS
 semantic locality
+short/direct semantic-hop chains
 explicit state/dependencies/contracts
 simple/enumerable control flow
 stable names and direct call relationships
@@ -206,7 +272,7 @@ useful diagnostics
 
 MECHANICAL PROXIES / GUARDRAILS
 complexity/nesting/function-size thresholds
-dependency-cycle checks
+dependency-cycle/fan-out checks
 static analysis/type checking
 formatters/lints
 
