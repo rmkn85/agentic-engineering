@@ -19,15 +19,29 @@ Immediate actions:
 - move file/directory-specific guidance into scoped/nested rules where the harness supports them;
 - keep rationale and external research in `references/`, not runtime instructions.
 
-## 2. Make noisy commands quiet
+## 2. Make noisy commands progressively inspectable
 
-Keep full logs on disk and show the model only status plus relevant failures.
+Keep full logs on disk but expose only the smallest useful diagnostic layer first.
 
 ```bash
-tools/quiet-run .agent-logs/test.log -- make test
+tools/quiet-run -- make test
 ```
 
-Expand the log only when the compact result identifies a failure that needs diagnosis.
+`quiet-run` now writes a small bundle containing `manifest.json`, a bounded failure excerpt when needed, and the full log. Its normal model-facing output is one line with paths rather than an automatic tail dump.
+
+On failure:
+
+```text
+one-line status / manifest
+        ↓ if needed
+failure excerpt
+        ↓ if needed
+targeted search/slice of full log
+        ↓ only when necessary
+entire full log
+```
+
+For programs that may terminate or become unreachable, generalize the same pattern with [`../runtime/postmortem-bundles.md`](../runtime/postmortem-bundles.md): a persisted manifest should link to progressively deeper stack/event/environment/trace/dump artifacts so diagnosis does not depend on querying a live process.
 
 ## 3. Route exact work away from the model
 
@@ -90,7 +104,7 @@ python tools/codex-bench.py \
   --eval-command './test-or-acceptance-check'
 ```
 
-Then change **one meaningful variable**: model tier, instruction variant, delegation split, tool/config layer, code-structure hypothesis, or context placement.
+Then change **one meaningful variable**: model tier, instruction variant, delegation split, tool/config layer, code-structure hypothesis, diagnostic representation, or context placement.
 
 ## Decision order
 
@@ -99,7 +113,7 @@ Is the work exact/mechanical?
   -> tool/script
 else
 Is the problem repeated reading/log/context noise?
-  -> cache, reduce, scope, or isolate context
+  -> cache, reduce, scope, layer, or isolate context/evidence
 else
 Am I writing/touching source?
   -> keep the local mental model bounded for a weak/fresh reader
