@@ -20,7 +20,7 @@ Choose an outcome-sized assignment, not one agent per command or document. Keep 
 
 Model choice is separate from spawning. Where the platform and user allow selection, choose a supported tier and effort appropriate to the task; record the requested tier and the resolved tier if the harness reports it. An omitted model that inherits the orchestrator is not evidence of lower-cost delegation. Do not invent model availability, bypass selection permissions, or silently replace an unavailable requested tier. Reuse a worker's relevant context when that is useful; avoid restarting completed work just to change its model.
 
-Give workers only the necessary context and disjoint write scopes. Require compact evidence rather than a prose dump: result, source locations or log/artifact paths, validation, limitations, and unresolved choices. The orchestrator reviews decision-bearing source and spot-checks routine work. It does not systematically replay every read and command. Failed coverage or unreliable results justify deeper inspection and escalation.
+Give workers minimal context and disjoint write scopes. Workers keep logs on disk and return only results, evidence paths, validation, limitations, and unresolved decisions. The coordinator reviews decision-bearing source without replaying commands or importing logs already consumed by workers. When evidence is insufficient, request targeted worker investigation; read only excerpts needed for a coordinator decision.
 
 Revisit the choice at integration boundaries or when actual quality, cost, rate-limit, or collision evidence changes it. Do not narrate a routing choice before every tool call. A short direct command often has less overhead than any subagent.
 

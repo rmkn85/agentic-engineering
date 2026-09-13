@@ -11,7 +11,7 @@ For ordinary work, use this file plus [`docs/agent-corpus/README.md`](docs/agent
 ## Execution invariants
 
 - Preserve the task, success criteria, source coverage, permissions, and quality bar; optimize execution, not scope.
-- Prefer deterministic tools for exact/mechanical work. Keep full noisy evidence outside model context; expose a compact structured status/manifest first and follow stable references to deeper evidence only when needed.
+- Use deterministic tools for mechanical work. Keep logs on disk; workers return status, decisions, and evidence paths. The coordinator reads only decision-critical excerpts: consumed logs keep taxing later context.
 - Before a substantial batch, choose the cheapest adequate executor: exact tool, bounded worker, or orchestrator. Keep tightly coupled judgment/integration with an adequate orchestrator; do not add fan-out without a concrete benefit.
 - Treat context as a working set. Keep always-loaded guidance small; prefer path-scoped rules, on-demand skills, isolated worker context, and retrievable references when they are sufficient.
 - Reuse valid semantic and deterministic work until an input that can affect it changes.

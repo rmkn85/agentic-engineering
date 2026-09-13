@@ -11,7 +11,7 @@ Do **not** recursively crawl the repository before starting work. In particular,
 3. **Treat context as a working set, not an archive.** Keep always-loaded instructions small. Load path-specific rules, skills, references, source files, logs, and tool schemas only when they become relevant.
 4. **Use deterministic machinery for deterministic work.** Search, inventory, hashing, formatting, compilation, test execution, filtering, moving, and measurement usually do not need model reasoning.
 5. **Reuse valid work.** Cache semantic findings and deterministic artifacts until an input that can affect them changes. Do not reread or revalidate merely to demonstrate activity.
-6. **Keep evidence larger than model context.** Persist full logs and source evidence outside the conversation; expose terse structured status/failure evidence first and expand only when needed.
+6. **Keep logs out of coordinator context.** Retain evidence on disk; workers/tools return status, decisions, and paths. Inspect only decision-critical excerpts; consumed logs burden later turns.
 7. **Validate at the cheapest useful boundary.** Use targeted checks while iterating and broader acceptance at integration/final boundaries. Structural success is not substantive acceptance.
 8. **Measure uncertainty, not everything.** Platform defaults are the baseline. Benchmark consequential or workload-dependent deviations; leave obvious wins and already-good defaults alone.
 9. **Leave touched code cheap to model.** A fresh weaker coding model should be able to predict a touched unit's representative behavior from the unit plus a small explicit contract/dependency context. Do not trade local simplicity for hidden coupling or abstraction mazes.
