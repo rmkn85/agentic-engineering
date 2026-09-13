@@ -79,17 +79,48 @@ A stronger model's ability to recover after more context/search/reasoning does n
 
 ---
 
+## LongCodeU (ACL 2025): nominal context is not reliable code comprehension
+
+Primary source:
+
+- Jia Li et al., *Benchmarking Long-Context Language Models on Long Code Understanding*, ACL 2025: https://aclanthology.org/2025.acl-long.1324/
+
+LongCodeU evaluates nine long-context language models on several code-understanding dimensions. The reported results are directly relevant to the “just give the model the whole repository/file” fallback:
+
+- performance drops dramatically once long-code inputs exceed roughly 32K tokens/length scale used by the study, despite advertised context windows of 128K–1M;
+- understanding relations **between code units** is the most difficult evaluated category.
+
+### What this suggests here
+
+A huge nominal context window is not a substitute for source organization.
+
+If ordinary behavior requires loading tens of thousands of tokens and reconstructing relations across many units, the code has already exceeded the cheap-maintenance target even if the harness technically accepts the input.
+
+This strengthens the case for:
+
+- narrow mental-model boundaries;
+- predictable dependency direction;
+- few required inter-unit hops;
+- explicit contracts that let the reader stop traversing;
+- local code that is understandable before long-context fallback is needed.
+
+The number 32K should **not** become an Agentic Engineering threshold. The paper studies particular models/tasks and future models will change. The durable lesson is to benchmark effective comprehension, not advertised context capacity.
+
+---
+
 ## Code semantics equivalence benchmark (2026)
 
 Source:
 
 - Cosimo Laneve, *Understanding code semantics: a benchmark study of LLMs*, International Journal on Software Tools for Technology Transfer (2026): https://link.springer.com/article/10.1007/s10009-026-00842-4
 
-This study probes whether LLMs recognize semantic equivalence/inequivalence under meaning-preserving program transformations such as copy propagation and constant folding.
+This study probes whether LLMs recognize semantic equivalence/inequivalence under meaning-preserving program transformations such as copy propagation and constant folding. Across the evaluated cases/models, the paper reports that models misclassified 41% of equivalent cases without context and 29% even with minimal context.
 
 ### Relevance
 
 It reinforces the distinction between surface-form familiarity and semantic reasoning. For Agentic Engineering, stylistic consistency helps retrieval and pattern recognition, but the deeper goal is keeping behavior easy to reconstruct rather than merely syntactically familiar.
+
+It also suggests that adding a little more prompt context can improve performance without removing the underlying semantic weakness — another reason to improve the source representation itself rather than expecting prompt engineering to compensate indefinitely.
 
 ---
 
