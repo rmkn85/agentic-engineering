@@ -14,8 +14,9 @@ Goal: extend the module while preserving its existing mental model instead of cr
 5. **Make the unit locally predictable.** Keep representative paths and state transformations easy to enumerate. Extract helpers only when they name a real concept or reduce the mental model; do not manufacture a wrapper chain.
 6. **Keep effects visible.** When practical, separate deterministic decision/transformation logic from external I/O or other nondeterministic effects.
 7. **Add independent behavioral evidence.** Test the new behavior/invariants at the narrowest stable boundary. Expected results should not duplicate the production algorithm.
-8. **Check integration without rereading everything.** Run the cheapest tests/static checks that cover the addition, then broader module/integration acceptance only when the dependency/risk boundary requires it.
-9. **Run the weak-reader check.** A fresh weaker model given the new unit and immediate contracts should be able to predict representative outputs, state/effects, failures, and dependencies.
+8. **Check runtime uncertainty only if introduced.** If this unit adds an external boundary, asynchronous/long-running state, retries/fallbacks, resource pressure, or another failure mode that local tests will not explain after the fact, load `instrumenting-runtime-feedback` and design the smallest useful runtime evidence. Otherwise keep it quiet.
+9. **Check integration without rereading everything.** Run the cheapest tests/static checks that cover the addition, then broader module/integration acceptance only when the dependency/risk boundary requires it.
+10. **Run the weak-reader check.** A fresh weaker model given the new unit and immediate contracts should be able to predict representative outputs, state/effects, failures, and dependencies.
 
 If the task primarily changes an existing unit, use `changing-code-unit`. If the module itself needs ownership/public-surface/dependency restructuring, use `refactoring-module`.
 
