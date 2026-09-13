@@ -18,6 +18,7 @@ The operational docs should therefore contain the **current decision rule**. Thi
 ## Contents
 
 - [`context-and-instruction-engineering-2026-09.md`](context-and-instruction-engineering-2026-09.md) — research behind the current instruction/context design, including OpenAI, Anthropic/Claude Code, Cursor, GitHub Copilot, LangChain, Promptfoo, DSPy, ACE, long-context research, BMAD, and Superpowers.
+- [`repository-evolution-2026-09.md`](repository-evolution-2026-09.md) — what the repository's early live failures taught about routing checkpoints, proxy acceptance, instruction structure, and behavioral regression tests.
 
 ## Promotion rule
 
