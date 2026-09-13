@@ -21,11 +21,32 @@ Treat the model as the expensive probabilistic component inside a mostly determi
 - Cache semantic work and deterministic work independently.
 - Keep model-visible output short; keep full evidence on disk and fetch it only when needed.
 - Before substantial work, apply the [executor-routing checkpoint](docs/local-codex/subagents.md#executor-routing-checkpoint): choose exact tools, an authorized sufficiently capable smaller worker, or the orchestrator, and make that choice observable before the batch starts.
+- Treat **instruction/context residency** as a resource decision: always-loaded rules must earn their recurring context cost; use scoped rules, on-demand skills, isolated worker context, or retrievable references when they are sufficient.
 - Choose **model capability, execution surface, and usage pool independently**; the same model can have very different system economics in Chat, Work, local Codex, cloud Codex, or API use.
 - Treat current platform defaults as a strong baseline; do not tune merely because a knob exists.
 - Prefer mechanically favorable optimizations such as valid caching, warm deterministic state, concise model-visible logs, and exact local tools.
 - Deviate from defaults only for a concrete reason; benchmark only when the tradeoff is non-obvious, consequential, or workload-dependent.
 - Treat explicit large-scale orchestration and fan-out as costed choices, not signals of sophistication.
+
+## Two knowledge layers
+
+The repository deliberately separates **what execution agents should normally read** from **what maintainers may need when improving the methodology**.
+
+### Operational corpus
+
+Start with [`docs/agent-corpus/README.md`](docs/agent-corpus/README.md). It contains the small execution kernel and points to deeper operational guidance only when a decision needs it.
+
+This avoids turning the repository itself into the failure mode it warns about: a giant instruction manual that crowds out the task.
+
+### Research/reference archive
+
+[`references/`](references/README.md) preserves external framework notes, source links, competing approaches, historical rationale, and research depth. Ordinary execution agents should **not** recursively crawl it. It exists so concision does not destroy useful research.
+
+## Quick adoption
+
+For teams that want immediate improvements without changing their architecture or agent framework, use [`docs/adoption/quick-wins.md`](docs/adoption/quick-wins.md).
+
+The first steps are intentionally boring: inspect instruction footprint, quiet noisy tool output, route exact work to exact tools, stop rereading unchanged state, keep validation proportional, and benchmark only the uncertain choices.
 
 ## Start here
 
@@ -38,29 +59,33 @@ The local stack includes:
 - [workstation setup](docs/local-codex/linux-mint-cursor-appimage.md)
 - [context and cache economics](docs/local-codex/context-caching.md)
 - [deterministic repo tooling and concise logs](docs/local-codex/tooling.md)
-- [prompt / AGENTS.md / skill discipline](docs/local-codex/prompts-skills-agents.md)
+- [prompt / AGENTS.md / rule / skill discipline](docs/local-codex/prompts-skills-agents.md)
 - [cost-aware delegation and subagent economics](docs/local-codex/subagents.md)
 - [defaults before overrides](docs/principles/defaults-before-overrides.md)
 - [measurement and benchmarking as decision aids](docs/local-codex/benchmarking.md)
+- [instruction/context adherence protocol](experiments/instruction-context-adherence.md)
 - [optional experiment matrix](experiments/local-codex-efficiency-matrix.md)
 - [sample Codex config](configs/codex/efficient-local.config.toml)
 - [minimal global AGENTS.md](templates/global-AGENTS-efficient.md)
 - [optional efficiency skill](skills/efficient-execution/SKILL.md)
-- tools for [quiet command execution](tools/quiet-run), [repo inventory](tools/repo-index.py), and [Codex JSONL benchmark capture](tools/codex-bench.py)
+- tools for [quiet command execution](tools/quiet-run), [repo inventory](tools/repo-index.py), [instruction-footprint inventory](tools/instruction-footprint.py), and [Codex JSONL benchmark capture](tools/codex-bench.py)
 
 ## Repository map
 
+- `docs/agent-corpus/` — small default reading corpus for execution agents
 - `docs/principles/` — durable concepts
 - `docs/execution/` — execution mechanisms and surface/resource selection
 - `docs/local-codex/` — concrete local Codex efficiency methodology
 - `docs/collaboration/` — concurrency and ownership
 - `docs/measurement/` — reusable metrics
 - `docs/evidence/` — how observations become shared practices
-- `experiments/` — controlled comparisons
+- `docs/adoption/` — low-friction adoption and local overlays
+- `experiments/` — behavioral and economic comparisons
 - `configs/` — conservative configuration examples
 - `templates/` — small reusable instruction templates
 - `skills/` — optional on-demand workflows
 - `tools/` — deterministic helpers that keep work out of the LLM
+- `references/` — external research/provenance; not normal runtime context
 
 ## Evidence rule
 
