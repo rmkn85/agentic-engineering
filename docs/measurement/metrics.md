@@ -12,13 +12,31 @@ Do not optimize a single metric in isolation. A task that uses 30% fewer tokens 
 - reasoning output tokens where exposed
 - model turns
 - wall-clock duration
-- deterministic acceptance result
+- deterministic and substantive acceptance result
 - commands/tool calls
 - retries/failures
 - number of agents/subagents
 - changed-file/diff statistics
 
 For repository-heavy workflows, additionally measure repeated file reads, write amplification, repeated tests, and raw log size versus model-visible log size where tooling can expose them.
+
+## Instruction/context metrics
+
+When prompts, `AGENTS.md`, skills, rules, tools, or memory are part of the experiment, also record where available:
+
+- always-loaded / recurring controllable context;
+- runtime context breakdown from the harness (system/instructions, memory, skills, tools/MCP, files, conversation);
+- file-based instruction footprint as a lower-bound proxy;
+- instruction/adherence failures visible in the execution trace;
+- human corrections caused by non-adherence;
+- retries or discarded work caused by context/instruction failure;
+- behavior under representative and high legitimate context pressure.
+
+Do not treat a nominal context-window size as a measure of effective instruction capacity. Do not treat cached input as absent context: caching can change billing/latency while the cached tokens still remain model input.
+
+[`../../tools/instruction-footprint.py`](../../tools/instruction-footprint.py) inventories common file-based instruction sources. Its character-based token estimate is only a stable comparison proxy; prefer native harness context accounting when available.
+
+## Cross-surface metrics
 
 For cross-surface comparisons, also record:
 
@@ -35,6 +53,8 @@ A token count alone can be misleading when two surfaces draw from different incl
 
 ## Derived comparisons
 
+Useful decision aids include:
+
 - cache-hit ratio
 - fresh-input estimate
 - token saving relative to baseline
@@ -47,6 +67,30 @@ A token count alone can be misleading when two surfaces draw from different incl
 - context amplification: total worker context divided by unique task-relevant information
 - human-turn efficiency: accepted progress per required user intervention
 
-Use the metric that matches the scarce resource. A message-metered Chat surface and a token-metered Codex surface should not be compared using tokens alone.
+For instruction experiments, a useful qualitative/quantitative pair is:
 
-See [`../local-codex/benchmarking.md`](../local-codex/benchmarking.md) for the concrete Codex protocol, [`../principles/metering-units-and-amortization.md`](../principles/metering-units-and-amortization.md) for metering granularity, [`../execution/surface-and-pool-selection.md`](../execution/surface-and-pool-selection.md) for cross-surface resource selection, and [`../../tools/codex-bench.py`](../../tools/codex-bench.py) for capture tooling.
+```text
+incremental recurring context
+vs
+change in accepted behavior / human correction rate
+```
+
+Do not collapse those into a universal “instruction value score” unless a workload gives a meaningful weighting. A 40-token rule that prevents an expensive recurring failure may be extremely valuable; a 700-token explanation that changes nothing may belong in a reference instead.
+
+## Recovery cost
+
+A cheaper initial model/run can be more expensive after non-adherence:
+
+```text
+effective workflow cost =
+  initial run
+  + duplicated/repeated work
+  + retries
+  + corrective human turns
+  + stronger-model recovery
+  + discarded worker work
+```
+
+Use actual surfaced units where possible; otherwise report the components rather than inventing a currency conversion.
+
+See [`../local-codex/benchmarking.md`](../local-codex/benchmarking.md) for the concrete Codex protocol, [`../../experiments/instruction-context-adherence.md`](../../experiments/instruction-context-adherence.md) for behavioral instruction testing, [`../principles/metering-units-and-amortization.md`](../principles/metering-units-and-amortization.md) for metering granularity, [`../execution/surface-and-pool-selection.md`](../execution/surface-and-pool-selection.md) for cross-surface resource selection, and [`../../tools/codex-bench.py`](../../tools/codex-bench.py) for capture tooling.
