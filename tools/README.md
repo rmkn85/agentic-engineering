@@ -4,17 +4,38 @@ These helpers exist to move exact work out of the model and make optimization me
 
 ## `quiet-run`
 
-Capture full command output locally while exposing only a one-line success summary or a bounded failure tail.
+Capture full command output locally while exposing only a compact result and links to progressively deeper evidence.
 
 ```bash
 tools/quiet-run -- pytest -q
 tools/quiet-run -- cargo test
 ```
 
+Each run creates a small diagnostic bundle:
+
+```text
+.agent-cache/logs/<run>/
+  manifest.json
+  failure-excerpt.log   # failures only
+  full.log
+```
+
+The command prints one line containing status, timing/size metadata, and paths to the manifest/excerpt/full log. It does **not** paste the excerpt into model context by default.
+
+On failure, inspect in this order:
+
+1. the one-line result / `manifest.json`;
+2. `failure-excerpt.log` if the failure class is not already clear;
+3. targeted searches/slices of `full.log`;
+4. the entire `full.log` only when genuinely necessary.
+
 Environment controls:
 
 - `QUIET_RUN_LOG_DIR` (default `.agent-cache/logs`)
-- `QUIET_RUN_TAIL_LINES` (default `80`)
+- `QUIET_RUN_TAIL_LINES` (default `80`, controls the retained failure excerpt)
+- `QUIET_RUN_INLINE_FAILURE=1` explicitly prints the excerpt for interactive use; leave unset for agent-efficient operation.
+
+This is deliberately a minimal example of a **postmortem evidence graph**: compact manifest first, retained detail behind references. More capable applications should use the same principle with structured events, environment fingerprints, traces, dumps, profiles and other artifacts.
 
 ## `repo-index.py`
 
