@@ -15,15 +15,17 @@ Useful dimensions include:
 - instruction present vs absent/scoped/on-demand;
 - instruction rule alone vs normal complete stack;
 - representative vs high legitimate context pressure;
-- thin vs stronger orchestrator for instruction/control reliability.
+- thin vs stronger orchestrator for instruction/control reliability;
+- code structure before/after a targeted legibility refactor at fixed behavior/acceptance.
 
 An experiment should define workload, environment, success criteria, model/settings, measured resources, substantive quality checks, and limitations. Change the smallest number of variables needed to answer the decision.
 
 ## Current protocols
 
 - [`instruction-context-adherence.md`](instruction-context-adherence.md) — RED/GREEN/refactor, ablation, instruction interference, context pressure, delegation/routing adherence, and escalation.
+- [`agent-legibility.md`](agent-legibility.md) — compare source structures by localization context, edit radius, validation/recovery effort, and accepted outcome.
 - [`local-codex-efficiency-matrix.md`](local-codex-efficiency-matrix.md) — optional broader local Codex comparisons.
 
 Historical observations that no longer need to be active protocols belong under [`../references/`](../references/), not here.
 
-Do not report resource savings from an instruction/model/delegation variant unless the required outcome remains non-inferior.
+Do not report resource savings from an instruction/model/delegation/code-structure variant unless the required outcome remains non-inferior.
