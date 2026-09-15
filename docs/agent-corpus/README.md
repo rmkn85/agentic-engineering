@@ -72,7 +72,7 @@ See [instruction/context adherence experiments](../../experiments/instruction-co
 | Benchmarks and resource comparisons | [`../local-codex/benchmarking.md`](../local-codex/benchmarking.md) |
 | Exact local tooling and quiet outputs | [`../local-codex/tooling.md`](../local-codex/tooling.md) |
 | Reuse/invalidation | [`../execution/read-once-write-once.md`](../execution/read-once-write-once.md) and [`../execution/caching-and-prefetching.md`](../execution/caching-and-prefetching.md) |
-| Model/surface/pool choice | [`../execution/surface-and-pool-selection.md`](../execution/surface-and-pool-selection.md) |
+| Model/surface/pool choice, including costly coupled synthesis versus bounded execution | [`../execution/surface-and-pool-selection.md`](../execution/surface-and-pool-selection.md) |
 | Evidence maturity and claims | [`../evidence/practice-lifecycle.md`](../evidence/practice-lifecycle.md) |
 
 ## References boundary

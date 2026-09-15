@@ -1,6 +1,6 @@
 # Execution surfaces and usage pools
 
-Reviewed: 2026-09-12
+Reviewed: 2026-09-15
 
 Efficiency decisions should separate three different questions:
 
@@ -15,6 +15,39 @@ These are related, but they are not the same decision. Using the same model thro
 Choose the cheapest capable combination that preserves the required outcome and quality bar.
 
 Do not spend a scarce model or agentic allowance merely because it is available. Conversely, do not downgrade model quality or force work through an awkward surface solely to save quota when that creates retries, lost context, or lower-quality output.
+
+## Route coupled synthesis separately from routine execution
+
+Model capability is most valuable where one decision must reconcile several uncertain concerns at once. Examples include translating an experiential goal into architecture, preserving a product invariant through a cross-layer redesign, converging art direction, authored assets and runtime constraints, interpreting visual and runtime evidence together, or diagnosing a failure whose cause may cross state, timing, rendering and resource boundaries.
+
+Consider a stronger, scarcer model for a bounded synthesis or diagnosis pass when most of these are true:
+
+- the desired outcome is clear enough to judge but the implementation route is materially ambiguous;
+- several interacting boundaries must change coherently;
+- local fixes are likely to move the problem or violate a distant constraint;
+- evidence includes semantic or perceptual judgment that deterministic checks cannot resolve;
+- a mistaken decision would create substantial rework, and a concise decision artifact can guide later execution.
+
+Use judgment across the factors; they are not a numeric score or fixed threshold.
+
+Use a sufficiently capable cheaper worker for bounded implementation when the contract, owned files, dependencies and acceptance checks are already explicit. This includes routine code changes and asset production after the reference, format, budgets and review criteria are settled. Use deterministic tools for exact inspection and repetition: state snapshots, counters, replay setup, captures, diffs, builds, tests and controlled measurements.
+
+A practical progression is:
+
+```text
+experience / invariant / failure
+        ↓  capable synthesis or cross-boundary diagnosis when needed
+explicit constraints + chosen boundary + observable acceptance
+        ↓  bounded implementation
+deterministic replay + state/counter checks + focused tests
+        ↓  human or domain judgment at the required acceptance boundary
+```
+
+This is a handoff pattern, not a permanent model assignment. After the difficult decision has been expressed as contracts, references, fixtures, scenarios or tests, route routine implementation and verification down again. Escalate only when new evidence reopens the coupled decision, not whenever a check fails.
+
+Do not reserve a strong model for high-volume mechanical work, unconstrained variant generation, repeated test execution, or broad repository reading that exact tooling or bounded workers can perform. Conversely, do not split a tightly coupled synthesis across independent workers merely to reduce per-worker cost; reconciliation can cost more than keeping the decision coherent.
+
+These criteria are an **engineering hypothesis**, not a measured Astra-versus-smaller-model saving. Validate consequential routing changes on representative accepted work, including retries and rework. The public game-building case that motivated this clarification is summarized in [the Astra game-building reference note](../../references/astra-game-building-2026-09.md).
 
 ## Execution surfaces
 

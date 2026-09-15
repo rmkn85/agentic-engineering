@@ -31,7 +31,7 @@ Do **not** treat the documentation tree as a startup checklist. In particular, [
 
 ## Execution mechanisms
 
-- [Execution surfaces and usage pools](execution/surface-and-pool-selection.md)
+- [Execution surfaces, model capability, and usage pools](execution/surface-and-pool-selection.md)
 - [Caching and prefetching](execution/caching-and-prefetching.md)
 - [Local-first execution](execution/local-first.md)
 - [Read-once/write-once and invalidation](execution/read-once-write-once.md)
