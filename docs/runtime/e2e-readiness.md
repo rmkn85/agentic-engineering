@@ -30,6 +30,14 @@ Keep probes narrow. A generic internet request does not establish access to the 
 
 For local-only checks, prefer loopback binding and an available port; preserve existing listeners owned by other work. Verify export dependency versions and official integrity information before downloading, and reuse valid cached artifacts. If browser tooling cannot inspect an application-owned graphics context, report the direct capability/renderer probe as unverified; do not disturb that context just to obtain a result.
 
+## Separate a prepared state from the journey into it
+
+Use a named, seeded fixture to make an important state cheap to inspect. Expose a small read-only interface for its current mode, authoritative state revision, simulation time, readiness, active view and bounded work counters. Keep setup mutation explicitly test-owned.
+
+Exercise the transition separately through ordinary inputs. Loading a completed state cannot prove loading, navigation, interaction, cancellation or save/reload on the way into it. For a spatial application, a visible surface does not prove contact or hazard queries are ready: delay those dependencies and verify the application's pending behavior, recovery and stale-result rejection. Tie screenshots to the state and input trace that produced them.
+
+When diagnosing visual and timing failures together, compare the same starting state, input path and quality policy. Isolate a suspected effect or scheduling policy before widening the change. Fewer draw calls, transferred bytes or discarded jobs prove changes in that work; they do not alone prove faster frames or good interaction. Human review remains necessary for perceptual and experiential acceptance.
+
 ## Make each run reproducible and attributable
 
 Record enough identity to distinguish the tested artifact from stale or parallel work:

@@ -219,7 +219,9 @@ Useful dimensions, depending on the system:
 - network/DNS/TLS endpoint identity;
 - hardware/accelerator/driver version.
 
-Prefer an **environment fingerprint + relevant deltas from baseline** over a raw `env`, package list, `/proc`, or system dump.
+Collect only the dimensions necessary for the specific failure and within the authorized diagnostic boundary. Shared specifications and retained public/project summaries use portable source/build identity, dependency contracts, anonymous execution cohorts and software/hardware rendering classes. Personal home paths, workstation/driver inventories, hostnames and private development configuration do not belong in them. Keep any necessary sensitive diagnostic detail in the authorized private evidence store; if it is unavailable, narrow the claim instead of inventing it.
+
+Prefer a scoped comparison with the relevant baseline over a raw environment, package, process or system dump.
 
 Never expose secrets, tokens, credentials or sensitive user data to the diagnostic path merely because an agent may need context. Redact or omit at the source.
 

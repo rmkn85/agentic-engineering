@@ -49,7 +49,7 @@ This is a handoff pattern, not a permanent model assignment. After the difficult
 
 Do not reserve a strong model for high-volume mechanical work, unconstrained variant generation, repeated test execution, or broad repository reading that exact tooling or bounded workers can perform. Conversely, do not split a tightly coupled synthesis across independent workers merely to reduce per-worker cost; reconciliation can cost more than keeping the decision coherent.
 
-These criteria are an **engineering hypothesis**, not a measured stronger-versus-cheaper-model saving. Validate consequential routing changes on representative accepted work, including retries and rework. One dated public game-building example is summarized in [the Astra game-building reference note](../../references/astra-game-building-2026-09.md); the model name identifies that source, not a permanent routing target.
+These criteria are an **engineering hypothesis**, not a measured stronger-versus-cheaper-model saving. Validate consequential routing changes on representative accepted work, including retries and rework. OpenAI's [Building games with Astra](https://developers.openai.com/blog/how-to-build-games-with-astra), reviewed September 15, 2026, illustrates this approach through coupled visual/runtime diagnosis, editable asset production and repeatable comparisons. Its model name identifies the source, not a permanent routing target; the article does not establish comparative model savings. Approved references, an explicit authority boundary, a repeatable scenario and an ordinary-input journey make a specialist's decision testable by later executors.
 
 ## Execution surfaces
 

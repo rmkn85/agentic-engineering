@@ -27,7 +27,6 @@ The operational docs should therefore contain the **current decision rule**. Thi
 - [`diagnostic-escalation-2026-09.md`](diagnostic-escalation-2026-09.md) — deterministic record/replay (`rr`), persistent crash buffers (`pstore`), dynamic tracing/ftrace and the 2026 OpenTelemetry Profiles alpha as escalation mechanisms for hard incidents.
 - [`repository-evolution-2026-09.md`](repository-evolution-2026-09.md) — what the repository's early live failures taught about routing checkpoints, proxy acceptance, instruction structure, and behavioral regression tests.
 - [`delegation-adherence-2026-09.md`](delegation-adherence-2026-09.md) — archived delegation-specific regression cases and qualitative observations retained after the active protocol was generalized.
-- [`astra-game-building-2026-09.md`](astra-game-building-2026-09.md) — a scoped reading of OpenAI's public Astra game-building case, separated into source-reported practice, evidence limits, and a cost-aware engineering hypothesis.
 
 ## Promotion rule
 
