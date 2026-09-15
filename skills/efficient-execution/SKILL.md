@@ -9,13 +9,13 @@ description: Use when executing long, repository-heavy or tool-heavy engineering
 
 2. **Route substantial batches before consuming them.** Choose the cheapest adequate executor: deterministic tool, bounded worker, or orchestrator. Keep small/tightly coupled work local. Use exact tools for exact work; use smaller workers only where authorized, supported, and sufficiently capable; keep ambiguous synthesis/integration on an adequate orchestrator.
 
-3. **Keep context lean.** Store full logs/evidence outside model context and expose terse status/failure excerpts first. Do not load large procedures/reference material until relevant. A worker can isolate a large temporary working set when the orchestrator only needs its evidence-backed result.
+3. **Keep context lean.** Retain verbose logs, tool output and captures with the executor; expose status and decisive excerpts or artifact paths first. Load procedures and evidence only for the current decision. At phase boundaries, update existing task notes with outcomes, decisions, owned changes, evidence paths, blockers and the next action so runtime compaction can preserve continuity. Notes do not themselves remove earlier context.
 
 4. **Reuse valid work.** Treat completed semantic work and deterministic artifacts as cached until an input that can affect them changes. Do not reread, regenerate, or revalidate merely to demonstrate activity.
 
 5. **Validate proportionally.** Run targeted checks after local changes and broader acceptance at integration/final boundaries. Before scaling a repeated assignment, inspect one representative result against the user's actual outcome.
 
-6. **Delegate outcome-sized work, not commands.** Give workers bounded scope, acceptance, and a compact return contract: result, source/artifact locations, validation, failures, uncertainty. Do not routinely reread all worker inputs. Record requested/resolved worker tier when visible; inherited orchestrator models are not evidence of cheaper delegation.
+6. **Delegate outcome-sized work, not commands.** Give workers only needed context, bounded ownership and acceptance. Require a compact return: result, scope/revision tested, changed files, checks and status, evidence paths, failures and uncertainty. Keep substantive deliverables complete; handoff brevity must not hide exceptions. Inspect decision-critical evidence and spot-check routine work; reopen or repeat more only for changed inputs, conflicts, unreliable results or required acceptance. Record requested/resolved worker tier when visible; inherited orchestrator models are not evidence of cheaper delegation.
 
 7. **Treat instructions as a costed resource.** If this skill conflicts with other persistent guidance or repeatedly fails under realistic context, fix placement/decision boundaries or escalate enforcement/model capability instead of adding unlimited prose.
 

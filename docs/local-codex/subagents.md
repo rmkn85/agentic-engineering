@@ -24,6 +24,21 @@ Give workers minimal context and disjoint write scopes. Workers keep logs on dis
 
 Revisit the choice at integration boundaries or when actual quality, cost, rate-limit, or collision evidence changes it. Do not narrate a routing choice before every tool call. A short direct command often has less overhead than any subagent.
 
+### Handoff and retained context
+
+Use the return contract in [`efficient-execution`](../../skills/efficient-execution/SKILL.md). Put detailed evidence in a retrievable artifact and keep the handoff about that artifact. For example:
+
+```text
+Result: web smoke check passed for revision <sha>, desktop viewport only.
+Checks: <command>, exit 0; rendered scene and keyboard input observed.
+Evidence: <absolute manifest/log/capture paths>.
+Open: mobile layout untested; no performance or human-play acceptance claimed.
+```
+
+Keep evidence available through integration; move required durable evidence to the task's normal artifact location before temporary files are removed. Include contradictions and untested scope even when the summary grows. A successful exit alone cannot establish visual or human acceptance.
+
+The orchestrator uses the task's existing notes for current outcomes, assumptions, decisions, changes, evidence references, blockers and next actions. Read an image when visual judgment is required; inspect original source for a disputed claim; ask the worker for a targeted follow-up when routine evidence is incomplete. Do not ingest the entire archive as a handoff ritual. At a phase boundary, prepare these notes for runtime-supported compaction; neither an artifact nor a shorter summary removes already-consumed history by itself.
+
 ### Launch-context routing
 
 A worker launched from a parent multi-repository directory may receive the parent's instruction chain but no child-repository instructions. The child files can exist on disk, and a worker can be coached to read them, without proving that the runtime delivered them at startup. Treat stale parent-session inheritance as another possible cause: startup discovery is rebuilt per run, not retroactively refreshed by changing directories or files.
