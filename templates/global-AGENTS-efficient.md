@@ -6,5 +6,5 @@
 - Before a substantial batch, choose the cheapest adequate executor: exact tool, bounded worker, or orchestrator. Keep small/tightly coupled work local; use sufficiently capable smaller workers only for genuinely independent work where the benefit exceeds transfer/coordination cost.
 - When writing or modifying code, leave touched units cheap for a fresh weaker coding model to mentally simulate from the unit plus a small explicit contract/dependency context; avoid hidden coupling and needless indirection.
 - Run the cheapest relevant validation while iterating and broaden at integration/final boundaries. Structural success is not a substitute for the requested substantive result.
-- Keep persistent instructions small. Prefer scoped rules, on-demand skills/reference material, or deterministic enforcement when guidance is not needed on nearly every task.
+- Keep persistent instructions small. For long repository- or tool-heavy work, load efficient-execution when available; workspace instructions can locate a repository-local copy.
 - Prefer concise intermediate/final messages unless detail is part of the requested deliverable.

@@ -61,6 +61,12 @@ Acceptance should inspect the execution trace:
 
 A response that merely says “I will delegate efficiently” but then reads every routine source itself fails.
 
+### Portable routing and handoff check
+
+On a fresh host/task, try one representative evidence-producing assignment through the normal router, without pasting the skill body into the prompt. Check that the agent finds the actual skill path, reads applicable repository instructions and retains detailed evidence outside its return message. The return must identify tested scope/revision, verdict, checks, limitations and retrievable evidence. Give the orchestrator a real unresolved claim: it should inspect the relevant evidence or request a targeted follow-up, while leaving unrelated logs unopened. A missing visual/input check must remain incomplete even if a command exited successfully.
+
+Also check one small task that should not activate the workflow, and an absent optional skill checkout. Keep startup delivery, behavior and resource measurements separate. After compaction, verify that a continuation uses the recorded next action and preserves unfinished acceptance rather than restarting completed work or declaring success. Run this subset when portability or retention is the uncertainty; it is not a required matrix for every wording edit.
+
 ## Context-pressure levels
 
 Use workload-specific fixtures rather than arbitrary token counts:
@@ -185,4 +191,4 @@ The correct endpoint may be removing an instruction because upstream/default beh
 
 ## Relationship to delegation adherence
 
-[`delegation-adherence.md`](delegation-adherence.md) remains the specific regression set for executor/model routing and outcome-preserving delegation. This document generalizes the method to any persistent instruction/context decision.
+Historical executor/model-routing observations are retained in [`references/delegation-adherence-2026-09.md`](../references/delegation-adherence-2026-09.md). This document is the active protocol for testing delegation and other persistent instruction/context decisions.

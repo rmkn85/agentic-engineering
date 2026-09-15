@@ -2,6 +2,8 @@
 
 Skills are on-demand workflows. Their discovery metadata should answer **when to load them**; their bodies contain the focused procedure. Do not load every skill for every task.
 
+For adoption across hosts and repositories, use [portable skill routing](../docs/adoption/overlays.md#portable-skill-routing): preserve linked resources and verify availability, startup delivery and task behavior separately.
+
 ## Execution
 
 - [`efficient-execution`](efficient-execution/SKILL.md) — long/repository-heavy/tool-heavy work where repeated model work, noisy context, fan-out, or broad validation may materially affect cost.

@@ -93,6 +93,14 @@ Tool definitions can also consume context. Depending on the harness, tool/MCP na
 
 Use native harness context inspection when available. [`tools/instruction-footprint.py`](../../tools/instruction-footprint.py) inventories common file-based instruction sources, but it is deliberately only a lower-bound proxy for runtime context.
 
+## Why a delegated task can still grow
+
+Worker isolation only saves the intermediate material that stays outside the parent's context. The parent still carries its startup instructions/tool definitions, its own reads and browser actions, worker messages, integration checks and the ongoing conversation. Do not attribute a large context number to worker transcripts without inspecting what the host actually returns. Context occupancy and total usage across agents are different measurements; do not invent a per-category breakdown when the runtime does not expose one.
+
+Keep complete logs and captures with their executor and use the [compact handoff contract](../local-codex/subagents.md#handoff-and-retained-context). Saving a log after already printing it does not undo the context cost. Nor does producing a shorter summary remove prior messages by itself.
+
+At a phase boundary, refresh the task's existing continuation notes and use host-supported compaction when available. Preserve scope, decisions, tested revision/environment, evidence references, blockers and the next action. After compaction, distinguish retained summaries from original evidence; reread exact source when the next decision requires it. Compaction changes the available context, not the files or the acceptance state. Keep the full substantive deliverable outside the compressed working summary.
+
 ## Output can dominate
 
 When a workflow requires a model to regenerate large amounts of source, output may dominate cost. Avoid regenerating unchanged bytes merely to prove they were considered. If intentional preservation is required, record an explicit retain/move decision and use deterministic movement when possible.

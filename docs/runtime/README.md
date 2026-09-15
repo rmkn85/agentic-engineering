@@ -18,6 +18,7 @@ The target may be alive, dead, wedged or unreachable. A robust design therefore 
 
 ## Guidance
 
+- [`e2e-readiness.md`](e2e-readiness.md) — scoped capability probes and evidence boundaries for web, engine-headless and native end-to-end acceptance.
 - [`diagnostic-feedback.md`](diagnostic-feedback.md) — logging, metrics, traces, profiles, health checks, self-healing, grouping/sampling, CI/build/test diagnostics and general evidence economics.
 - [`postmortem-bundles.md`](postmortem-bundles.md) — crash-safe/offline evidence bundles whose small manifest links to progressively deeper files such as stack slices, recent events, environment deltas, minidumps, cores and full logs.
 - [`diagnostic-escalation.md`](diagnostic-escalation.md) — only for harder cases: bounded flight recorders, deterministic record/replay, lower-level persistent crash buffers and temporary dynamic probes.

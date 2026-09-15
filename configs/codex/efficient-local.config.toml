@@ -3,6 +3,9 @@
 # IMPORTANT: this is NOT a "better than Codex defaults" profile.
 # Start with current Codex defaults and add only overrides that solve a concrete
 # problem in your environment. Settings below are examples, mostly commented out.
+# For a short skill router, see docs/adoption/overlays.md#portable-skill-routing.
+# Use the host's supported instruction mechanism; do not assume another runtime's
+# custom configuration keys or personal paths work here.
 
 # Environment integration: useful when Cursor is the editor.
 file_opener = "cursor"
