@@ -32,7 +32,7 @@ If economics remain uncertain, compare the smallest useful alternatives using th
 
 ## Initial review — 2026-09-12
 
-An independently prompted worker (requested `gpt-5.6-luna`, medium effort) ran the skill validator, diff-whitespace check, and local link/anchor checks; all passed.
+An independently prompted worker (a lower-cost named tier available on the 2026-09-12 review date, medium effort) ran the skill validator, diff-whitespace check, and local link/anchor checks; all passed. The tier label is historical evidence, not a stable selector; current routing must inspect live availability.
 
 Its first routing dry-run correctly disclosed an unavailable-model fallback but unnecessarily delegated a known typo. The skill entry point was then narrowed to keep small known edits and direct commands local and to describe delegable edits as batches. This caught an **overdelegation** failure in the proposed correction rather than treating the presence of the rule as success.
 

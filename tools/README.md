@@ -56,7 +56,7 @@ python3 tools/codex-bench.py \
   --repo . \
   --label efficient-local \
   --prompt-file benchmark-task.md \
-  --codex-home ~/.codex-efficient \
+  --codex-home /tmp/codex-benchmark-profile \
   --eval-command 'make test'
 ```
 

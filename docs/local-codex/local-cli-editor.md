@@ -1,12 +1,12 @@
-# Linux Mint + Cursor AppImage + Local Codex
+# Local Codex CLI with any editor
 
 ## Goal
 
-Make Cursor a thin editor/terminal around a persistent, warm local Codex environment. The editor packaging should not cause dependencies, indexes, caches, or Codex state to be rebuilt per task.
+Keep the agent CLI, repository state, dependencies, indexes, and caches independent from the editor lifecycle. Replacing or updating an editor should not rebuild the engineering environment.
 
-## 1. Install Codex independently of Cursor
+## 1. Install Codex independently of the editor
 
-Use the standalone Codex CLI so an editor update or AppImage replacement does not affect the agent runtime:
+Use a supported standalone Codex CLI installation so an editor update does not affect the agent runtime. Check the current official instructions for the operating system and package method in use; for example:
 
 ```bash
 curl -fsSL https://chatgpt.com/codex/install.sh | sh
@@ -15,22 +15,18 @@ codex
 
 Sign in with ChatGPT when using plan allowance, or configure API authentication deliberately when you want API billing. Current Codex documentation also supports npm and release-binary installation.
 
-Verify inside **Cursor's integrated terminal**, not only an external shell:
+Verify inside the editor's integrated terminal, not only an external shell:
 
 ```bash
 command -v codex
 codex --version
 ```
 
-If `codex` is absent there, fix `PATH` in the interactive shell configuration (`~/.bashrc` on a normal Mint bash setup) rather than adding an editor-specific copy of Codex.
+If `codex` is absent there, fix the integrated terminal's supported shell or environment configuration rather than adding an editor-specific copy of Codex.
 
-## 2. Cursor AppImage is only the editor layer
+## 2. Keep self-contained editor packages at the editor layer
 
-Cursor supports AppImage on Linux (`chmod +x Cursor-*.AppImage && ./Cursor-*.AppImage`). Cursor currently recommends its apt package for tighter desktop integration, but using AppImage does not prevent the local Codex strategy.
-
-Keep repositories, package caches, compiler caches, Codex state, and helper tools outside the AppImage. Replacing the AppImage should therefore have essentially zero warm-up cost for the engineering environment.
-
-Choose the intended shell in Cursor with **Terminal: Select Default Profile** and verify that it loads the same environment used by external terminals.
+When an editor ships as a self-contained image or application bundle, keep repositories, package caches, compiler caches, Codex state, and helper tools outside that package. Choose the intended integrated-terminal profile and verify that it exposes the required CLI and dependency versions.
 
 ## 3. Prefer CLI for measured runs
 
@@ -94,7 +90,7 @@ Use ecosystem caches rather than generic reinvention:
 
 ## 6. Separate editor indexing from Codex evidence
 
-Cursor may maintain its own code index. Do **not** assume Codex CLI automatically consumes that index.
+An editor may maintain its own code index. Do **not** assume Codex CLI automatically consumes that index.
 
 Give Codex access to deterministic local interfaces that any agent can use:
 
@@ -110,8 +106,6 @@ This avoids tying the methodology to one editor and makes benchmark results port
 
 - Codex install and local CLI: https://github.com/openai/codex
 - Codex configuration index: https://learn.chatgpt.com/docs
-- Cursor Linux/AppImage quickstart: https://prod.cursor.com/docs/get-started/quickstart
-- Cursor terminal behavior: https://prod.cursor.com/docs/agent/tools/terminal
 - Codex non-interactive JSONL: https://learn.chatgpt.com/docs/non-interactive-mode
 
 Last reviewed: 2026-09-12.

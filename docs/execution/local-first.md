@@ -20,7 +20,7 @@ Cloud execution remains valuable when its benefits exceed duplicated setup/conte
 
 - independent parallel tasks
 - clean-environment verification
-- long-running work that should not occupy a workstation
+- long-running work that should not occupy the local execution environment
 - reproducible remote environments
 
 Local and cloud should be chosen for execution characteristics, not treated as competing ideologies.

@@ -1,13 +1,13 @@
 # Portable execution lessons — September 2026
 
-Status: qualitative observations from a maintainer-run engineering task and fresh-worker startup probes, recorded 2026-09-15. No controlled token-savings or performance benchmark was performed. Raw task transcripts and product-specific files are not published here; these observations are leads for reproduction, not independent acceptance evidence for another installation.
+Status: anonymized qualitative observations from an engineering task and fresh-worker startup probes, recorded 2026-09-15. No controlled token-savings or performance benchmark was performed. Raw transcripts, personal configuration, and product-specific files are not published here; these observations are leads for reproduction, not independent acceptance evidence for another installation.
 
 ## Instruction placement and delivery
 
-- A custom multi-agent policy was present in the effective developer context and permitted bounded delegation without an explicit-user-request-only restriction. That host exposed `features.multi_agent_v2.enabled` and `multi_agent_mode_hint_text`; these are observed host-specific settings, not a supported configuration promise for other versions. Checking the saved configuration alone would not have established the effective policy.
+- An observed runtime supplied a custom multi-agent policy that permitted bounded delegation. This establishes only the effective behavior in that run; copied configuration keys or saved configuration alone would not establish a portable interface or the effective policy elsewhere.
 - A repository-local efficiency skill existed but was absent from the runtime skill catalog. Adding a concise workspace path router made the route visible in a fresh worker's supplied startup context. This established delivery of the router, not automatic catalog installation or universal behavioral adherence.
 - A worker launched from the multi-repository parent received workspace instructions but read child-repository instructions manually. Those are separate loading paths and must be reported separately.
-- The active sandbox rejected editing a global config outside its writable roots. A one-line patch could be prepared and dry-run checked without broadening permissions. The user subsequently reported applying it; fresh-session activation still requires its own check.
+- One restricted environment could prepare and dry-run a host-level configuration patch but could not apply it within its authorized write scope. Activation in a fresh session remained a separate, unverified step.
 
 ## Context growth and handoffs
 
@@ -17,9 +17,9 @@ The operational response is [compact handoffs and selective evidence inspection]
 
 ## Runtime capability and acceptance
 
-A prior local runtime audit reported working loopback HTTP, integrated-browser rendering/input and a successful engine web export after missing export templates were installed. Native rendering/capture was possible, while native GUI player control was unavailable through the exposed automation surface. Writable engine state directories and the actual graphics renderer mattered; software rendering could not establish hardware performance. These capabilities are environment-specific and require fresh probes on another host.
+One environment-specific audit exercised browser rendering/input, a web export, native rendering/capture, and automation boundaries. Required export dependencies had to be installed, and the actual renderer mattered; software rendering could not establish hardware performance. These capability results require fresh probes in another environment.
 
-The reusable result is the [E2E-readiness method](../docs/runtime/e2e-readiness.md): verify each required surface independently and preserve the distinction between automated assertions, inspected rendering, native behavior, performance and human acceptance. Do not copy an engine version, graphics fallback, local port or workaround into global policy.
+The reusable result is the [E2E-readiness method](../docs/runtime/e2e-readiness.md): verify each required surface independently and preserve the distinction between automated assertions, inspected rendering, native behavior, performance and human acceptance. Record required dependency versions in scoped evidence; do not copy host paths, ports, device/driver inventory, or local workarounds into global policy.
 
 ## What would revise these practices
 

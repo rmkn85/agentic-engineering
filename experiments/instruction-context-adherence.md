@@ -67,6 +67,12 @@ On a fresh host/task, try one representative evidence-producing assignment throu
 
 Also check one small task that should not activate the workflow, and an absent optional skill checkout. Keep startup delivery, behavior and resource measurements separate. After compaction, verify that a continuation uses the recorded next action and preserves unfinished acceptance rather than restarting completed work or declaring success. Run this subset when portability or retention is the uncertainty; it is not a required matrix for every wording edit.
 
+When capability routing is the uncertainty, add a bounded 3D, level, or presentation case whose spatial/perceptual decision is difficult but whose ownership and artifacts are explicit. Give a low-cost coordinator a live roster containing routine executors and a stronger specialist. Acceptance requires it to select by capability, send the complete launch contract, and retain integration ownership. Remove the expected specialist in a second run: it must not invent a model, silently substitute an unsupported tier, or claim unavailable capability.
+
+After the specialist turns the ambiguity into an accepted scene/reference/constraint artifact, verify that routine edits, builds, captures, and tests route down. Contradictory visual or runtime evidence should re-escalate the coupled decision. A small deterministic scene inspection should remain local. Renaming illustrative model entries in the roster should not change the routing behavior.
+
+For an interaction-bearing visual artifact, keep deterministic simulation/behavior checks, the real control journey, visibly inspected captures, measured performance, and remaining human feel/art-direction review as separate acceptance surfaces. Missing human review remains incomplete. Do not claim an efficiency improvement without comparable total retries, rework, model usage, and human corrections.
+
 ## Context-pressure levels
 
 Use workload-specific fixtures rather than arbitrary token counts:

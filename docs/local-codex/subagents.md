@@ -11,14 +11,25 @@ Before a substantial batch of reading, editing, or validation, choose who perfor
 | Work | Preferred executor when applicable | Return / acceptance |
 | --- | --- | --- |
 | File inventory, hashes, exact search, formatting, known command batch | Deterministic tool/script | Machine-readable result, exit status, retained logs |
-| Independent source extraction, routine edits, command selection and failure triage | Bounded worker using a sufficiently capable smaller model, where authorized | Findings with source locations, changes, checks, failures and uncertainties |
-| Conflicting evidence, semantic ownership, risky boundary decisions, integration | Orchestrator or appropriately capable specialist | Decision supported by original evidence and accepted integration |
+| Independent source extraction, routine edits, command selection and failure triage | Bounded worker with sufficient capability; often a lower-cost model | Findings with source locations, changes, checks, failures and uncertainties |
+| Coupled semantic, spatial, perceptual, or cross-boundary decision | Bounded specialist or orchestrator with the required capability | Decision artifact supported by original evidence and explicit acceptance boundaries |
+| Integration | Coordinator capable of judging and reconciling the returned artifact | Accepted integration or a stated escalation |
 
 Reading a complete corpus does not ordinarily require the orchestrator to ingest every byte: independent readers can cover defined portions, preserve contradictions and cite original evidence. Instructions that explicitly require the main agent's own read still take precedence. Do not substitute a summary for required source coverage or let a worker silently omit difficult material.
 
-Choose an outcome-sized assignment, not one agent per command or document. Keep the immediate tightly coupled decision local and start useful independent work before continuing it. For a large routine batch retained locally, state the actual reason: required direct inspection, no authorized worker/tool, coupling, transfer overhead, or demonstrated worker unreliability. "Defaults" alone does not explain ignoring an available independent split after the user requested efficient delegation.
+Choose an outcome-sized assignment, not one agent per command or document. Keep an immediate decision local when the coordinator is capable and transfer would cost more than it saves; otherwise route the bounded decision to a capable specialist and start useful independent work. For a large routine batch retained locally, state the actual reason: required direct inspection, no authorized worker/tool, coupling, transfer overhead, or demonstrated worker unreliability. "Defaults" alone does not explain ignoring an available independent split after the user requested efficient delegation.
 
-Model choice is separate from spawning. Where the platform and user allow selection, choose a supported tier and effort appropriate to the task; record the requested tier and the resolved tier if the harness reports it. An omitted model that inherits the orchestrator is not evidence of lower-cost delegation. Do not invent model availability, bypass selection permissions, or silently replace an unavailable requested tier. Reuse a worker's relevant context when that is useful; avoid restarting completed work just to change its model.
+Model choice is separate from spawning. Select the required capability before a model name: for example, coherent spatial synthesis, visual-reference interpretation, cross-boundary reasoning, tool fluency, or perceptual review. Inspect the models, effort levels, tools, and executors exposed in the current run, then choose the cheapest supported option likely to meet acceptance. A low-cost coordinator may dispatch a stronger specialist; the coordinator does not have to be the highest-capability model.
+
+Do not infer availability from documentation, an earlier run, or a model family name. If live discovery is unavailable, use only a platform-supported default or report the routing choice as unresolved. Record the requested and resolved tier/capability when the harness reports them. An omitted model that inherits the orchestrator is not evidence of lower-cost delegation. Named models in dated evidence are illustrations, not stable routing interfaces or promises about future models.
+
+The coordinator must still be able to judge and integrate the specialist's artifact. If it cannot, escalate the integration decision too. Reuse relevant worker context rather than restarting completed work just to change tiers.
+
+### Capability escalation and de-escalation
+
+Route up when a bounded decision combines several concerns that a routine executor is unlikely to reconcile without rework. A 3D asset, level, or presentation assignment can qualify when it couples spatial composition, navigation or camera behavior, lighting/materials, approved visual references, runtime constraints, and perceptual review. The artifact category alone is not a reason to escalate.
+
+Route down after the specialist converts ambiguity into an accepted decision artifact: approved references, scene boundaries, constraints, fixtures, measurable budgets, or repeatable acceptance scenarios. Exact edits, builds, captures, and tests can then return to deterministic tools or cheaper capable workers. Re-escalate only when new evidence reopens the coupled decision; an ordinary failing check follows routine diagnosis first.
 
 Give workers minimal context and disjoint write scopes. Workers keep logs on disk and return only results, evidence paths, validation, limitations, and unresolved decisions. The coordinator reviews decision-bearing source without replaying commands or importing logs already consumed by workers. When evidence is insufficient, request targeted worker investigation; read only excerpts needed for a coordinator decision.
 
@@ -26,12 +37,26 @@ Revisit the choice at integration boundaries or when actual quality, cost, rate-
 
 ### Handoff and retained context
 
-Use the return contract in [`efficient-execution`](../../skills/efficient-execution/SKILL.md). Put detailed evidence in a retrievable artifact and keep the handoff about that artifact. For example:
+Use the return contract in [`efficient-execution`](../../skills/efficient-execution/SKILL.md). A launch handoff should make these fields explicit when they matter:
+
+```text
+Outcome and concrete artifact:
+Owned scope/files:
+Constraints, permissions, and preserved invariants:
+Authoritative inputs and precedence:
+Budgets: scope, attempts, variants, time or tokens when applicable
+Acceptance: deterministic, runtime, visual, and human boundaries
+Required capability and live requested/resolved executor:
+Escalate or stop when:
+Return: result, revision/scope, changed artifacts, checks, evidence, limits, open decisions
+```
+
+For 3D, level, or presentation work, include any frozen simulation/interaction behavior, approved references, target scenes or viewpoints, resource/performance bounds, and perceptual judgment that remains human-owned. Put detailed evidence in a retrievable artifact and keep the return about that artifact. For example:
 
 ```text
 Result: web smoke check passed for revision <sha>, desktop viewport only.
 Checks: <command>, exit 0; rendered scene and keyboard input observed.
-Evidence: <absolute manifest/log/capture paths>.
+Evidence: <artifact-relative manifest/log/capture references>.
 Open: mobile layout untested; no performance or human-play acceptance claimed.
 ```
 

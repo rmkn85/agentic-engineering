@@ -7,7 +7,7 @@ Do **not** recursively crawl the repository before starting work. In particular,
 ## Execution kernel
 
 1. **Preserve the requested outcome.** Optimize execution, not scope, acceptance criteria, evidence, or quality.
-2. **Route substantial batches before consuming them.** Choose the cheapest adequate executor: deterministic tool, bounded worker, or orchestrator. Keep tightly coupled judgment and integration with the orchestrator; do not create fan-out without a concrete benefit.
+2. **Route substantial batches before consuming them.** Choose the cheapest adequate executor: deterministic tool, bounded worker, orchestrator, or capability-selected specialist. A low-cost coordinator may route one bounded coupled decision to a stronger available specialist, then return implementation and verification to cheaper executors. Do not create fan-out without a concrete benefit.
 3. **Treat context as a working set, not an archive.** Keep always-loaded instructions small. Load path-specific rules, skills, references, source files, logs, and tool schemas only when they become relevant.
 4. **Use deterministic machinery for deterministic work.** Search, inventory, hashing, formatting, compilation, test execution, filtering, moving, and measurement usually do not need model reasoning.
 5. **Reuse valid work.** Cache semantic findings and deterministic artifacts until an input that can affect them changes. Do not reread or revalidate merely to demonstrate activity.

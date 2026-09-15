@@ -4,15 +4,15 @@ This methodology optimizes **execution efficiency**, not project methodology.
 
 The task itself is held constant. We change the execution environment, instructions, tools, caching, validation strategy, and delegation policy, then measure whether the same required result was obtained with fewer resources.
 
-## Reference environment
+## Required capabilities
 
-- Linux Mint / Ubuntu-family Linux
-- Cursor desktop, including AppImage
-- Codex CLI authenticated with ChatGPT or API
-- Git repository already cloned locally
-- dependencies/build products kept warm where safe
+- a supported Codex CLI authenticated through the intended account or API route
+- a local Git checkout
+- the project's required dependency and tool versions
+- persistent build/index/package caches where safe
+- an editor or terminal that exposes the same required CLI environment
 
-Cursor is the editor. Codex CLI provides a useful **measurable execution substrate** because `codex exec --json` emits machine-readable events including per-turn token usage. Measurement is a helper when a choice is uncertain; routine work does not need to become a benchmark.
+Codex CLI provides a useful **measurable execution substrate** because `codex exec --json` emits machine-readable events including per-turn token usage. The editor is optional and replaceable. Measurement is a helper when a choice is uncertain; routine work does not need to become a benchmark.
 
 Start from current Codex defaults. This methodology adds mechanisms around them and proposes overrides only when a concrete workload shows a reason. See [defaults before overrides](../principles/defaults-before-overrides.md).
 

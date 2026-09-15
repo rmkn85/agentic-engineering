@@ -1,6 +1,6 @@
 # Astra game-building case — September 2026
 
-Status: scoped source note based on OpenAI's public [Building games with Astra](https://developers.openai.com/blog/how-to-build-games-with-astra), reviewed 2026-09-15. **Not part of the normal agent reading corpus.** The case reports one author's workflow; it is not a comparative model benchmark.
+Status: scoped source note based on OpenAI's public [Building games with Astra](https://developers.openai.com/blog/how-to-build-games-with-astra), reviewed 2026-09-15. **Not part of the normal agent reading corpus.** The dated model name identifies the source; it is not a stable routing selector, a future-model claim, or a comparative benchmark.
 
 Operational guidance: [execution surfaces and usage pools](../docs/execution/surface-and-pool-selection.md#route-coupled-synthesis-separately-from-routine-execution), [runtime E2E readiness](../docs/runtime/e2e-readiness.md), and [agent-efficient diagnostic feedback](../docs/runtime/diagnostic-feedback.md).
 

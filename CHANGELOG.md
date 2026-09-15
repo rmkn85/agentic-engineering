@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Made executor routing capability-based so a low-cost coordinator can dispatch a bounded stronger specialist, with explicit launch contracts, live availability checks, de-escalation, and visual/3D acceptance cases.
+- Removed personal environment residue from public guidance and references, generalized the local CLI/editor setup, and added recurring whole-corpus privacy review guidance.
 - Initial repository foundation.
 - Added principles for context economics, local execution, caching, incremental semantic work, collaboration, measurement, evidence, and local overrides.
 - Added a focused default agent operating corpus and explicit reading boundary so ordinary agents do not crawl the full documentation/research tree.

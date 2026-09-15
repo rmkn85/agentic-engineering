@@ -20,7 +20,7 @@ Treat the model as the expensive probabilistic component inside a mostly determi
 - Use deterministic local tools for exact search, indexing, hashing, moving, formatting, compilation, testing, filtering, and measurement.
 - Cache semantic work and deterministic work independently.
 - Keep model-visible output short; keep full evidence on disk and fetch it only when needed.
-- Before substantial work, apply the [executor-routing checkpoint](docs/local-codex/subagents.md#executor-routing-checkpoint): choose exact tools, an authorized sufficiently capable smaller worker, or the orchestrator, and make that choice observable before the batch starts.
+- Before substantial work, apply the [executor-routing checkpoint](docs/local-codex/subagents.md#executor-routing-checkpoint): choose exact tools, a bounded worker, the orchestrator, or a capability-selected specialist, and make that choice observable before the batch starts. The coordinator does not need to be the strongest model.
 - Treat **instruction/context residency** as a resource decision: always-loaded rules must earn their recurring context cost; use scoped rules, on-demand skills, isolated worker context, or retrievable references when they are sufficient.
 - Treat **source code as future agent context**: a fresh weaker coding model should be able to build a useful bounded mental model of touched code from the unit plus a small explicit contract/dependency context.
 - Treat **runtime/build/test evidence as future agent context**: emit compact structured diagnostic state first, preserve deeper evidence behind stable references, and support offline postmortem navigation when the target is dead.
@@ -86,13 +86,13 @@ The first steps are intentionally boring: inspect instruction footprint, quiet n
 
 ## Start here
 
-The first concrete methodology is the [Local Codex Efficiency Stack](docs/local-codex/README.md), designed for Linux Mint + Cursor (including AppImage) but largely editor- and model-independent.
+The first concrete methodology is the [Local Codex Efficiency Stack](docs/local-codex/README.md), designed around a warm local checkout and a measurable Codex CLI while remaining editor- and operating-system-independent.
 
 Before choosing that surface for a task, see [execution surfaces and usage pools](docs/execution/surface-and-pool-selection.md): Chat, Work, local Codex, cloud Codex, and API usage can offer similar model capability while differing substantially in repository state, tool affordances, and which allowance pays for the work.
 
 The local stack includes:
 
-- [workstation setup](docs/local-codex/linux-mint-cursor-appimage.md)
+- [local CLI and editor setup](docs/local-codex/local-cli-editor.md)
 - [context and cache economics](docs/local-codex/context-caching.md)
 - [deterministic repo tooling and concise logs](docs/local-codex/tooling.md)
 - [prompt / AGENTS.md / rule / skill discipline](docs/local-codex/prompts-skills-agents.md)

@@ -71,7 +71,7 @@ When a controlled experiment is actually warranted:
 
 1. Pin a Git commit.
 2. Create a disposable detached worktree.
-3. Record machine/tool versions and Codex version.
+3. Record the tool/Codex versions and only the non-identifying execution capabilities needed to interpret the comparison.
 4. Select a named `CODEX_HOME` / config variant.
 5. Use the same task prompt for variants that are not prompt experiments.
 6. Run with `codex exec --json` and preserve the JSONL event stream.

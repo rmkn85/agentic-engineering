@@ -20,7 +20,7 @@ Do not spend a scarce model or agentic allowance merely because it is available.
 
 Model capability is most valuable where one decision must reconcile several uncertain concerns at once. Examples include translating an experiential goal into architecture, preserving a product invariant through a cross-layer redesign, converging art direction, authored assets and runtime constraints, interpreting visual and runtime evidence together, or diagnosing a failure whose cause may cross state, timing, rendering and resource boundaries.
 
-Consider a stronger, scarcer model for a bounded synthesis or diagnosis pass when most of these are true:
+"Bounded" describes the assignment's ownership and context, not the model strength it requires. A bounded specialist may be stronger than the orchestrator coordinating it. Consider a stronger, scarcer model for a bounded synthesis or diagnosis pass when most of these are true:
 
 - the desired outcome is clear enough to judge but the implementation route is materially ambiguous;
 - several interacting boundaries must change coherently;
@@ -31,6 +31,8 @@ Consider a stronger, scarcer model for a bounded synthesis or diagnosis pass whe
 Use judgment across the factors; they are not a numeric score or fixed threshold.
 
 Use a sufficiently capable cheaper worker for bounded implementation when the contract, owned files, dependencies and acceptance checks are already explicit. This includes routine code changes and asset production after the reference, format, budgets and review criteria are settled. Use deterministic tools for exact inspection and repetition: state snapshots, counters, replay setup, captures, diffs, builds, tests and controlled measurements.
+
+Select capability from the executors and models exposed by the current run. Do not route from a remembered model catalog. If the coordinator cannot judge or integrate the specialist's artifact, raise the integration decision to a capable executor too. Named models belong in dated examples and evidence only; operational routing should survive their renaming or removal.
 
 A practical progression is:
 
@@ -47,7 +49,7 @@ This is a handoff pattern, not a permanent model assignment. After the difficult
 
 Do not reserve a strong model for high-volume mechanical work, unconstrained variant generation, repeated test execution, or broad repository reading that exact tooling or bounded workers can perform. Conversely, do not split a tightly coupled synthesis across independent workers merely to reduce per-worker cost; reconciliation can cost more than keeping the decision coherent.
 
-These criteria are an **engineering hypothesis**, not a measured Astra-versus-smaller-model saving. Validate consequential routing changes on representative accepted work, including retries and rework. The public game-building case that motivated this clarification is summarized in [the Astra game-building reference note](../../references/astra-game-building-2026-09.md).
+These criteria are an **engineering hypothesis**, not a measured stronger-versus-cheaper-model saving. Validate consequential routing changes on representative accepted work, including retries and rework. One dated public game-building example is summarized in [the Astra game-building reference note](../../references/astra-game-building-2026-09.md); the model name identifies that source, not a permanent routing target.
 
 ## Execution surfaces
 
@@ -89,7 +91,7 @@ Use cloud intentionally when the cloud environment itself creates value:
 
 - genuinely independent substantial tasks that reduce the critical path
 - clean-room verification from a fresh environment
-- work that must continue without the local workstation
+- work that must continue without the local execution environment
 - reproducible remote environments
 - a deliberately independent executor or reviewer
 - cloud-only capabilities

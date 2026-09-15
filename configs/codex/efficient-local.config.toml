@@ -7,8 +7,8 @@
 # Use the host's supported instruction mechanism; do not assume another runtime's
 # custom configuration keys or personal paths work here.
 
-# Environment integration: useful when Cursor is the editor.
-file_opener = "cursor"
+# Optional editor integration. Use an executable available in the target environment.
+# file_opener = "<editor-command>"
 
 # -----------------------------------------------------------------------------
 # OPTIONAL, workload-dependent overrides

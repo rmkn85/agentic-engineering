@@ -12,7 +12,7 @@ For ordinary work, use this file plus [`docs/agent-corpus/README.md`](docs/agent
 
 - Preserve the task, success criteria, source coverage, permissions, and quality bar; optimize execution, not scope.
 - Use deterministic tools for mechanical work. Keep logs on disk; workers return status, decisions, and evidence paths. The coordinator reads only decision-critical excerpts: consumed logs keep taxing later context.
-- Before a substantial batch, choose the cheapest adequate executor: exact tool, bounded worker, or orchestrator. Keep tightly coupled judgment/integration with an adequate orchestrator; do not add fan-out without a concrete benefit.
+- Before a substantial batch, choose the cheapest adequate executor: exact tool, bounded worker, orchestrator, or capability-selected specialist. The coordinator need not be the strongest model: it may route one bounded, coupled decision to a stronger available specialist, then resume cheaper execution. Do not add fan-out without a concrete benefit.
 - Treat context as a working set. Keep always-loaded guidance small; prefer path-scoped rules, on-demand skills, isolated worker context, and retrievable references when they are sufficient.
 - Reuse valid semantic and deterministic work until an input that can affect it changes.
 - Use targeted validation while iterating and broader acceptance at integration/final boundaries. Structural checks, worker completion, and green links/tests are not substitutes for the requested substantive outcome.
@@ -28,6 +28,7 @@ For important behavior changes, establish the baseline when practical, add the s
 
 - Keep guidance domain-neutral unless explicitly a case study.
 - Never copy private repository content, proprietary code, credentials, internal URLs, or confidential project details here.
+- Do not publish personal environment identifiers or configuration: personal usernames or account URLs unrelated to public project/source identity, host/runner names, private addresses, workstation paths, hardware inventory, operating-system installation details, driver inventory, or copied personal config. Preserve only the minimum capability, dependency version, and evidence limitation needed to support a claim, using neutral placeholders where concrete values are unnecessary.
 - Distinguish **documented behavior**, **measured result**, and **engineering hypothesis**.
 - Prefer mechanisms and decision rules over vendor-specific prompt folklore.
 - For vendor/model behavior that may change, include a review date and authoritative source where practical.
