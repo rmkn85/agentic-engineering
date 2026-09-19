@@ -24,6 +24,8 @@ When uncertain, keep the rule local. Premature generalization turns a useful kno
 
 Projects should be able to adopt shared material selectively. Avoid hard dependencies on a central repository for ordinary development unless a tool truly requires them. Shared knowledge should improve local autonomy, not create a new central point of failure.
 
+For a fresh or stale checkout given only a repository location, use the [repository-only contributor contract](newcomer-contract.md). Bind shared lessons to existing native setup, checks and delivery; apply them by process capability rather than by which project first encountered a failure. The [anonymized contributor lessons](../../references/portable-contributor-lessons-2026-09.md) preserve rationale outside normal task context.
+
 ## Portable skill routing
 
 Keep one maintained procedure and a short route to it. Use these layers:

@@ -7,6 +7,10 @@ For adoption across hosts and repositories, use [portable skill routing](../docs
 ## Execution
 
 - [`efficient-execution`](efficient-execution/SKILL.md) — long/repository-heavy/tool-heavy work where repeated model work, noisy context, fan-out, or broad validation may materially affect cost.
+- [`recovering-interrupted-work`](recovering-interrupted-work/SKILL.md) — interrupted tasks, stale source, changed hosts or ambiguous writes; preserve existing task authority and work.
+- [`improving-execution-guidance`](improving-execution-guidance/SKILL.md) — recurring execution friction; improve the smallest mechanism, generalize safely and verify behavior without changing the requested outcome.
+
+For native setup/check/delivery bindings and cold/stale acceptance, see the [repository-only contributor contract](../docs/adoption/newcomer-contract.md).
 
 ## Agent-legible source work
 
