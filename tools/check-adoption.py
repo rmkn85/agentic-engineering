@@ -55,7 +55,15 @@ def validate(root: Path, manifest: dict) -> dict:
         if not local_file(root, name).read_text(encoding="utf-8").strip():
             raise ValueError("empty contributor entry")
     result = {"schema": 1, "state": "adoption_valid", "files": len(seen), "upstream_revision": upstream["revision"]}
-    if os.environ.get("GITHUB_ACTIONS") == "true":
+    # A dependency checkout inherits its caller's CI environment. Only the
+    # primary checkout may compare HEAD with that workflow's GITHUB_SHA;
+    # dependency pins belong to the native composition verifier.
+    workspace = os.environ.get("GITHUB_WORKSPACE")
+    if os.environ.get("GITHUB_ACTIONS") == "true" and (
+        not workspace or Path(workspace).resolve() != root
+    ):
+        result["ci_identity_scope"] = "not_primary_checkout"
+    elif os.environ.get("GITHUB_ACTIONS") == "true":
         expected = os.environ.get("GITHUB_SHA", "")
         if not re.fullmatch(r"[0-9a-f]{40}", expected):
             raise ValueError("CI candidate identity missing")

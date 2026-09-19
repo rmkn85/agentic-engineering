@@ -69,12 +69,25 @@ class AdoptionTests(unittest.TestCase):
             adoption.validate(self.root, self.manifest)
 
     def test_wrong_ci_candidate_fails(self):
-        with mock.patch.dict(os.environ, {"GITHUB_ACTIONS": "true", "GITHUB_SHA": "b" * 40}), mock.patch.object(adoption.subprocess, "check_output", return_value="c" * 40):
+        with mock.patch.dict(os.environ, {"GITHUB_ACTIONS": "true", "GITHUB_SHA": "b" * 40, "GITHUB_WORKSPACE": str(self.root)}), mock.patch.object(adoption.subprocess, "check_output", return_value="c" * 40):
             with self.assertRaisesRegex(ValueError, "identity mismatch"):
                 adoption.validate(self.root, self.manifest)
 
+    def test_dependency_checkout_does_not_inherit_consumer_candidate(self):
+        with mock.patch.dict(os.environ, {"GITHUB_ACTIONS": "true", "GITHUB_SHA": "b" * 40, "GITHUB_WORKSPACE": str(self.root / "consumer")}), mock.patch.object(adoption.subprocess, "check_output") as git:
+            result = adoption.validate(self.root, self.manifest)
+            self.assertEqual(result["ci_identity_scope"], "not_primary_checkout")
+            self.assertNotIn("candidate", result)
+            git.assert_not_called()
+
+    def test_unknown_primary_checkout_does_not_invent_identity(self):
+        with mock.patch.dict(os.environ, {"GITHUB_ACTIONS": "true", "GITHUB_SHA": "b" * 40, "GITHUB_WORKSPACE": ""}), mock.patch.object(adoption.subprocess, "check_output") as git:
+            result = adoption.validate(self.root, self.manifest)
+            self.assertNotIn("candidate", result)
+            git.assert_not_called()
+
     def test_ci_candidate_is_recorded_not_latest_inferred(self):
-        with mock.patch.dict(os.environ, {"GITHUB_ACTIONS": "true", "GITHUB_SHA": "b" * 40}), mock.patch.object(adoption.subprocess, "check_output", return_value="b" * 40):
+        with mock.patch.dict(os.environ, {"GITHUB_ACTIONS": "true", "GITHUB_SHA": "b" * 40, "GITHUB_WORKSPACE": str(self.root)}), mock.patch.object(adoption.subprocess, "check_output", return_value="b" * 40):
             self.assertEqual(adoption.validate(self.root, self.manifest)["candidate"], "b" * 40)
 
 
