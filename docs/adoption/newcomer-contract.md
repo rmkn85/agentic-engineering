@@ -51,7 +51,7 @@ Preparation and tests should be callable independently of the IDE. Use the repos
 
 Use one authoritative CI chain. Its local equivalents run the same scripts with the same locks, source inputs and acceptance criteria. Cache by inputs that affect validity; record and invalidate stale results. Reuse the accepted artifact for downstream checks and promotion instead of rebuilding a different candidate. An unrelated documentation successor is not a new tested runtime identity.
 
-A local or self-hosted fallback needs a pre-authorized runner and the same candidate checks. A queued job, exhausted allowance, unavailable runner or skipped check is not success. Do not dynamically reroute untrusted code to a personal account or grant privileges to make a fallback work. Changes to runner eligibility, secrets, branch protection and publication policy require their normal authority.
+A local or self-hosted fallback needs a pre-authorized runner and the same candidate checks. A queued job, exhausted allowance, unavailable runner or skipped check is not success. Do not dynamically reroute untrusted code to a personal account or grant privileges to make a fallback work. Changes to runner eligibility, secrets, branch protection and publication policy require their normal authority. For a ready-to-adopt pattern that keeps untrusted pull requests hosted while routing trusted main to a maintained self-hosted runner, plus artifact-quota and rerun recovery, use [CI and delivery resilience](../execution/ci-delivery-resilience.md).
 
 A source push, successful tests, accepted artifact, successful publisher and verified served bytes are different claims. Keep those identities connected in existing evidence. Libraries prove installed consumers, data repositories prove usable fixtures/contracts, documentation proves navigation and substantive reader use, and hardware projects distinguish replay from physical-device acceptance. Do not invent a deployment for a repository that does not ship a service or application.
 
@@ -65,7 +65,7 @@ Every maintained repository gets source safety, bounded context, interruption re
 | Multiple repositories | Exact source vector, scoped environments and installed-provider/consumer tests |
 | Large/private data or devices | Small deterministic fixtures/replay; explicit real-resource gates; no silent synthetic fallback |
 | Public artifacts | Allowlisted output, retained notices, no private source/logs/data and exact served identity |
-| Expensive CI | Early discriminating checks, nonduplicated workflows, valid cache reuse and bounded fallback |
+| Expensive CI | Early discriminating checks, nonduplicated workflows, valid cache reuse and bounded fallback; separate test verdicts from evidence transport |
 | Multiple hosts/IDEs | Thin native adapters; verify instruction availability, delivery and actual application separately |
 | Repeated diagnostics | Small outcome first, durable structured detail and raw evidence reachable on demand |
 
