@@ -151,3 +151,41 @@ test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
 ```
 
 For API/connector-driven work, use the provider's commit/check APIs instead of assuming a write generated a workflow event.
+
+
+## Multi-runner workstation pool
+
+Register one runner process per desired concurrent job slot. Give every instance an isolated `_work`, and label instances by machine/resource capability.
+
+```text
+runner-1: romik-desktop, general, heavy, io-heavy
+runner-2: romik-desktop, general, heavy
+runner-3: romik-desktop, general
+runner-4: romik-desktop, general
+```
+
+Route light jobs:
+
+```yaml
+runs-on: [self-hosted, romik-desktop, general]
+```
+
+Route CPU/browser/engine jobs:
+
+```yaml
+runs-on: [self-hosted, romik-desktop, heavy]
+```
+
+Route publication/large-transfer jobs:
+
+```yaml
+runs-on: [self-hosted, romik-desktop, io-heavy]
+```
+
+For trusted-main/self-hosted and PR/hosted split:
+
+```yaml
+runs-on: ${{ github.event_name == 'pull_request' && 'ubuntu-latest' || fromJSON('["self-hosted","romik-desktop","general"]') }}
+```
+
+Use shared machine caches only for concurrency-safe/download-oriented state. Keep workspaces and mutable environments per runner/job.
