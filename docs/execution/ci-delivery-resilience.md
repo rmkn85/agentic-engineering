@@ -93,7 +93,7 @@ A generic pattern:
     printf 'source=%s\nrun=%s\nattempt=%s\n'       "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" > "$destination/identity.txt"
 ```
 
-Keep the copied paths allowlisted. Do not dump secrets, raw private datasets, or arbitrary home directories into evidence.
+Keep the copied paths allowlisted. Do not dump secrets, raw private datasets, or arbitrary home directories into evidence. An `if: always()` evidence step must tolerate outputs that do not exist because an earlier step failed; secondary evidence retention must never replace or obscure the first failure.
 
 If remote upload is redundant rather than required for publication:
 
@@ -161,7 +161,13 @@ After a CI/deployment change:
 
 This matters especially for connector/API-driven development: successful Git publication and successful CI triggering are separate claims.
 
-## 8. Verify producer/consumer delivery contracts
+## 8. Treat workflow-policy tests as executable contracts
+
+Repositories may intentionally test the shape of their CI workflows: allowed runners, privilege boundaries, build-entry counts, cache rules, publication gates, or forbidden `continue-on-error`. When a delivery improvement legitimately changes that shape, a policy test failure is useful evidence—not bureaucracy to disable.
+
+Update the test and workflow together. Narrow the new permission to the exact mechanism being introduced: for example, allow `continue-on-error` only on redundant evidence-upload steps while keeping it forbidden on product tests; explicitly require deterministic digest reconstruction if artifact downloads are removed. Preserve contrasting negative cases so the new exception cannot expand silently.
+
+## 9. Verify producer/consumer delivery contracts
 
 A source workflow and a central publisher can each be internally correct while the end-to-end handoff is impossible. Before calling delivery repaired, verify that the producer emits the package kind, name, paths and identity that the consumer registry actually expects.
 
@@ -177,7 +183,7 @@ For multi-repository composition, a green portfolio run can also be stale if its
 
 Do not silently replace deliberate frozen historical pins; this rule applies when the contract claims to validate **current** integrated source.
 
-## 9. Keep current main authoritative
+## 10. Keep current main authoritative
 
 For concurrent agent work, use this integration discipline:
 
@@ -190,7 +196,7 @@ For concurrent agent work, use this integration discipline:
 
 An old workflow rerun is useful only when its SHA still equals current accepted source or when intentionally diagnosing history.
 
-## 10. Adoption decision tree
+## 11. Adoption decision tree
 
 Use the smallest applicable mechanism:
 
