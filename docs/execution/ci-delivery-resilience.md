@@ -160,7 +160,23 @@ After a CI/deployment change:
 
 This matters especially for connector/API-driven development: successful Git publication and successful CI triggering are separate claims.
 
-## 8. Keep current main authoritative
+## 8. Verify producer/consumer delivery contracts
+
+A source workflow and a central publisher can each be internally correct while the end-to-end handoff is impossible. Before calling delivery repaired, verify that the producer emits the package kind, name, paths and identity that the consumer registry actually expects.
+
+Examples of contract drift include a publisher expecting an immutable release asset while the producer only uploads a transient Actions artifact, or a consumer selecting files beneath `dist/` while the package flattens that directory. Test the real handoff contract, not just each side independently.
+
+For multi-repository composition, a green portfolio run can also be stale if its pinned source vector no longer equals the repositories' accepted current heads. At final integration:
+
+1. read the current accepted/default-branch head for every owned component;
+2. compare it with the composition/source-pin manifest;
+3. update pins through the normal reviewed route;
+4. rerun the composition test on that exact vector;
+5. recheck heads before reporting completion, because parallel contributors may have advanced them again.
+
+Do not silently replace deliberate frozen historical pins; this rule applies when the contract claims to validate **current** integrated source.
+
+## 9. Keep current main authoritative
 
 For concurrent agent work, use this integration discipline:
 
@@ -173,7 +189,7 @@ For concurrent agent work, use this integration discipline:
 
 An old workflow rerun is useful only when its SHA still equals current accepted source or when intentionally diagnosing history.
 
-## 9. Adoption decision tree
+## 10. Adoption decision tree
 
 Use the smallest applicable mechanism:
 
