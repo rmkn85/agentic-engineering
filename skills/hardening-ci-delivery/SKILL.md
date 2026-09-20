@@ -9,7 +9,9 @@ description: Use when CI, self-hosted runners, artifact storage, packaging, publ
 
 2. **Classify the first failed boundary:** trigger, runner, setup, product test/build, post-job cleanup, evidence transport, package handoff, promotion, or live serving. Keep earlier valid evidence, but do not promote a later stage to green.
 
-3. **Preserve trust boundaries.** Keep untrusted pull requests on disposable/hosted infrastructure unless explicitly hardened. Trusted main may use a maintained ordinary-user self-hosted runner. Keep genuine cross-platform matrices on their required operating systems. Route by actual capability labels; remove stale machine-specific labels when an equivalent authorized runner can execute the job.
+3. **Preserve trust boundaries and pool capacity.** One runner process is one job slot. On a multi-core host, use multiple isolated runner instances plus capability labels (`general`, `heavy`, `io-heavy`) to bound expensive concurrency without a custom scheduler. Keep trusted-main self-hosted routing separate from untrusted PR routing.
+
+4. **Preserve trust boundaries.** Keep untrusted pull requests on disposable/hosted infrastructure unless explicitly hardened. Trusted main may use a maintained ordinary-user self-hosted runner. Keep genuine cross-platform matrices on their required operating systems. Route by actual capability labels; remove stale machine-specific labels when an equivalent authorized runner can execute the job.
 
 4. **Separate tests from evidence transport.** If only optional logs/screenshots fail to upload, retain an allowlisted runner-local copy and make the redundant upload non-blocking. Evidence steps running after failure must tolerate missing outputs and must not mask the original blocker. If downstream delivery requires the package, use an immutable release asset or deterministic reconstruction verified by a digest; never silently substitute different bytes.
 
