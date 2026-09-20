@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "review_date": "2026-09-20",
+  "scope": "committed_source_native_check",
+  "candidate": "afc558348a6ca51e2acc9b9dcb651c696db04ea3",
+  "tree": "9cd774629f27d4bbe8c2fa922ab057756c923f10",
+  "stale_base": "201b892248d3d21cc74c5678ec75b7249682d440",
+  "command": ["make", "check"],
+  "ci": {
+    "run_id": 35512084537,
+    "job_id": 106081624876,
+    "url": "https://github.com/rmkn85/agentic-engineering/actions/runs/35512084537",
+    "conclusion": "success"
+  },
+  "scenarios": [
+    {"name": "cold", "state": "passed", "native_seconds": 6.273, "retained_local_files": 0},
+    {"name": "stale", "state": "passed", "native_seconds": 3.819, "retained_local_files": 2}
+  ],
+  "wall_seconds": 10.283,
+  "new_local_regression_cases": 15,
+  "discriminating_case": "A command passes with a home-only configuration, then the cold trial rejects its undeclared dependency.",
+  "mechanism": "Run the same native check against complete disposable Git clones, with separate home/cache locations and exact source identity.",
+  "limitations": [
+    "One observed upstream CI trial, not a statistical speed comparison.",
+    "PATH/base tooling and host capabilities remain; this is not a security sandbox or a clean operating-system image.",
+    "Local Git transport; remote authentication and IDE synchronization are not tested.",
+    "No actual model/IDE minor-feature, dependency-installation or deployed-product acceptance is established.",
+    "No token-usage measurement or numerical savings claim."
+  ],
+  "followup": "Bind the helper to an adopter's actual native source-only check and require its own executed evidence; never transfer this pass to another repository by copying files."
+}
