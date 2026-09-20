@@ -35,6 +35,7 @@ A useful default for GitHub Actions is:
 - **Pull requests or otherwise untrusted code:** run on hosted/disposable infrastructure unless the repository has an explicit hardened policy for untrusted self-hosted execution.
 - **Trusted main-branch verification:** a maintained self-hosted runner may be used to conserve hosted budget and reuse expensive tool/browser caches.
 - **Cross-platform release matrices:** keep real Windows/macOS/Linux validation on the matching operating systems. Do not replace a three-OS release contract with one Linux runner merely because it is available.
+- **Runner labels:** label jobs by capabilities they truly require (for example OS/architecture/hardware), not by a historical workstation identity. An obsolete special label can leave a valid job queued forever while an equivalent trusted runner is idle. Keep a special label only when it protects a real dependency, trust boundary, or scarce device.
 
 On self-hosted runners, prefer ordinary-user execution, repository-local virtual environments, runner-scoped caches, and no system package mutation during ordinary feature validation. Missing host prerequisites should produce one explicit blocker rather than privilege escalation.
 
