@@ -55,9 +55,11 @@ def git(root: Path, *args: str) -> str:
     return result.stdout.strip()
 
 
-def unchanged(root: Path, head: str) -> None:
+def unchanged(root: Path, head: str, branch: str | None = None) -> None:
     if git(root, "rev-parse", "HEAD") != head:
         raise Blocked("checkout_changed_during_inspection")
+    if branch is not None and git(root, "branch", "--show-current") != branch:
+        raise Blocked("branch_changed_during_inspection")
     if git(root, "status", "--porcelain=v1", "--untracked-files=normal"):
         raise Blocked("working_tree_not_clean")
 
@@ -98,8 +100,8 @@ def inspect(args: argparse.Namespace, receipt: dict) -> None:
     if ahead:
         raise Blocked("diverged" if behind else "unpublished_local_commits")
     if behind and args.ff_only:
-        unchanged(root, head)
-        git(root, "merge", "--ff-only", "--no-edit", target)
+        unchanged(root, head, args.branch)
+        git(root, "merge", "--ff-only", "--no-edit", "--no-autostash", "--no-overwrite-ignore", target)
         receipt.update(head=git(root, "rev-parse", "HEAD"), behind=0, mutated=True)
         if receipt["head"] != target:
             raise Blocked("checkout_changed_during_fast_forward")
@@ -107,7 +109,7 @@ def inspect(args: argparse.Namespace, receipt: dict) -> None:
         raise Blocked("behind_remote")
     if not (args.fetch or args.ff_only):
         raise Blocked("remote_freshness_unverified")
-    unchanged(root, receipt["head"])
+    unchanged(root, receipt["head"], args.branch)
     receipt["state"] = "current_clean_checkout"
 
 
