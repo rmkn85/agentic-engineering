@@ -45,3 +45,9 @@ A useful practice should make clear:
 4. when not to use it;
 5. how the same outcome/quality is verified;
 6. what evidence supports it and what would revise it.
+
+## Native validation and adoption
+
+From this repository root, `make check` runs the contributor-tool regression suite with Python 3.9+ and Git, without external packages or an installed project ecosystem. CI uses that same command. Tool tests do not replace semantic review, public-corpus privacy review, or a real host/model/delivery trial.
+
+When adopting these practices in another repository, use the [newcomer contract](docs/adoption/newcomer-contract.md) and [native command bindings](docs/adoption/native-command-bindings.md). Apply protections by process needs, preserve local authority, and prefer executable native routes over additional always-loaded prose.
