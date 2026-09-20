@@ -223,3 +223,42 @@ A resilient repository should demonstrate at least:
 - live deployment identity is checked when the repository actually ships a public/service artifact.
 
 See also [CI capacity and candidate identity](ci-capacity-and-identity.md), [native command bindings](../adoption/native-command-bindings.md), and the [repository-only contributor contract](../adoption/newcomer-contract.md).
+
+
+## Runner pools on one multi-core host
+
+One self-hosted runner process is one GitHub Actions job slot, regardless of host CPU/RAM. A multi-core workstation serving many repositories should normally register multiple independent runner instances with isolated work directories.
+
+Prefer **capability labels** over a custom scheduler. Example machine-wide topology for six slots:
+
+- runner A1: `general,heavy,io-heavy`
+- runner A2: `general,heavy`
+- runner A3/A4: `general`
+- runner B1: `general,heavy,io-heavy`
+- runner C1: `general`
+
+This yields six total slots, at most three jobs that explicitly require `heavy`, and at most two jobs that explicitly require `io-heavy`. Organization scoping may require static allocation of slots between organizations; allocate according to actual queued work, not symmetry.
+
+Use workflow routing such as:
+
+```yaml
+runs-on: [self-hosted, romik-desktop, general]
+```
+
+or `heavy` / `io-heavy`. When pull requests must remain hosted, an expression may return the self-hosted label array only for trusted main:
+
+```yaml
+runs-on: ${{ github.event_name == 'pull_request' && 'ubuntu-latest' || fromJSON('["self-hosted","romik-desktop","general"]') }}
+```
+
+Keep each runner's checkout/work directory isolated. Share only stores that are designed for cross-process reuse: content-addressed package-download caches, immutable/versioned browser/tool downloads, and run-ID-keyed evidence. Do not share mutable checkouts, `.venv`, `node_modules`, build directories, or an undocumented runner-internal tool cache.
+
+A useful machine contract is to export stable roots such as:
+
+```sh
+CI_SHARED_CACHE=/data/ci/shared/cache
+CI_SHARED_TOOLS=/data/ci/shared/tools
+CI_SHARED_EVIDENCE=/data/ci/shared/evidence
+```
+
+and let repositories map npm/uv/pip/Playwright caches beneath those roots. The fallback remains the runner-local cache when a shared root is not configured.
