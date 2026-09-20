@@ -17,5 +17,6 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - name: Run the same dependency-free checks as local contributors
-        run: make check
+          fetch-depth: 2
+      - name: Exercise native checks from cold and stale committed source
+        run: make contributor-trial
