@@ -30,6 +30,12 @@ Treat the model as the expensive probabilistic component inside a mostly determi
 - Deviate from defaults only for a concrete reason; benchmark only when the tradeoff is non-obvious, consequential, or workload-dependent.
 - Treat explicit large-scale orchestration and fan-out as costed choices, not signals of sophistication.
 
+## Efficiency control plane
+
+The September 2026 frontier synthesis is captured in [`docs/principles/efficiency-control-plane.md`](docs/principles/efficiency-control-plane.md). It turns recent work on observation handles, prompt-prefix stability, bounded recovery, thin model routing, action fusion, and context management into portable decision rules that require no new framework or model.
+
+Two concrete companion guides are [observation economy](docs/execution/observation-economy.md) and [bounded recovery](docs/execution/bounded-recovery.md). For prompt-cache hygiene, see [prompt-prefix stability](docs/local-codex/prefix-stability.md). The deeper research provenance stays outside the normal runtime path in [`references/agentic-efficiency-frontier-2026-09.md`](references/agentic-efficiency-frontier-2026-09.md).
+
 ## Code is persistent context
 
 For coding/refactoring tasks, see [`docs/code/agent-legible-code.md`](docs/code/agent-legible-code.md). It distills practices that make future work cheaper to localize, mentally model, modify, validate, and debug without turning “AI-friendly code” into another style religion.
