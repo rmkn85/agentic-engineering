@@ -57,14 +57,16 @@ def main():
     ms=[load(p) for p in ns.metrics]
     price_col=" API-equivalent cost |" if prices[0] is not None else ""
     price_rule="---:|" if prices[0] is not None else ""
-    print(f"| label | accept | wall s | input | cached | cache % | output | reasoning | turns | commands | changed files | peak root input |{price_col}")
-    print(f"|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|{price_rule}")
+    print(f"| label | accept | wall s | input | cached | cache % | output | reasoning | turns | commands | changed files | peak root input | compactions |{price_col}")
+    print(f"|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|{price_rule}")
     for m in ms:
         i,c,o,r=tok(m); ratio=f"{100*c/i:.1f}%" if i is not None and c is not None and i>0 else "unavailable"
         accept=acceptance(m)
         q=m["counts"]; g=m["git"]
-        peak=(m.get("root_responses") or {}).get("peak_input_tokens")
+        root=m.get("root_responses") or {}
+        peak=root.get("peak_input_tokens")
+        compactions=root.get("compaction_count")
         price=estimate_cost((i,c,o,r),prices) if prices[0] is not None else None
         extra=f" {price:.4f} |" if price is not None else " unavailable |" if prices[0] is not None else ""
-        print(f"| {m['label']} | {accept} | {m['wall_seconds']:.1f} | {display(i)} | {display(c)} | {ratio} | {display(o)} | {display(r)} | {q['turns']} | {q['commands']} | {g['changed_files']} | {display(peak)} |{extra}")
+        print(f"| {m['label']} | {accept} | {m['wall_seconds']:.1f} | {display(i)} | {display(c)} | {ratio} | {display(o)} | {display(r)} | {q['turns']} | {q['commands']} | {g['changed_files']} | {display(peak)} | {display(compactions)} |{extra}")
 if __name__=="__main__": main()

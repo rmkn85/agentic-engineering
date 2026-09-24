@@ -71,10 +71,13 @@ def summarize_root_responses(events_path, codex_home):
     if len(paths)!=1:
         return None
     records={}
+    compactions=0
     with paths[0].open(errors="replace") as session:
         for line in session:
             try: item=json.loads(line)
             except json.JSONDecodeError: continue
+            if item.get("type")=="compacted":
+                compactions+=1
             if item.get("type")!="token_usage_record": continue
             payload=item.get("payload") or {}
             rid=payload.get("response_id")
@@ -86,7 +89,7 @@ def summarize_root_responses(events_path, codex_home):
         return None
     inputs=[u["input_tokens"] for u in records.values()]
     cached=[u["cached_input_tokens"] for u in records.values()]
-    return {"response_count":len(records),
+    return {"response_count":len(records),"compaction_count":compactions,
             "median_input_tokens":statistics.median(inputs),
             "peak_input_tokens":max(inputs),
             "peak_cached_input_tokens":max(cached)}

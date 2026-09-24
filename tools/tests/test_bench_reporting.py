@@ -100,7 +100,7 @@ class BenchReportingTests(unittest.TestCase):
                     "reasoning_output_tokens": 1}}})
             session.write_text("\n".join(json.dumps(record) for record in records) + "\n")
             self.assertEqual(bench.summarize_root_responses(events, root), {
-                "response_count": 2, "median_input_tokens": 200.0,
+                "response_count": 2, "compaction_count": 0, "median_input_tokens": 200.0,
                 "peak_input_tokens": 300, "peak_cached_input_tokens": 200})
 
 
