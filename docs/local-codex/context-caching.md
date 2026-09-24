@@ -83,7 +83,11 @@ Compaction is lossy by design. Before natural compaction boundaries, persist imp
 
 Then a compacted session can reconstruct working state from deterministic files rather than hoping a prose summary retained every important detail.
 
-Compact at coherent milestones, not mid-change.
+Codex exposes `model_auto_compact_token_limit`, a token threshold for automatic history compaction. When unset, the model default applies. `model_auto_compact_token_limit_scope` defaults to `total`; `body_after_prefix` counts only growth after the carried compaction-window prefix. These settings control *when* compaction runs, not how much useful task state it preserves. Do not use `model_context_window` as a way to manufacture more model capacity. See the [configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference) (reviewed 2026-09-24).
+
+For a host-specific trial, use a one-off `codex -c model_auto_compact_token_limit=<tokens>` override or a private profile, starting from measured context-window and post-compaction sizes. Keep `total` when the goal is to cap the full active context. Compare accepted work, peak input, cached and fresh input, wall time, and compaction count against the default; earlier compaction may create more summaries or discard needed detail. `PreCompact` and `PostCompact` hooks expose `manual` versus `auto` triggers for prospective local telemetry; ordinary transcript markers alone do not identify the trigger. See [one-off overrides](https://learn.chatgpt.com/docs/config-file/config-advanced) and [hooks](https://learn.chatgpt.com/docs/hooks).
+
+Prefer coherent milestones. If context pressure appears mid-change, first save the exact in-progress state and next action, then compact using the host's supported control. A note or short worker return does not itself remove earlier context.
 
 ## Cache invalidation
 
