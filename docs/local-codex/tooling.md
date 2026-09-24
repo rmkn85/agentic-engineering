@@ -58,12 +58,14 @@ Each run writes a small bundle under `.agent-cache/logs/`:
 
 On success it prints one compact line. On failure it still prints one compact line, pointing to the manifest, retained failure excerpt and full log. The excerpt is **not** pasted automatically into model context unless `QUIET_RUN_INLINE_FAILURE=1` is explicitly set.
 
+The manifest records SHA-256 for each retained artifact. [`observation-recall.py`](../../tools/observation-recall.py) verifies that receipt before returning an exact bounded line slice, byte slice, or literal search result. This makes a compact observation restorable without assuming that the summary captured every relevant detail. The local bundle must still exist; a hash alone cannot restore a deleted artifact.
+
 The agent should inspect progressively:
 
 ```text
 status / manifest
 -> failure excerpt if needed
--> targeted `rg`/`sed`/parser slice of full log
+-> verified targeted recall or `rg`/`sed`/parser slice of full log
 -> whole full log only when necessary
 ```
 
@@ -83,6 +85,12 @@ Examples include:
 - profiler/dump query tools that can extract top/relevant records without rendering the whole artifact.
 
 Reduce structured output deterministically to stable failed identities, locations, codes, counts and artifact references before involving a model.
+
+## Tool-schema disclosure
+
+When a task repeatedly sends a large MCP tool catalog, measure the actual schema context before adding a proxy. Progressive disclosure can expose a small tool facade and fetch only the chosen full schema. [`mcp-compressor`](https://github.com/atlassian-labs/mcp-compressor) is one optional implementation; our [synthetic fixture trial](../../experiments/harness-tool-trials-2026-09-24.md#mcp-schema-compression-conditional-experiment) confirmed smaller serialized listings and exact invocation on one selected tool. It did not measure model-token savings or task acceptance.
+
+For a real comparison, hold task, model, tool permissions and acceptance fixed. Count the extra schema lookup, selection mistakes, fresh and cached input, latency and total cost. Use a compressed route only if accepted work improves after those costs. Small catalogs or seldom-used MCP tasks may not repay the extra indirection.
 
 ## Prefer structured summaries
 

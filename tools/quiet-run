@@ -5,6 +5,19 @@ TAIL_LINES="${QUIET_RUN_TAIL_LINES:-80}"
 LOG_DIR="${QUIET_RUN_LOG_DIR:-.agent-cache/logs}"
 INLINE_FAILURE="${QUIET_RUN_INLINE_FAILURE:-0}"
 
+file_sha256() {
+  python3 - "$1" <<'PY'
+import hashlib
+import sys
+
+digest = hashlib.sha256()
+with open(sys.argv[1], "rb") as source:
+    for block in iter(lambda: source.read(1024 * 1024), b""):
+        digest.update(block)
+print(digest.hexdigest())
+PY
+}
+
 if [[ "${1:-}" == "--" ]]; then shift; fi
 if [[ $# -eq 0 ]]; then
   echo "usage: quiet-run -- command [args...]" >&2
@@ -30,6 +43,7 @@ end_ns="$(date +%s%N)"
 elapsed_ms=$(( (end_ns - start_ns) / 1000000 ))
 bytes=$(wc -c <"$log" | tr -d ' ')
 lines=$(wc -l <"$log" | tr -d ' ')
+digest=$(file_sha256 "$log")
 
 if [[ $code -eq 0 ]]; then
   status="PASS"
@@ -46,6 +60,7 @@ if [[ $code -eq 0 ]]; then
       "id": "full-log",
       "kind": "log",
       "ref": "full.log",
+      "sha256": "$digest",
       "bytes": $bytes,
       "lines": $lines,
       "priority": 9,
@@ -59,6 +74,7 @@ else
   tail -n "$TAIL_LINES" "$log" >"$excerpt"
   excerpt_bytes=$(wc -c <"$excerpt" | tr -d ' ')
   excerpt_lines=$(wc -l <"$excerpt" | tr -d ' ')
+  excerpt_digest=$(file_sha256 "$excerpt")
   cat >"$manifest" <<EOF
 {
   "schema": "quiet-run-diagnostic-v2",
@@ -72,6 +88,7 @@ else
       "id": "failure-excerpt",
       "kind": "log-slice",
       "ref": "failure-excerpt.log",
+      "sha256": "$excerpt_digest",
       "bytes": $excerpt_bytes,
       "lines": $excerpt_lines,
       "priority": 1,
@@ -81,6 +98,7 @@ else
       "id": "full-log",
       "kind": "log",
       "ref": "full.log",
+      "sha256": "$digest",
       "bytes": $bytes,
       "lines": $lines,
       "priority": 9,
@@ -92,11 +110,11 @@ EOF
 fi
 
 if [[ $code -eq 0 ]]; then
-  printf 'PASS code=0 elapsed_ms=%s log_bytes=%s log_lines=%s manifest=%s log=%s\n' \
-    "$elapsed_ms" "$bytes" "$lines" "$manifest" "$log"
+  printf 'PASS code=0 elapsed_ms=%s log_bytes=%s log_lines=%s obs=sha256:%s manifest=%s log=%s\n' \
+    "$elapsed_ms" "$bytes" "$lines" "$digest" "$manifest" "$log"
 else
-  printf 'FAIL code=%s elapsed_ms=%s log_bytes=%s log_lines=%s manifest=%s excerpt=%s log=%s\n' \
-    "$code" "$elapsed_ms" "$bytes" "$lines" "$manifest" "$excerpt" "$log"
+  printf 'FAIL code=%s elapsed_ms=%s log_bytes=%s log_lines=%s obs=sha256:%s manifest=%s excerpt=%s log=%s\n' \
+    "$code" "$elapsed_ms" "$bytes" "$lines" "$digest" "$manifest" "$excerpt" "$log"
   if [[ "$INLINE_FAILURE" == "1" ]]; then
     echo "--- requested failure excerpt: last ${TAIL_LINES} lines ---"
     cat "$excerpt"

@@ -111,7 +111,7 @@ The local stack includes:
 - [minimal global AGENTS.md](templates/global-AGENTS-efficient.md)
 - [source-scoped agent-legibility template](templates/source-AGENTS-agent-legible.md)
 - [optional efficiency skill](skills/efficient-execution/SKILL.md)
-- tools for [quiet command execution](tools/quiet-run), [repo inventory](tools/repo-index.py), [instruction-footprint inventory](tools/instruction-footprint.py), and [Codex JSONL benchmark capture](tools/codex-bench.py)
+- tools for [quiet command execution](tools/quiet-run), [verified observation recall](tools/observation-recall.py), [repo inventory](tools/repo-index.py), [instruction-footprint inventory](tools/instruction-footprint.py), and [Codex JSONL benchmark capture](tools/codex-bench.py)
 
 ## Repository map
 

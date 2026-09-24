@@ -30,6 +30,10 @@ An experiment should define workload, environment, success criteria, model/setti
 - [`diagnostic-feedback.md`](diagnostic-feedback.md) — compare raw-first diagnostics with compact manifests/capsules and progressively deeper retained evidence, including dead-target cases.
 - [`local-codex-efficiency-matrix.md`](local-codex-efficiency-matrix.md) — optional broader local Codex comparisons.
 
+## Bounded tool trials
+
+- [`harness-tool-trials-2026-09-24.md`](harness-tool-trials-2026-09-24.md) — verified observation recall and an isolated MCP schema-compression fixture, with explicit limits on what the trials establish.
+
 Historical observations that no longer need to be active protocols belong under [`../references/`](../references/), not here.
 
 Do not report resource savings from an instruction/model/delegation/skill/code-structure/diagnostic variant unless the required outcome remains non-inferior.

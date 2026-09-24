@@ -7,3 +7,4 @@
 *.log
 *.tmp
 .agent-bench/
+__pycache__/

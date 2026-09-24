@@ -21,6 +21,7 @@ Each run creates a small diagnostic bundle:
 ```
 
 The command prints one line containing status, timing/size metadata, and paths to the manifest/excerpt/full log. It does **not** paste the excerpt into model context by default.
+The line and manifest also carry a SHA-256 receipt for the full log. The receipt identifies exact content; the bundle path identifies where that content is currently retained.
 
 On failure, inspect in this order:
 
@@ -28,6 +29,16 @@ On failure, inspect in this order:
 2. `failure-excerpt.log` if the failure class is not already clear;
 3. targeted searches/slices of `full.log`;
 4. the entire `full.log` only when genuinely necessary.
+
+For exact, bounded recall, use `observation-recall.py` with the manifest from that run:
+
+```bash
+python3 tools/observation-recall.py .agent-cache/logs/<run>/manifest.json --find 'test_name'
+python3 tools/observation-recall.py .agent-cache/logs/<run>/manifest.json --lines 120:15
+python3 tools/observation-recall.py .agent-cache/logs/<run>/manifest.json --bytes 4096:512
+```
+
+Line spans are `START:COUNT` with one-based lines; byte spans use a zero-based offset. Recall verifies the artifact hash before emitting output. The default output limit is 16 KiB; narrow the request or explicitly raise `--max-output-bytes` when more evidence is needed. Bundles are local transient state and are not a durable evidence store.
 
 Environment controls:
 
