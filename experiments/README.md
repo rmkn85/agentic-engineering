@@ -33,6 +33,7 @@ An experiment should define workload, environment, success criteria, model/setti
 ## Bounded tool trials
 
 - [`harness-tool-trials-2026-09-24.md`](harness-tool-trials-2026-09-24.md) — verified observation recall and an isolated MCP schema-compression fixture, with explicit limits on what the trials establish.
+- [`fixtures/coordination-replay/README.md`](fixtures/coordination-replay/README.md) — synthetic cross-component release repair with retained logs and independent source/package/install/consumer acceptance; suitable for paired coordinator-context trials.
 
 Historical observations that no longer need to be active protocols belong under [`../references/`](../references/), not here.
 

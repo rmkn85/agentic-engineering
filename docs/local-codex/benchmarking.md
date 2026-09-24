@@ -81,6 +81,20 @@ When a controlled experiment is actually warranted:
 10. Repeat enough times to observe material variance; prefer medians over cherry-picked best runs.
 
 `tools/codex-bench.py` automates most of this when needed.
+When the local Codex session trace is available, it also records the root
+agent's peak and median input tokens per model response. Those figures expose
+a growing coordinator context that one aggregate turn total can hide. Session
+trace availability and format vary by host; an unavailable figure is not zero.
+
+`tools/bench-compare.py` accepts `--input-per-million`,
+`--cached-input-per-million`, and `--output-per-million` together when a
+price-equivalent estimate is useful. Supply the applicable rates for the model
+and date being compared. It charges cached input once at its own rate and
+counts reasoning output within output tokens, rather than adding it twice.
+The estimate is not a measured Codex subscription charge. Missing usage stays
+unavailable. If child-agent usage is not present in the captured event stream,
+the reported tokens and estimate cover only the visible run; record worker
+usage separately before claiming a total.
 
 ## Useful metrics
 

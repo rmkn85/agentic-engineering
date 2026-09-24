@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from decimal import Decimal
 from pathlib import Path
 
 
@@ -75,6 +76,32 @@ class BenchReportingTests(unittest.TestCase):
         self.assertIn("| evaluated | PASS | 1.0 | 0 | 0 | unavailable |", lines[3])
         self.assertIn("| failed | FAIL |", lines[4])
         self.assertIn("| missing-command | UNVERIFIED |", lines[5])
+
+    def test_optional_cost_uses_uncached_and_cached_rates_once(self):
+        tokens=(1_000_000,500_000,2_000_000,100_000)
+        rates=(Decimal("2"),Decimal("0.5"),Decimal("8"))
+        self.assertEqual(compare.estimate_cost(tokens,rates),Decimal("17.25"))
+        self.assertIsNone(compare.estimate_cost((None,0,0,0),rates))
+        self.assertIsNone(compare.estimate_cost((10,11,0,0),rates))
+
+    def test_root_response_profile_uses_local_session_usage(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            events = root / "events.jsonl"
+            events.write_text(json.dumps({"type": "thread.started", "thread_id": "trial-1"}) + "\n")
+            session_dir = root / "sessions" / "2026" / "09" / "24"
+            session_dir.mkdir(parents=True)
+            session = session_dir / "rollout-trial-1.jsonl"
+            records = []
+            for response_id, input_count, cached_count in (("a", 100, 20), ("b", 300, 200), ("b", 300, 200)):
+                records.append({"type": "token_usage_record", "payload": {
+                    "response_id": response_id, "usage": {"input_tokens": input_count,
+                    "cached_input_tokens": cached_count, "output_tokens": 5,
+                    "reasoning_output_tokens": 1}}})
+            session.write_text("\n".join(json.dumps(record) for record in records) + "\n")
+            self.assertEqual(bench.summarize_root_responses(events, root), {
+                "response_count": 2, "median_input_tokens": 200.0,
+                "peak_input_tokens": 300, "peak_cached_input_tokens": 200})
 
 
 if __name__ == "__main__":

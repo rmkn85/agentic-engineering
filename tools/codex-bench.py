@@ -6,7 +6,7 @@ model, reasoning effort, AGENTS.md, skills and Codex settings in the selected
 CODEX_HOME/profile, then benchmark identical task prompts across variants.
 """
 from __future__ import annotations
-import argparse, json, os, shlex, subprocess, sys, tempfile, time
+import argparse, json, os, shlex, statistics, subprocess, sys, tempfile, time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -52,6 +52,44 @@ def summarize_events(events_path):
     usage={k:sum(u[k] for u in per_turn) if per_turn and all(type(u.get(k)) is int and u[k]>=0 for u in per_turn) else None
            for k in USAGE_FIELDS}
     return usage, per_turn, counts
+
+
+def summarize_root_responses(events_path, codex_home):
+    """Read per-response usage for the CLI thread when its local trace exists."""
+    thread_id=None
+    with events_path.open(errors="replace") as events:
+        for line in events:
+            try: event=json.loads(line)
+            except json.JSONDecodeError: continue
+            if event.get("type")=="thread.started":
+                thread_id=event.get("thread_id")
+                break
+    if not isinstance(thread_id,str) or not thread_id:
+        return None
+    session_root=Path(codex_home or Path.home()/".codex")/"sessions"
+    paths=list(session_root.rglob(f"*-{thread_id}.jsonl")) if session_root.exists() else []
+    if len(paths)!=1:
+        return None
+    records={}
+    with paths[0].open(errors="replace") as session:
+        for line in session:
+            try: item=json.loads(line)
+            except json.JSONDecodeError: continue
+            if item.get("type")!="token_usage_record": continue
+            payload=item.get("payload") or {}
+            rid=payload.get("response_id")
+            usage=payload.get("usage") or {}
+            if not isinstance(rid,str) or not rid or rid in records: continue
+            if all(type(usage.get(k)) is int and usage[k]>=0 for k in USAGE_FIELDS):
+                records[rid]=usage
+    if not records:
+        return None
+    inputs=[u["input_tokens"] for u in records.values()]
+    cached=[u["cached_input_tokens"] for u in records.values()]
+    return {"response_count":len(records),
+            "median_input_tokens":statistics.median(inputs),
+            "peak_input_tokens":max(inputs),
+            "peak_cached_input_tokens":max(cached)}
 
 
 def main():
@@ -101,6 +139,7 @@ def main():
     wall=time.monotonic()-started
 
     usage, per_turn, counts=summarize_events(events_path)
+    root_responses=summarize_root_responses(events_path,env.get("CODEX_HOME"))
 
     eval_code=None; eval_wall=None
     if ns.eval_command:
@@ -129,7 +168,7 @@ def main():
         "schema":1,"label":ns.label,"timestamp_utc":ts,"repo":str(repo),"base_commit":commit,
         "codex_home":env.get("CODEX_HOME"),"profile":ns.profile,"codex_exit_code":proc.returncode,
         "wall_seconds":wall,"eval_command":ns.eval_command,"eval_exit_code":eval_code,"eval_wall_seconds":eval_wall,
-        "usage":usage,"per_turn_usage":per_turn,"counts":counts,
+        "usage":usage,"per_turn_usage":per_turn,"root_responses":root_responses,"counts":counts,
         "derived":{"fresh_input_tokens_floor":max(input_t-cached_t,0) if cache_known else None,
                    "cache_ratio":cached_t/input_t if cache_known and input_t else None},
         "git":{"changed_files":changed_files,"insertions":ins,"deletions":dels},
