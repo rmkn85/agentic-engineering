@@ -8,6 +8,27 @@ The existing `quiet-run` retained full command output and returned a compact bun
 
 This adapts the observation-handle mechanism described by [SoL-Pi](https://github.com/NVlabs/SoL-Pi) to the existing local bundle. It does not install Pi or claim SoL-Pi's reported model-token savings. Actual model-visible reads and accepted diagnosis should be compared on representative noisy failures before claiming an efficiency gain. The local bundle remains transient; no durable storage or deduplication is claimed.
 
+### Skill wording pilot: do not promote
+
+We then tested whether the `efficient-execution` skill should explicitly tell agents to use a hash-bound receipt and bounded recall for large observations. Two isolated in-app workers used the same model, task, checkout commit (`ebe0447`), root instructions and 6,000-line diagnostic fixture. Only the candidate worktree's skill gained this sentence:
+
+> For recurring large observations, keep the exact source and use a hash-bound receipt with bounded recall when available.
+
+Both workers ran the fixture through `quiet-run` and wrote a JSON answer containing the log SHA-256 and every exact assertion line. The independent [`check.py`](fixtures/skill-observation/check.py) accepted both: three correct assertions, 838,653 raw bytes retained, identical SHA-256. In their handoffs, the baseline reported one targeted `rg -n` search; the candidate reported `rg -c` followed by `rg -n`. Neither reported using `observation-recall.py`. These command accounts are worker reports, not an instrumented trace. No per-worker token or cost telemetry was available, so the pilot does not establish a resource difference. It does show that the extra skill sentence was unnecessary for this case; the shared skill remains unchanged.
+
+To repeat this behavioral pilot, use two disposable worktrees from the same commit and change only the candidate's `skills/efficient-execution/SKILL.md` as quoted above. Give each worker the same task, substituting only its checkout and run directory:
+
+```text
+Read AGENTS.md, docs/agent-corpus/README.md and skills/efficient-execution/SKILL.md.
+Run python3 experiments/fixtures/skill-observation/emit.py through tools/quiet-run,
+with QUIET_RUN_LOG_DIR=<run-directory>/logs. Do not read emit.py source.
+Diagnose the retained output. Write <run-directory>/answer.json containing
+{"sha256":"<full-log digest>","failures":[{"line":<1-based line>,"text":"<exact line>"}, ...]}
+for every ASSERTION line in order. Keep model-visible output bounded.
+```
+
+Then run `python3 experiments/fixtures/skill-observation/check.py <run-directory>` for each worker. The checker reads the retained raw log, verifies its hash and checks the answer exactly. Compare accepted results and inspect the execution trace for evidence reads and extra calls. For token, wall-time and cost claims, run the same task through an authenticated JSONL harness such as [`codex-bench.py`](../tools/codex-bench.py), then render the `metrics.json` files with [`bench-compare.py`](../tools/bench-compare.py). This pilot's sandbox could not authenticate a nested Codex CLI run, so those measurements remain open.
+
 ## MCP schema compression: conditional experiment
 
 We exercised [Atlassian mcp-compressor](https://github.com/atlassian-labs/mcp-compressor) 0.32.1 in an isolated environment against the eight-tool server in [`fixtures/mcp-compressor/`](fixtures/mcp-compressor/). Each variant retrieved the selected full schema and returned the same deterministic tool result as the direct server.
