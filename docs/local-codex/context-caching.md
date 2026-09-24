@@ -10,6 +10,8 @@ There are several independent caches. Optimize each without confusing them:
 4. **tool/build cache** — compiler, package, test, and generated artifacts;
 5. **OS cache** — filesystem/page cache, usually a minor factor for ordinary source trees.
 
+For a focused audit checklist, see [prompt-prefix stability](prefix-stability.md).
+
 ## Prompt-cache friendliness
 
 Prompt caching rewards repeated stable prefixes. Keep durable content stable and put volatile task state later.
