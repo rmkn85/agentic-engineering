@@ -28,6 +28,8 @@ The operational docs should therefore contain the **current decision rule**. Thi
 - [`repository-evolution-2026-09.md`](repository-evolution-2026-09.md) — what the repository's early live failures taught about routing checkpoints, proxy acceptance, instruction structure, and behavioral regression tests.
 - [`delegation-adherence-2026-09.md`](delegation-adherence-2026-09.md) — archived delegation-specific regression cases and qualitative observations retained after the active protocol was generalized.
 
+- [`agentic-efficiency-frontier-2026-09.md`](agentic-efficiency-frontier-2026-09.md) — September 2026 research on SoL-Pi, thin strong-root/cheap-worker orchestration, selective context management, prefix caching, pre-inference routing, bounded recovery, multi-agent token amplification, and workload-dependent KV serving.
+
 ## Promotion rule
 
 A reference insight should move into operational guidance only when it produces a concrete decision rule or mechanism that is useful enough to justify its context/maintenance cost. Preserve the fuller source note here even after promotion.
