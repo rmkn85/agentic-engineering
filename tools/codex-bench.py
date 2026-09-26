@@ -95,6 +95,30 @@ def summarize_root_responses(events_path, codex_home):
             "peak_cached_input_tokens":max(cached)}
 
 
+def collect_practice_feedback(run_dir):
+    """Optional local sidecar; never infer usage or replace native acceptance."""
+    from practice_feedback import analyze, load_record, summarize
+    path = run_dir / "practice-feedback.json"
+    if not path.exists():
+        return {"state": "not_recorded"}
+    try:
+        if path.is_symlink():
+            raise ValueError("feedback receipt must be a file in this run")
+        result = analyze(load_record(path), run_dir)
+        report = summarize([result])
+        output = run_dir / "practice-summary.json"
+        with output.open("x", encoding="utf-8") as stream:
+            json.dump({**report, "details": [result]}, stream, indent=2, allow_nan=False)
+            stream.write("\n")
+        return {"state": "recorded", "summary": output.name,
+                "reported_outcome": result["outcome_reported"],
+                "outcome_evidence_resolved": result["outcome_evidence_resolved"],
+                "practices_reported": len(result["practices"]),
+                "practices_with_resolved_evidence": sum(p["evidence_resolved"] for p in result["practices"])}
+    except (OSError, ValueError, TypeError, AttributeError) as error:
+        return {"state": "invalid", "error": str(error)}
+
+
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--repo", default=".")
@@ -123,6 +147,7 @@ def main():
     git(repo,"worktree","add","--detach",str(wt),commit,capture=False)
 
     env=os.environ.copy()
+    env["AGENT_RUN_ARTIFACTS"]=str(run_dir)
     if ns.codex_home:
         env["CODEX_HOME"]=str(Path(ns.codex_home).expanduser().resolve())
 
@@ -147,7 +172,7 @@ def main():
     eval_code=None; eval_wall=None
     if ns.eval_command:
         t=time.monotonic()
-        ep=subprocess.run(ns.eval_command,cwd=wt,shell=True,text=True,
+        ep=subprocess.run(ns.eval_command,cwd=wt,env=env,shell=True,text=True,
                           stdout=(run_dir/"eval.stdout.log").open("w"),
                           stderr=(run_dir/"eval.stderr.log").open("w"))
         eval_wall=time.monotonic()-t; eval_code=ep.returncode
@@ -175,7 +200,8 @@ def main():
         "derived":{"fresh_input_tokens_floor":max(input_t-cached_t,0) if cache_known else None,
                    "cache_ratio":cached_t/input_t if cache_known and input_t else None},
         "git":{"changed_files":changed_files,"insertions":ins,"deletions":dels},
-        "command":cmd,"worktree":str(wt)
+        "command":cmd,"worktree":str(wt),
+        "practice_feedback":collect_practice_feedback(run_dir)
     }
     (run_dir/"metrics.json").write_text(json.dumps(metrics,indent=2)+"\n")
     print(json.dumps(metrics,indent=2))

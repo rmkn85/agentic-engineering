@@ -1,19 +1,19 @@
 # Agent operating corpus
 
-This is the **small default corpus** for agents applying Agentic Engineering during ordinary engineering work. It is deliberately compact. Read this page, then load deeper guidance only when the current decision needs it.
+Read this **default operating corpus**, then load deeper guidance only for the current decision.
 
-Do **not** recursively crawl the repository before starting work. In particular, `references/` is research provenance for maintainers improving this methodology; it is not normal runtime context.
+Do **not** recursively crawl the repository. `references/` is methodology research/provenance, not ordinary runtime context.
 
 ## Execution kernel
 
-1. **Preserve the requested outcome.** Optimize execution, not scope, acceptance criteria, evidence, or quality.
+1. **Preserve the outcome and inherited constraints.** Separate the change from deferred checks/refinement. Narrower verification is not permission to remove a product invariant; an explicit product-scope change is different.
 2. **Route substantial batches before consuming them.** Choose the cheapest adequate executor: deterministic tool, bounded worker, orchestrator, or capability-selected specialist. A low-cost coordinator may route one bounded coupled decision to a stronger available specialist, then return implementation and verification to cheaper executors. Do not create fan-out without a concrete benefit.
 3. **Treat context as a working set, not an archive.** Keep always-loaded instructions small. Load path-specific rules, skills, references, source files, logs, and tool schemas only when they become relevant.
 4. **Use deterministic machinery for deterministic work.** Search, inventory, hashing, formatting, compilation, test execution, filtering, moving, and measurement usually do not need model reasoning.
 5. **Reuse valid work.** Cache semantic findings and deterministic artifacts until an input that can affect them changes. Do not reread or revalidate merely to demonstrate activity.
 6. **Keep logs out of coordinator context.** Retain evidence on disk; workers/tools return status, decisions, and paths. Inspect only decision-critical excerpts; consumed logs burden later turns.
-7. **Validate at the cheapest useful boundary.** Use targeted checks while iterating and broader acceptance at integration/final boundaries. Structural success is not substantive acceptance.
-8. **Measure uncertainty, not everything.** Platform defaults are the baseline. Benchmark consequential or workload-dependent deviations; leave obvious wins and already-good defaults alone.
+7. **Construct, then challenge.** Identify what preserves the affected property in the real consumer and the next ordinary change. Probe one consequential assumption outside the happy path; use targeted checks now and appropriate integration later. Tests do not supply the preserving mechanism.
+8. **Measure uncertainty, not everything.** Keep good defaults. For consequential decisions retain the practice/revision, trigger, action and native evidence in the existing run record. Separate reported use from observed behavior; leave unknown measurements unknown.
 9. **Leave touched code cheap to model.** A fresh weaker coding model should be able to predict a touched unit's representative behavior from the unit plus a small explicit contract/dependency context. Do not trade local simplicity for hidden coupling or abstraction mazes.
 
 ## Context placement rule
@@ -45,17 +45,9 @@ Use a separate worker/context when a subtask needs a large temporary working set
 
 ## Instruction changes are code changes
 
-A rule is useful only if it changes behavior under realistic conditions.
+Judge instructions by behavior in the normal stack.
 
-When adding or strengthening an instruction:
-
-- identify the observed failure or uncertainty it addresses;
-- establish the baseline behavior when practical;
-- add the smallest intervention likely to fix it;
-- test the behavior with the normal instruction stack, not only in isolation;
-- test under realistic context pressure when overload/interference is plausible;
-- remove, scope, or demote instructions that add recurring context without measurable behavioral value;
-- escalate to deterministic enforcement or a more capable orchestrator when repeated failures show that more prose is not the answer.
+Identify the failure, preserve a practical baseline, and make the smallest intervention. Test actual behavior under normal instructions and relevant context pressure. Remove, scope or demote recurring prose without demonstrated benefit. Repeated failure calls for better placement, deterministic enforcement or adequate capability—not more synonyms.
 
 See [instruction/context adherence experiments](../../experiments/instruction-context-adherence.md) when this tradeoff is material.
 
@@ -63,6 +55,7 @@ See [instruction/context adherence experiments](../../experiments/instruction-co
 
 | Decision | Read |
 | --- | --- |
+| Narrow scope, structural preservation, uncertain or irreversible conditions | [`../principles/defaults-before-overrides.md`](../principles/defaults-before-overrides.md) |
 | Writing/refactoring source for cheap future agent maintenance | [`../code/agent-legible-code.md`](../code/agent-legible-code.md) |
 | Designing logging/telemetry/crash evidence/self-monitoring | [`../runtime/diagnostic-feedback.md`](../runtime/diagnostic-feedback.md) and, for dead-target evidence, [`../runtime/postmortem-bundles.md`](../runtime/postmortem-bundles.md) |
 | Establishing browser/native E2E test capability or choosing proof surfaces | [`../runtime/e2e-readiness.md`](../runtime/e2e-readiness.md) |

@@ -14,6 +14,31 @@ A deviation is justified when all three are true:
 
 Do not add an override merely because a setting exists or because an older version of a tool benefited from it.
 
+## Preserve properties by construction, not constant supervision
+
+For an affected cross-cutting property, distinguish **enduring obligation**, **current change**, and **deferred refinement/evidence**. Recover these from current product authority, not just the latest task sentence. Deferring an expensive check changes confidence, not the obligation. Conversely, an explicitly scoped throwaway prototype or authorized product-scope change need not implement aspirational future features.
+
+Before selecting tests, identify **property → preserving mechanism → real consumer → composition owner**. Prefer adequate native facilities and existing abstractions. A guide, dependency name or isolated demo is not integration. Components own their local allocations; the composition owns competing budgets, ordering and the complete user/system outcome. Individually valid parts can jointly fail.
+
+Ask what happens under the next ordinary extension. Does another input, action, consumer or longer payload follow an existing policy, or force unrelated repairs? Use the smallest meaningful variation probe when this mechanism changes—not an exhaustive matrix on every edit. Preserve a good baseline rather than inventing a framework. See [agent-legible code](../code/agent-legible-code.md) for locality and dependency design.
+
+## Unknown conditions require bounded strategies
+
+| Uncertainty affecting this change | Proportionate response |
+| --- | --- |
+| Known operating envelope, uncertain instance | Preserve invariants across the range; probe boundaries and interactions, with justified margins rather than universal numbers. |
+| Discoverable during execution | Make the condition observable, bound retries/resources, and use a documented fallback that preserves essential semantics. |
+| Unobservable or delayed feedback | Reduce dependence on that assumption; contain faults and select a conservative, locally appropriate default. Missing evidence remains uncertainty. |
+| Irreversible action or no later correction | Inspect exact delivered configuration/dependencies, exercise essential degraded behavior, retain recovery where possible, and require existing risk authority before proceeding. A future patch or absent reviewer is not a mitigation. |
+
+Unknown does not mean every failure is predictable or that safe failure is always a halt. Choose the least harmful state for the actual system. Extra redundancy, watchdogs or independent review must have a named failure/decision to address; correlated copies may preserve the same blind spot.
+
+Actively challenge one consequential assumption, not only declared happy-path claims. Depending on the boundary, use a property/metamorphic relation, fault injection, changed ordering/content/resource limit, differential consumer, or small combinatorial sample. Retain the seed/minimized reproducer and healthy control. Check that the oracle itself can fail correctly. Sampling is evidence about sampled conditions, not exhaustive assurance.
+
+New observations can reveal a missing obligation. Reconcile the contract with product authority and keep the reason/change visible; do not freeze an incomplete checklist or silently weaken it. Respect unresolved critical risk instead of guessing permission. Return to the requested outcome once the uncertainty no longer changes the next decision.
+
+**Basis:** this is a domain-neutral engineering synthesis, not a claim of aerospace certification or universal agent reliability. NASA's [design-solution process](https://www.nasa.gov/reference/4-4-design-solution-definition/) explicitly distinguishes design validation against stakeholder expectations from later product verification. NIST's [combinatorial coverage guidance](https://www.nist.gov/publications/combinatorial-coverage-measurement) describes interaction coverage rather than exhaustive correctness. Reviewed 2026-09-26. Their process scale and assurance levels are not imported here.
+
 ## Three classes of optimization
 
 ### 1. Mechanically favorable practices
