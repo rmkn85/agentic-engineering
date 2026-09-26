@@ -4,6 +4,8 @@ Subagents are useful. They also duplicate model calls, context, tool use, and co
 
 The current platform behavior is the baseline. Intervene only when the workload gives a reason.
 
+The broader decision order—deterministic operation → cheapest capable worker → stronger specialist only at uncertainty boundaries—is summarized in the [efficiency control plane](../principles/efficiency-control-plane.md).
+
 ## Executor-routing checkpoint
 
 Before a substantial batch of reading, editing, or validation, choose who performs it. A one-line choice in the existing plan is enough; this is not a new planning document or a pause for approval.

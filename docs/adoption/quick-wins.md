@@ -91,7 +91,25 @@ When touching code, cheaply remove obvious local obstacles such as hidden depend
 
 If a 15-line function still needs six wrappers and several hidden collaborators to explain, making it shorter is not the quick win. Reduce the **semantic-hop/context radius** instead.
 
-## 8. Benchmark only the uncertain decisions
+## 8. Keep bulky observations behind compact receipts
+
+When a command or worker produces large evidence, retain the exact artifact but keep only status, a small failure/index layer, and a stable reference in active context. Retrieve exact ranges only when a later decision needs them.
+
+See [observation economy](../execution/observation-economy.md).
+
+## 9. Recover routine failures before replanning
+
+For known operational failures such as safe transient retries, approved formatter fixes, stale generated output, or unambiguous tool-schema mistakes, use a bounded deterministic recovery followed by verification. Escalate semantic ambiguity instead of growing an automatic retry loop.
+
+See [bounded recovery](../execution/bounded-recovery.md).
+
+## 10. Stabilize the reusable prompt prefix
+
+Keep durable rules and task specification stable; move timestamps, progress, current evidence, and other volatile state later. Measure actual cached-input reuse when the runtime exposes it. Fix accidental prefix churn before adding a semantic compactor.
+
+See [prompt-prefix stability](../local-codex/prefix-stability.md).
+
+## 11. Benchmark only the uncertain decisions
 
 If an optimization is mechanically favorable and preserves the outcome, use it. If the tradeoff is workload/model dependent, compare the smallest useful alternatives with the same task and acceptance criteria.
 
