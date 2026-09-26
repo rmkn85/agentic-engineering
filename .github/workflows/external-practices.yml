@@ -1,0 +1,27 @@
+name: Verify pinned external practices
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'configs/external-practices.json'
+      - 'tools/external_practices.py'
+      - 'tools/check-external-practices.py'
+      - '.github/workflows/external-practices.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: external-practices-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  upstream-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Offline adapter contracts first
+        run: python3 -m unittest discover -s tools/tests -p test_external_practices.py -v
+      - name: Real pinned upstreams on one bounded public fixture
+        run: python3 tools/check-external-practices.py

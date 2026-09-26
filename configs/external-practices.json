@@ -1,0 +1,19 @@
+{
+  "schema": "external-practices/v1",
+  "reviewed": "2026-09-26",
+  "ponytail": {
+    "repository": "https://github.com/DietrichGebert/ponytail",
+    "revision": "e3ba2aa6f1e6f0bc4d69eb09c9f0d0a93af56156",
+    "skill": "skills/ponytail-review/SKILL.md",
+    "mode": "bounded-review",
+    "license": "MIT"
+  },
+  "graphify": {
+    "repository": "https://github.com/Graphify-Labs/graphify",
+    "revision": "4000de15466588ec3ee32f9e10a587ca97d3b8a5",
+    "package": "graphifyy",
+    "version": "0.9.68",
+    "mode": "local-code-only",
+    "license": "Apache-2.0; retain upstream notices"
+  }
+}
