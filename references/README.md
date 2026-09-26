@@ -29,6 +29,7 @@ The operational docs should therefore contain the **current decision rule**. Thi
 - [`delegation-adherence-2026-09.md`](delegation-adherence-2026-09.md) — archived delegation-specific regression cases and qualitative observations retained after the active protocol was generalized.
 
 - [`agentic-efficiency-frontier-2026-09.md`](agentic-efficiency-frontier-2026-09.md) — September 2026 research on SoL-Pi, thin strong-root/cheap-worker orchestration, selective context management, prefix caching, pre-inference routing, bounded recovery, multi-agent token amplification, and workload-dependent KV serving.
+- [`chatgpt-parallel-native-processes-2026-09/`](chatgpt-parallel-native-processes-2026-09/README.md) — documented ChatGPT Work subagents versus actually exposed session tools; measured three-way headless and off-screen Godot execution, resource and namespace boundaries, rejecting controls and reproducible public fixtures. Native subprocess concurrency, not a claim of multiple AI agents or newly allocated sandboxes.
 
 ## Promotion rule
 
