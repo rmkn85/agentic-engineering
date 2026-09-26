@@ -57,6 +57,7 @@ See [instruction/context adherence experiments](../../experiments/instruction-co
 | --- | --- |
 | Narrow scope, structural preservation, uncertain or irreversible conditions | [`../principles/defaults-before-overrides.md`](../principles/defaults-before-overrides.md) |
 | Writing/refactoring source for cheap future agent maintenance | [`../code/agent-legible-code.md`](../code/agent-legible-code.md) |
+| Bounded complexity review, cross-file relationship discovery, or external-tool usage/effect evidence | [`../../skills/using-external-practices/SKILL.md`](../../skills/using-external-practices/SKILL.md) |
 | Designing logging/telemetry/crash evidence/self-monitoring | [`../runtime/diagnostic-feedback.md`](../runtime/diagnostic-feedback.md) and, for dead-target evidence, [`../runtime/postmortem-bundles.md`](../runtime/postmortem-bundles.md) |
 | Establishing browser/native E2E test capability or choosing proof surfaces | [`../runtime/e2e-readiness.md`](../runtime/e2e-readiness.md) |
 | Diagnosing a crash/failure/noisy runtime artifact | use [`../../skills/diagnosing-runtime-failure/SKILL.md`](../../skills/diagnosing-runtime-failure/SKILL.md) and follow the smallest diagnostic artifact first |

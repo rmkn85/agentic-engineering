@@ -87,6 +87,25 @@ Records name practice/revision, trigger, decision and reported stage (`not_used`
 
 For records sharing an authorized evidence root, pass multiple receipt paths to summarize by task class and record kind. Fixtures never count as live agent trials. Unknown metrics retain known/total denominators instead of becoming zeros, duplicate run IDs are rejected, and detail stays in the report. Exit 0 means valid analysis, not accepted work; exit 2 means malformed input. The tool does not execute evidence, fetch URLs, upload data, overwrite output or create telemetry services. Keep reports private and use existing retention/privacy policy.
 
+## `external_practices.py`
+
+Use pinned upstream Ponytail review and Graphify local code relationships through
+an opt-in, instrumented route. The [adoption guide](../docs/adoption/external-practices.md)
+and [conditional skill](../skills/using-external-practices/SKILL.md) define setup,
+use, freshness, effect assessment, and private evidence retention.
+
+```bash
+make external-report
+python3 tools/external_practices.py --repo /path/to/consumer report --details
+```
+
+Receipts reuse `practice-feedback/v1`. Reports distinguish setup, selected/loaded/
+applied/nonuse, fixture/live records, failed attempts and unknown effects. Loading
+Ponytail is not applying its advice; Graphify execution is not accepted development.
+No global hooks, model provider calls, graph service or automatic uploads are added.
+`make external-smoke` runs the separate network-enabled pinned-upstream fixture;
+it is not a prerequisite for normal offline `make check`.
+
 ## `bench-compare.py`
 
 Render one or more `metrics.json` files as a compact Markdown comparison.
