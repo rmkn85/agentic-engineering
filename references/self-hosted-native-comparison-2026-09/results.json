@@ -1,0 +1,154 @@
+{
+  "schema": 1,
+  "review_date": "2026-09-27",
+  "status": "PARTIAL_CAPABILITY_CONFIRMED",
+  "method": "Anonymized transcription of completed native pipeline reports, not a synthetic benchmark result",
+  "source_revision": "fab177bb1d2de09561f8b6b7b155cbc67e7f9698",
+  "fixture_git_blobs": {
+    "probe.gd": "83776691d735fd17cdd2f2e80744c9348b298ee1",
+    "project.godot": "6cc9ccb3269a440c0e0d45e5d47a96b6df3d9ee6"
+  },
+  "runner_capabilities": {
+    "platform": "Linux x86-64",
+    "non_root": true,
+    "python": "3.14.7",
+    "godot_version": "4.7.2.stable.arch_linux.ed1daf0bf",
+    "engine_sha256": "3a72f85d53b84d7656ad8a633b06b019a11ad170a5718ff50bacc1c83cd4e72b",
+    "sufficient_affinity_for_three_workers": true,
+    "cpu_quota_visible": null,
+    "memory_limit_visible": null,
+    "pids_limit_visible": null,
+    "godot_on_path": true,
+    "xvfb_available": true,
+    "xauth_available": true,
+    "taskset_available": true,
+    "driver_policy": "inherited_configuration",
+    "driver_variables_inherited": [],
+    "docker_daemon_access": "not_tested",
+    "vulkan": "not_tested",
+    "general_network": "not_tested",
+    "ordinary_pinned_github_checkout": "passed",
+    "same_namespace_and_cgroup_as_coordinator": true
+  },
+  "cases": [
+    {
+      "case": "headless-pilot",
+      "status": "PASS",
+      "workers": 1,
+      "checks_passed": 6,
+      "checks_failed": 0,
+      "ticks_per_worker": 6000,
+      "group_wall_seconds": 1.216746854000121,
+      "sampled_sum_godot_rss_kib": 125172
+    },
+    {
+      "case": "headless-parallel",
+      "status": "PASS",
+      "workers": 3,
+      "checks_passed": 18,
+      "checks_failed": 0,
+      "ticks_per_worker": 6000,
+      "group_wall_seconds": 1.317618971000229,
+      "common_native_active_overlap_ms": 722.255,
+      "simultaneous_progressing_workers": 3,
+      "sampled_sum_godot_rss_kib": 372692,
+      "distinct_engine_pids": true,
+      "distinct_user_dirs": true,
+      "parameters": [
+        {"gravity": 4.9, "speed": 0.6, "hue": 0.05},
+        {"gravity": 9.8, "speed": 1.2, "hue": 0.35},
+        {"gravity": 19.6, "speed": 1.8, "hue": 0.65}
+      ],
+      "early_y": [2.40791630744934, 1.81583309173584, 0.631665945053101],
+      "early_x": [0.290000021457672, 0.580000042915344, 0.869999647140503],
+      "final_y": [0.239999607205391, 0.239998117089272, 0.239998683333397],
+      "final_x": [14.436182975769, 29.1400470733643, 43.3365592956543],
+      "floor_contacts": [1, 1, 1],
+      "observed_cpu_seconds": [0.74, 0.83, 0.83],
+      "sampled_individual_peak_rss_kib": [125556, 125292, 125424]
+    },
+    {
+      "case": "headless-no-floor",
+      "status": "EXPECTED_REJECTION",
+      "workers": 1,
+      "native_exit": 1,
+      "checks_passed": 4,
+      "checks_failed": 2,
+      "failed_checks": ["floor_contact", "rests_above_floor"],
+      "ticks_per_worker": 6000,
+      "contacts": 0,
+      "group_wall_seconds": 0.46110019000025204,
+      "sampled_sum_godot_rss_kib": 124784
+    },
+    {
+      "case": "render-pilot",
+      "status": "FAIL",
+      "failure_boundary": "X11 display connection before native readiness",
+      "diagnostics": [
+        "ERROR: X11 Display is not available",
+        "WARNING: Display driver x11 failed, falling back to wayland.",
+        "Fallback also reported a socket path exceeding 108 bytes and no Wayland display"
+      ],
+      "native_captures_completed": 0
+    },
+    {
+      "case": "render-parallel",
+      "status": "NOT_RUN",
+      "reason": "Render pilot failed; no fan-out"
+    },
+    {
+      "case": "minimal-x11-client",
+      "status": "FAIL",
+      "x11_open": false,
+      "godot_launched": false,
+      "owned_xdg_path_bytes": 60,
+      "additional_filtered_error_lines": [],
+      "reason": "XOpenDisplay(NULL) could not connect under owned Xvfb; root cause not established",
+      "temporary_bytes": 21,
+      "temporary_evidence_cleaned": true
+    }
+  ],
+  "job_outcomes": {
+    "preflight": "success",
+    "native_sequence": "failure",
+    "display_diagnostic": "failure"
+  },
+  "evidence_economy": {
+    "native_sequence_temporary_bytes": 46842033,
+    "temporary_evidence_cleaned": true,
+    "cloud_artifacts_uploaded": 0,
+    "image_inspection": "not_performed_no_completed_runner_capture"
+  },
+  "validation": {
+    "focused_tests_local": 17,
+    "new_tests_runner": 10,
+    "runner_test_invocations": 2,
+    "full_repository_make_check": "not_run"
+  },
+  "baseline": {
+    "source_revision": "6b73481b9925f3295fd0edbfcd7f0aabe6619c01",
+    "surface": "ChatGPT Python sandbox",
+    "python": "3.13.5",
+    "engine": "4.7.2 official",
+    "driver_policy": "explicit LLVMpipe with one rasterizer thread",
+    "shared_cpu_quota_equivalents": 4,
+    "shared_memory_limit_bytes": 4294967296,
+    "headless_pilot_seconds": 0.898,
+    "headless_parallel_seconds": 1.006,
+    "headless_parallel_common_overlap_ms": 365.648,
+    "headless_parallel_sum_rss_mib": 310.23,
+    "negative_control_seconds": 0.61,
+    "render_parallel_seconds": 5.638,
+    "render_parallel_checks_passed": 27,
+    "render_parallel_common_overlap_ms": 623.854,
+    "render_parallel_sum_rss_mib": 827.46,
+    "precision": "Baseline timings/RSS rounded as in its committed report"
+  },
+  "limits": [
+    "Single samples; not a serial/parallel speedup or host ranking",
+    "Different official/distribution engine binaries and execution environments",
+    "Configured runner display failure is not general software-rendering impossibility",
+    "No AI agents, new sandboxes, maximum-concurrency tests, GPU benchmarks or production-game acceptance",
+    "No privilege, sandbox, driver, network-policy or host configuration changes"
+  ]
+}

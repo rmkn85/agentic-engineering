@@ -30,6 +30,7 @@ The operational docs should therefore contain the **current decision rule**. Thi
 
 - [`agentic-efficiency-frontier-2026-09.md`](agentic-efficiency-frontier-2026-09.md) — September 2026 research on SoL-Pi, thin strong-root/cheap-worker orchestration, selective context management, prefix caching, pre-inference routing, bounded recovery, multi-agent token amplification, and workload-dependent KV serving.
 - [`chatgpt-parallel-native-processes-2026-09/`](chatgpt-parallel-native-processes-2026-09/README.md) — documented ChatGPT Work subagents versus actually exposed session tools; measured three-way headless and off-screen Godot execution, resource and namespace boundaries, rejecting controls and reproducible public fixtures. Native subprocess concurrency, not a claim of multiple AI agents or newly allocated sandboxes.
+- [`self-hosted-native-comparison-2026-09/`](self-hosted-native-comparison-2026-09/README.md) — the same native fixture on a configured self-hosted runner: three-way headless success, an unresolved X11 display boundary, default-driver preservation, workspace-local results and a qualified comparison with ChatGPT. No expanded host access or hardware-performance claim.
 
 ## Promotion rule
 
