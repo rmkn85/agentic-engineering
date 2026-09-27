@@ -55,7 +55,20 @@ def context(pid):
         cgroup = None
     return {'namespaces': namespaces, 'cgroup': cgroup}
 
-def launch(engine, root, index, rendered, floor, start, affinity):
+# Preserve only graphics configuration, never credentials or desktop endpoints.
+DRIVER_KEYS = ('LIBGL_ALWAYS_SOFTWARE', 'GALLIUM_DRIVER', '__GLX_VENDOR_LIBRARY_NAME',
+               'LP_NUM_THREADS', 'MESA_LOADER_DRIVER_OVERRIDE', 'DRI_PRIME',
+               'VK_DRIVER_FILES', 'VK_ICD_FILENAMES', 'VK_ADD_DRIVER_FILES',
+               'VK_INSTANCE_LAYERS', 'VK_LAYER_PATH', 'VK_LOADER_DRIVERS_SELECT',
+               'VK_LOADER_DRIVERS_DISABLE', 'LD_LIBRARY_PATH')
+
+def driver_environment(inherited, configured=False):
+    if configured:
+        return {key: inherited[key] for key in DRIVER_KEYS if key in inherited}
+    return {'LIBGL_ALWAYS_SOFTWARE': '1', 'GALLIUM_DRIVER': 'llvmpipe',
+            '__GLX_VENDOR_LIBRARY_NAME': 'mesa', 'LP_NUM_THREADS': '1'}
+
+def launch(engine, root, index, rendered, floor, start, affinity, configured_drivers=False):
     d = root / f'worker-{index + 1}'
     d.mkdir(mode=0o700)
     project = d / 'project'
@@ -72,9 +85,9 @@ def launch(engine, root, index, rendered, floor, start, affinity):
            'XDG_DATA_HOME': str(d / 'data'), 'XDG_CONFIG_HOME': str(d / 'config'),
            'XDG_CACHE_HOME': str(d / 'cache'), 'XDG_RUNTIME_DIR': str(d / 'runtime'),
            'PROBE_OUTPUT': str(d), 'PROBE_CONFIG': str(d / 'config.json'),
-           'LIBGL_ALWAYS_SOFTWARE': '1', 'GALLIUM_DRIVER': 'llvmpipe',
-           '__GLX_VENDOR_LIBRARY_NAME': 'mesa', 'LP_NUM_THREADS': '1',
            'GODOT_SILENCE_ROOT_WARNING': '1'}
+    env.update(driver_environment(os.environ, configured_drivers))
+    env['TMPDIR'] = str(d / 'runtime')
     for name in ('home', 'runtime', 'data', 'config', 'cache'):
         (d / name).mkdir(mode=0o700)
     cmd = [str(engine), '--path', str(project), '--script', 'res://probe.gd',
@@ -93,7 +106,7 @@ def launch(engine, root, index, rendered, floor, start, affinity):
     return {'proc': proc, 'dir': d, 'config': config, 'log': log,
             'launched_ms': (time.monotonic() - start) * 1000, 'cpu_samples': []}
 
-def group(engine, root, count, rendered=False, floor=True, timeout=25):
+def group(engine, root, count, rendered=False, floor=True, timeout=25, configured_drivers=False):
     root.mkdir(parents=True, exist_ok=False)
     if not hasattr(os, 'sched_getaffinity'):
         raise RuntimeError('This Linux experiment needs CPU-affinity support')
@@ -101,13 +114,13 @@ def group(engine, root, count, rendered=False, floor=True, timeout=25):
     start = time.monotonic()
     parent = context(os.getpid())
     workers = []
-    peaks = {'sum_godot_rss_kib': 0, 'cgroup_memory_bytes': 0, 'simultaneous_progressing_workers': 0}
+    peaks = {'sum_godot_rss_kib': 0, 'cgroup_memory_bytes': None, 'simultaneous_progressing_workers': 0}
     def check_deadline():
         if time.monotonic() - start > timeout:
             raise TimeoutError('bounded native group exceeded its deadline')
     try:
         for index in range(count):
-            workers.append(launch(engine, root, index, rendered, floor, start, affinity))
+            workers.append(launch(engine, root, index, rendered, floor, start, affinity, configured_drivers))
         while not all(read_json(w['dir'] / 'ready.json') for w in workers):
             check_deadline()
             if any(w['proc'].poll() is not None for w in workers):
@@ -148,7 +161,7 @@ def group(engine, root, count, rendered=False, floor=True, timeout=25):
             peaks['simultaneous_progressing_workers'] = max(peaks['simultaneous_progressing_workers'], progressing)
             try:
                 mem = int(Path('/sys/fs/cgroup/memory.current').read_text())
-                peaks['cgroup_memory_bytes'] = max(peaks['cgroup_memory_bytes'], mem)
+                peaks['cgroup_memory_bytes'] = max(peaks['cgroup_memory_bytes'] or 0, mem)
             except OSError:
                 pass
             time.sleep(0.002)
@@ -170,7 +183,7 @@ def group(engine, root, count, rendered=False, floor=True, timeout=25):
                 required.update({'pixel_readback', 'software_renderer', 'png_saved'})
             if set(checks) != required or (floor and not all(value is True for value in checks.values())):
                 raise RuntimeError('native checks did not complete successfully')
-            if not floor and (checks.get('floor_contact') is not False or checks.get('rests_above_floor') is not False):
+            if not floor and any(value is not (name not in {'floor_contact', 'rests_above_floor'}) for name, value in checks.items()):
                 raise RuntimeError('negative control did not reject missing collision')
             capture = native.get('capture')
             if rendered:
@@ -188,13 +201,15 @@ def group(engine, root, count, rendered=False, floor=True, timeout=25):
                            'peak_rss_kib': w.get('peak_rss_kib')})
         identity = {'distinct_engine_pids':len({w['engine_pid'] for w in workers}) == count,
                     'distinct_user_dirs':len({w['user_dir'] for w in workers}) == count,
-                    'same_cgroup_membership_as_coordinator':all(c['cgroup'] == parent['cgroup'] for c in contexts),
+                    'same_cgroup_membership_as_coordinator': (all(c['cgroup'] == parent['cgroup'] for c in contexts)
+                        if parent['cgroup'] is not None and all(c['cgroup'] is not None for c in contexts) else None),
                     'namespace_matches_coordinator':{n: all(c['namespaces'][n] is not None and c['namespaces'][n] == parent['namespaces'][n] for c in contexts) for n in parent['namespaces']}}
         overlap_ms = max(0, min(w['native']['active_finish_unix_usec'] for w in result) - max(w['native']['active_start_unix_usec'] for w in result)) / 1000
         summary = {'native_active_overlap_ms': overlap_ms, 'schema':1, 'kind':'native_processes_not_subagents', 'rendered':rendered,
                    'workers':result, 'identity':identity, 'peaks':peaks,
                    'wall_seconds':time.monotonic()-start, 'requested_clock_flags':'--fixed-fps 60 --max-fps 60 (not a real-time guarantee)',
-                   'ai_subagents_spawned':0,'new_sandboxes_created':0}
+                   'ai_subagents_spawned':0,'new_sandboxes_created':0,
+                   'driver_policy':'inherited_configuration' if configured_drivers else 'explicit_software'}
         (root / 'summary.json').write_text(json.dumps(summary, indent=2)+'\n')
         return summary
     finally:
@@ -209,6 +224,9 @@ if __name__ == '__main__':
     parser.add_argument('--workers',type=int,choices=(1,2,3),default=1)
     parser.add_argument('--render',action='store_true')
     parser.add_argument('--omit-floor',action='store_true')
+    parser.add_argument('--configured-drivers',action='store_true',
+                        help='Keep inherited graphics selection; never force software/vendor overrides')
     args=parser.parse_args()
-    r=group(args.engine.resolve(),args.output.resolve(),args.workers,args.render,not args.omit_floor)
+    r=group(args.engine.resolve(),args.output.resolve(),args.workers,args.render,not args.omit_floor,
+            configured_drivers=args.configured_drivers)
     print(json.dumps({k:r[k] for k in ('kind','wall_seconds','identity','peaks')},indent=2))
