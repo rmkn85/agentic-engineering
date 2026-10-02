@@ -10,7 +10,7 @@ For ordinary work, use this file plus [`docs/agent-corpus/README.md`](docs/agent
 
 ## Execution invariants
 
-- Preserve the task, success criteria, source coverage, permissions, and quality bar; optimize execution, not scope.
+- Preserve the task, success criteria, source coverage, permissions, and quality bar; optimize execution, not scope. A milestone is not completion: apply the corpus's [completion boundary](docs/agent-corpus/README.md#completion-boundary) before any final response.
 - Use deterministic tools for mechanical work. Keep logs on disk; workers return status, decisions, and evidence paths. The coordinator reads only decision-critical excerpts: consumed logs keep taxing later context.
 - Before a substantial batch, choose the cheapest adequate executor: exact tool, bounded worker, orchestrator, or capability-selected specialist. The coordinator need not be the strongest model: it may route one bounded, coupled decision to a stronger available specialist, then resume cheaper execution. Do not add fan-out without a concrete benefit.
 - Treat context as a working set. Keep always-loaded guidance small; prefer path-scoped rules, on-demand skills, isolated worker context, and retrievable references when they are sufficient.

@@ -14,10 +14,11 @@ Document deterministic commands and the cheapest useful validation sequence.
 ## Agent execution rules
 - Inspect before modifying.
 - Preserve behavior unless the task explicitly changes it.
+- Before finalizing, re-check the requested outcome against actual state and evidence. Continue necessary authorized work rather than listing executable next steps; stop only when complete or genuinely blocked, without expanding into optional work.
 - Prefer deterministic tools for deterministic transformations.
 - Keep tool output concise; inspect full logs only when needed.
 - Record important assumptions and invalidations.
-- Validate locally before declaring work complete.
+- Run appropriate verification through available authorized routes; diagnose relevant failures, repair and reverify before declaring completion.
 
 ## Local overrides
 Document project-specific constraints here rather than modifying shared engineering guidance.

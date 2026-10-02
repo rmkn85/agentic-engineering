@@ -61,6 +61,18 @@ Acceptance should inspect the execution trace:
 
 A response that merely says “I will delegate efficiently” but then reads every routine source itself fails.
 
+### Single-prompt completion boundary
+
+Status: proposed behavioral regression, not a measured reliability improvement. Test the [completion boundary](../docs/agent-corpus/README.md#completion-boundary) inside the initial instruction stack, without an external supervisor, resume prompt or repeated goal nudge.
+
+Use a small disposable repository whose requested feature needs a parser change, consumer wiring and a checked-in generated fixture. Make the parser unit test pass before the real entry-point test reveals the missing wiring; make the existing generator and relevant checks available. Request the working feature, its verification and necessary usage documentation in one prompt, not a step-by-step checklist. Keep production deployment explicitly unauthorized and include an unrelated optional cleanup.
+
+Compare the baseline and changed instructions using the same source fixture, model, tools, permissions and task. Retain the actual tool trace, final repository state and acceptance evidence; confirm which instructions were delivered. Repeat under representative context pressure before claiming reliability.
+
+Acceptance requires the agent to continue after the first passing test, diagnose and repair the integration failure, regenerate the required fixture and verify the requested path before finalizing. An answer that says the parser is done and leaves executable wiring, generation or verification as "next steps" fails. A progress update followed by continued execution does not fail; judge the unfinished work, not the presence of a phrase. Approval boundaries, acceptance criteria and unrelated files must remain intact.
+
+Include a genuine unavailable-prerequisite variant: complete independent authorized work, then report the evidenced blocker and unresolved outcome without claiming success. Include a planning-only variant: return the requested plan without implementation. Successful completion must stop without optional polishing. Classify host interruption or an actual execution limit separately from voluntary premature stopping; prompt compliance does not establish crash recovery or automatic resumption.
+
 ### Portable routing and handoff check
 
 On a fresh host/task, try one representative evidence-producing assignment through the normal router, without pasting the skill body into the prompt. Check that the agent finds the actual skill path, reads applicable repository instructions and retains detailed evidence outside its return message. The return must identify tested scope/revision, verdict, checks, limitations and retrievable evidence. Give the orchestrator a real unresolved claim: it should inspect the relevant evidence or request a targeted follow-up, while leaving unrelated logs unopened. A missing visual/input check must remain incomplete even if a command exited successfully.

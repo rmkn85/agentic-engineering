@@ -6,7 +6,7 @@ Do **not** recursively crawl the repository. `references/` is methodology resear
 
 ## Execution kernel
 
-1. **Preserve the outcome and inherited constraints.** Separate the change from deferred checks/refinement. Narrower verification is not permission to remove a product invariant; an explicit product-scope change is different.
+1. **Preserve the outcome and inherited constraints.** Narrower interim checks do not remove product invariants or required final acceptance; only an authorized scope change does.
 2. **Route substantial batches before consuming them.** Choose the cheapest adequate executor: deterministic tool, bounded worker, orchestrator, or capability-selected specialist. A low-cost coordinator may route one bounded coupled decision to a stronger available specialist, then return implementation and verification to cheaper executors. Do not create fan-out without a concrete benefit.
 3. **Treat context as a working set, not an archive.** Keep always-loaded instructions small. Load path-specific rules, skills, references, source files, logs, and tool schemas only when they become relevant.
 4. **Use deterministic machinery for deterministic work.** Search, inventory, hashing, formatting, compilation, test execution, filtering, moving, and measurement usually do not need model reasoning.
@@ -15,6 +15,18 @@ Do **not** recursively crawl the repository. `references/` is methodology resear
 7. **Construct, then challenge.** Identify what preserves the affected property in the real consumer and the next ordinary change. Probe one consequential assumption outside the happy path; use targeted checks now and appropriate integration later. Tests do not supply the preserving mechanism.
 8. **Measure uncertainty, not everything.** Keep good defaults. For consequential decisions retain the practice/revision, trigger, action and native evidence in the existing run record. Separate reported use from observed behavior; leave unknown measurements unknown.
 9. **Leave touched code cheap to model.** A fresh weaker coding model should be able to predict a touched unit's representative behavior from the unit plus a small explicit contract/dependency context. Do not trade local simplicity for hidden coupling or abstraction mazes.
+
+## Completion boundary
+
+For implementation tasks, own the requested outcome, not the first successful subtask. Progress updates and coherent commits are checkpoints, not permission to stop.
+
+Before every final response, compare the request (including later clarifications) with actual state and verification evidence. Ask: **Does necessary work remain that I can perform now with available tools and authorization?** If yes, perform it instead of finalizing; do not wait for another "continue".
+
+Discovered work required for that outcome belongs to the current task. Carry it through implementation, integration, verification and repair; do not present executable required work as "next steps". Keep optional improvements out of scope and respect explicit planning-only, no-deploy, stop and approval boundaries.
+
+Failed checks relevant to the outcome and ordinary engineering difficulty call for diagnosis, repair and re-verification, not a handoff. Do not repeat an ineffective action without new evidence or weaken acceptance to claim success.
+
+Stop incomplete only at a concrete boundary preventing further authorized progress, such as an unavailable prerequisite, required external decision or actual execution limit. Finish independent unblocked work first. Report the exact blocker, attempted recovery and remaining work honestly; never claim completion or imply automatic continuation after termination.
 
 ## Context placement rule
 
