@@ -1,67 +1,70 @@
-# Opt-in Codex model-routing preset. Reviewed 2026-10-04.
-# This file is an EXAMPLE to merge into the user's or trusted project's config;
-# checking out this repository does not install it or edit the user's settings.
-# Keep existing permissions, approvals, providers, tools and unrelated settings.
-# No native model allowlist or hard spending limit is installed by this preset.
-# Policy and sources: docs/local-codex/subagents.md#named-model-and-effort-policy
-# Native settings: https://learn.chatgpt.com/docs/agent-configuration/subagents
-# Configuration: https://learn.chatgpt.com/docs/config-file/config-reference
-# Verify these IDs and efforts in the actual client/account before adoption.
+# Opt-in native Codex routing preset. Source audit: 2026-10-04.
+# EXAMPLE to merge, not an installer. Preserve permissions and unrelated settings.
+# Audit: docs/local-codex/multi-agent-v2.md (OpenAI source snapshot d0759639).
+# Match the actual CLI/app backend and inspect effective custom roles.
+# No native model allowlist, per-worker budget or exact billing cap is installed.
 
-# Substantial coding, integration and orchestration. Choose Luna explicitly for
-# a lightweight main task when adequate; user-directed Astra planning is separate.
 model = "gpt-6.1-sol"
 model_reasoning_effort = "medium"
 service_tier = "default"
 
+# General worker settings complement, not replace, the native V2 configuration.
 [agents]
 enabled = true
-# Safety net, NOT a substitute for explicit per-dispatch model/effort selection.
 default_subagent_model = "gpt-6-luna"
 default_subagent_reasoning_effort = "medium"
-# Optional workload choice, not a total-cost cap or universal optimum:
+# Optional workload cap; do not set contradictory values in two tables:
 # max_concurrent_threads_per_session = 2
+# max_depth is V1-only; it does NOT prevent V2 grandchildren.
 
-# Runtime policy belongs in efficient-execution / applicable AGENTS.md:
-# - Luna low for routine work, medium for focused judgment, high for a specific
-#   deeper reasoning need. Sol medium/high only for justified complex subtasks.
-# - No Astra worker, automatic model substitution or xhigh/max/ultra worker.
-# - Set bounded context and finite assignment + aggregate budgets before launch.
-# - Reuse/follow-up must remain compliant and debit the existing allocation.
-# - Ratios are review heuristics, not quotas. No mandatory 20% Sol or High spend.
-# Use supported launch controls or a selected inspected role. Custom agent files
-# override explicit spawn values, which override these defaults, then parent
-# fallback. Set BOTH model and model_reasoning_effort in selected role files;
-# inspect existing ~/.codex/agents/ and project .codex/agents/ overrides.
-# Parent inheritance by omission is not intentional model selection.
-# There is no native allowlist key introduced here. The permitted pairs are in
-# the skill; they work as policy even when no config/custom role is installed.
+[features.multi_agent_v2]
+enabled = true
+# Exposes actual model and reasoning_effort fields on native V2 spawn_agent.
+# True in the inspected runtime defaults; explicit here for the routing contract.
+expose_spawn_agent_model_overrides = true
+# Preserve an existing intentional mode hint when merging. It changes delegation
+# policy independently of model/effort defaults and should not be silently erased.
+multi_agent_mode_hint_text = """
+Cost-aware delegation is active. The owner authorizes the root coordinator to
+select workers deliberately: Luna Low/Medium normally, Luna High or Sol
+Medium/High for a specific justified subtask. Never dispatch Astra or above-High
+effort. Use exact tools for mechanical work and delegate only when worthwhile.
+Select model, reasoning_effort and fork_turns explicitly. Prefer fork_turns="none"
+with a sufficient bounded handoff; workers must not spawn descendants. Reuse
+requires compliant configuration and remaining assignment budget. Preserve all
+permissions and acceptance. Apply efficient-execution when available.
+"""
 
-# Migration from an older [features.multi_agent_v2] hint:
-# The current public configuration reference documents [agents], not that stanza
-# or multi_agent_mode_hint_text. Do not rely on a prose hint to set worker models.
-# Keep routing instructions in the skill/AGENTS.md; check the installed client's
-# supported controls before removing version-specific configuration. A fresh
-# run must verify effective settings; existing threads keep their old state.
+# These settings affect different things; do not change them by name alone:
+# hide_spawn_agent_metadata: presentation, NOT a resolved model/effort receipt.
+# root_agent_usage_hint_text/subagent_usage_hint_text: replace built-in role text.
+# subagent_developer_instructions: replaces inherited worker developer guidance.
+# non_code_mode_only: direct-model versus nested code-mode tool exposure,
+#                    NOT whether the task involves programming.
+# wait timeout settings: mailbox waiting, NOT worker runtime/deadline budgets.
+# Leave these and message-board settings at working defaults unless needed.
 
-# -----------------------------------------------------------------------------
-# Other OPTIONAL, workload-dependent settings
-# Place TOP-LEVEL keys before [agents] when merging; TOML tables continue until
-# another table begins. The examples below are comments, not active settings.
-# -----------------------------------------------------------------------------
+# Custom roles override explicit spawn model/effort, then defaults, then parent.
+# Set BOTH model and model_reasoning_effort in selected role files. The hint does
+# not configure a model by itself; verify actual tool calls and native settings.
+# V2 fork_turns is a spawn argument: "none", "all" (default), or a positive
+# integer string. Current V2 full-history forks CAN override models and roles.
+# followup_task has no model/effort fields: transfer findings to a new cheaper
+# worker when a configuration change is needed; do not spend again by accident.
 
-# Retain full logs outside model context; do not truncate decisive diagnostics.
-# tool_output_token_limit = 4000
-# Bound persistent instructions only after observing a real footprint problem.
-# project_doc_max_bytes = 16384
-# Use cached search only when freshness is not required.
-# web_search = "cached"
-# Keep the platform's compaction defaults unless evidence justifies a threshold.
-# A compaction threshold is not a per-worker token or spending budget.
-# Preserve an existing intentional threshold when changing model routing alone.
+# Optional native features.rollout_budget is separate from this routing preset.
+# The inspected controller raises SessionBudgetExceeded after shared root/worker
+# accounting reaches its limit; it is more than reminders. Accounting can occur
+# after an inference and in-flight work may overshoot. It is not a precise dollar
+# cap, a per-child allocation, or an automatically durable cross-process budget.
+# Do not install an arbitrary global limit. Validate the actual client's fields
+# and measure scope/overshoot before relying on it. See the source audit.
 
-# Do not infer a hard cap from concurrency, rollout tracking or a prompt budget.
-# Label attempt/time/token limits as soft unless the host actually enforces them.
-# Required hard cap unavailable -> no dispatch through that path.
-# Disable native multi-agent tools, when needed, with enabled = false in [agents].
-# Do not invent budget/allowlist keys or introduce an orchestration service.
+# To intentionally disable delegation, turn off BOTH effective controls:
+# [agents] enabled = false AND [features.multi_agent_v2] enabled = false.
+# Enabled V2 takes precedence over agents.enabled=false. Verify a fresh run.
+# Never disable V2 merely because a documentation index omits its typed fields.
+
+# Other top-level overrides belong BEFORE tables when merging this example.
+# Preserve intentional compaction, permission, approval, provider and tool settings.
+# Concurrency, context limits and soft prompt budgets are not exact spending caps.
