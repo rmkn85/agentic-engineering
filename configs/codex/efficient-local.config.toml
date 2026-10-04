@@ -1,69 +1,67 @@
-# Local Codex efficiency example.
-#
-# IMPORTANT: this is NOT a "better than Codex defaults" profile.
-# Start with current Codex defaults and add only overrides that solve a concrete
-# problem in your environment. Settings below are examples, mostly commented out.
-# Worker model/effort selection is an explicit policy boundary, not permission to
-# inherit parent cost settings. See docs/local-codex/subagents.md#launch-preflight.
-# For a short skill router, see docs/adoption/overlays.md#portable-skill-routing.
-# Use the host's supported instruction mechanism; do not assume another runtime's
-# custom configuration keys or personal paths work here.
+# Opt-in Codex model-routing preset. Reviewed 2026-10-04.
+# This file is an EXAMPLE to merge into the user's or trusted project's config;
+# checking out this repository does not install it or edit the user's settings.
+# Keep existing permissions, approvals, providers, tools and unrelated settings.
+# No native model allowlist or hard spending limit is installed by this preset.
+# Policy and sources: docs/local-codex/subagents.md#named-model-and-effort-policy
+# Native settings: https://learn.chatgpt.com/docs/agent-configuration/subagents
+# Configuration: https://learn.chatgpt.com/docs/config-file/config-reference
+# Verify these IDs and efforts in the actual client/account before adoption.
 
-# Optional editor integration. Use an executable available in the target environment.
-# file_opener = "<editor-command>"
+# Substantial coding, integration and orchestration. Choose Luna explicitly for
+# a lightweight main task when adequate; user-directed Astra planning is separate.
+model = "gpt-6.1-sol"
+model_reasoning_effort = "medium"
+service_tier = "default"
 
-# -----------------------------------------------------------------------------
-# OPTIONAL, workload-dependent overrides
-# -----------------------------------------------------------------------------
-
-# Limit retained model-visible output only if noisy commands are actually filling
-# context. Prefer wrappers that save the full log and emit a concise summary first.
-# Do not truncate diagnostics blindly.
-# tool_output_token_limit = 4000
-
-# Bound project documentation only if a large instruction chain is materially
-# consuming context or causing instruction conflicts. The upstream default is the
-# baseline and may improve over time.
-# project_doc_max_bytes = 16384
-
-# Use cached web search only where freshness is not required.
-# web_search = "cached"
-
-# Keep the shell environment policy at the platform default unless reproducibility
-# or security requirements justify an override.
-# [shell_environment_policy]
-# inherit = "core"
-# ignore_default_excludes = false
-
-# A smaller skill catalog may save context in installations with many skills, but
-# can reduce skill discovery. Change only after observing a real problem.
-# [skills]
-# max_context_tokens = 2000
-
-# Native subagent defaults: safety net against accidental parent inheritance.
-# Reviewed 2026-10-04:
-# https://learn.chatgpt.com/docs/agent-configuration/subagents
-# Replace the placeholder with a live-verified allowed non-premium model. Check
-# that the chosen effort is supported and within the owner's ceiling. Each
-# dispatch must still intentionally select its effective model/effort/context.
-# [agents]
-# default_subagent_model = "<live-verified-economy-model>"
-# default_subagent_reasoning_effort = "low"
+[agents]
+enabled = true
+# Safety net, NOT a substitute for explicit per-dispatch model/effort selection.
+default_subagent_model = "gpt-6-luna"
+default_subagent_reasoning_effort = "medium"
+# Optional workload choice, not a total-cost cap or universal optimum:
 # max_concurrent_threads_per_session = 2
-#
-# The concurrency value is an optional workload cap, not a universal optimum or
-# total-spend limit. Explicit spawn settings and custom agent files can override
-# these defaults; inspect effective precedence and set BOTH model and
-# model_reasoning_effort in any selected custom role. Defaults do not enforce a
-# model allowlist, effort maximum, per-worker token budget or aggregate spend cap.
-# If compliant selection cannot be established, disable multi-agent tools in the
-# existing [agents] table until configured, rather than silently inheriting:
-# enabled = false
-#
-# Use supported native hard restrictions where available. Label instruction-only
-# attempt/time/token budgets as soft checkpoints; rollout-budget tracking is not
-# evidence of a hard cap. Do not copy invented budget/allowlist keys into config.
 
-# Do not disable stable platform caches/snapshots without a specific reason.
-# Prefer inheriting future upstream improvements automatically where they do not
-# conflict with explicit worker selection, budget or permission constraints.
+# Runtime policy belongs in efficient-execution / applicable AGENTS.md:
+# - Luna low for routine work, medium for focused judgment, high for a specific
+#   deeper reasoning need. Sol medium/high only for justified complex subtasks.
+# - No Astra worker, automatic model substitution or xhigh/max/ultra worker.
+# - Set bounded context and finite assignment + aggregate budgets before launch.
+# - Reuse/follow-up must remain compliant and debit the existing allocation.
+# - Ratios are review heuristics, not quotas. No mandatory 20% Sol or High spend.
+# Use supported launch controls or a selected inspected role. Custom agent files
+# override explicit spawn values, which override these defaults, then parent
+# fallback. Set BOTH model and model_reasoning_effort in selected role files;
+# inspect existing ~/.codex/agents/ and project .codex/agents/ overrides.
+# Parent inheritance by omission is not intentional model selection.
+# There is no native allowlist key introduced here. The permitted pairs are in
+# the skill; they work as policy even when no config/custom role is installed.
+
+# Migration from an older [features.multi_agent_v2] hint:
+# The current public configuration reference documents [agents], not that stanza
+# or multi_agent_mode_hint_text. Do not rely on a prose hint to set worker models.
+# Keep routing instructions in the skill/AGENTS.md; check the installed client's
+# supported controls before removing version-specific configuration. A fresh
+# run must verify effective settings; existing threads keep their old state.
+
+# -----------------------------------------------------------------------------
+# Other OPTIONAL, workload-dependent settings
+# Place TOP-LEVEL keys before [agents] when merging; TOML tables continue until
+# another table begins. The examples below are comments, not active settings.
+# -----------------------------------------------------------------------------
+
+# Retain full logs outside model context; do not truncate decisive diagnostics.
+# tool_output_token_limit = 4000
+# Bound persistent instructions only after observing a real footprint problem.
+# project_doc_max_bytes = 16384
+# Use cached search only when freshness is not required.
+# web_search = "cached"
+# Keep the platform's compaction defaults unless evidence justifies a threshold.
+# A compaction threshold is not a per-worker token or spending budget.
+# Preserve an existing intentional threshold when changing model routing alone.
+
+# Do not infer a hard cap from concurrency, rollout tracking or a prompt budget.
+# Label attempt/time/token limits as soft unless the host actually enforces them.
+# Required hard cap unavailable -> no dispatch through that path.
+# Disable native multi-agent tools, when needed, with enabled = false in [agents].
+# Do not invent budget/allowlist keys or introduce an orchestration service.

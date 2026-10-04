@@ -7,14 +7,14 @@ Do **not** recursively crawl the repository. `references/` is methodology resear
 ## Execution kernel
 
 1. **Preserve the outcome and inherited constraints.** Narrower interim checks do not remove product invariants or required final acceptance; only an authorized scope change does.
-2. **Route substantial batches before consuming them.** Choose the cheapest adequate executor: exact tool, bounded worker or coordinator. Every worker launch/fork/reuse must pass the [dispatch contract](../local-codex/subagents.md#launch-preflight): explicit model, effort, bounded context and finite budgets; no parent inheritance, premium workers or missing-setting exceptions. Stronger specialists stay within the worker ceiling; harder decisions return to the coordinator, then routine work routes down. Do not create fan-out without a concrete benefit.
-3. **Treat context as a working set, not an archive.** Keep always-loaded instructions small. Load path-specific rules, skills, references, source files, logs, and tool schemas only when they become relevant.
+2. **Route deliberately before consuming substantial work.** Choose the cheapest adequate model/effort for acceptance. The [named policy](../local-codex/subagents.md#named-model-and-effort-policy) starts substantial coding/orchestration on Sol/Medium and focused workers on Luna/Medium, lowering routine work to Luna/Low. The coordinator may intentionally select Sol or High for a specific need; no Astra or above-High workers. Every launch/fork/reuse must pass the [dispatch contract](../local-codex/subagents.md#launch-preflight): explicit selection, bounded context and finite budgets, never parent inheritance. No installed allowlist or forced 80/20 ratio is required. Keep exact/tiny work with tools; harder decisions return to the authorized coordinator, then routine work routes down.
+3. **Treat context as a working set, not an archive.** Keep always-loaded instructions small. Load path-specific rules, on-demand skills, references, source files, logs, and tool schemas only when they become relevant.
 4. **Use deterministic machinery for deterministic work.** Search, inventory, hashing, formatting, compilation, test execution, filtering, moving, and measurement usually do not need model reasoning.
 5. **Reuse valid work.** Cache semantic findings and deterministic artifacts until an input that can affect them changes. Do not reread or revalidate merely to demonstrate activity. Worker reuse also requires compliant configuration and remaining budget.
 6. **Keep logs out of coordinator context.** Retain evidence on disk; workers/tools return status, decisions, and paths. Inspect only decision-critical excerpts; consumed logs burden later turns.
 7. **Construct, then challenge.** Identify what preserves the affected property in the real consumer and the next ordinary change. Probe one consequential assumption outside the happy path; use targeted checks now and appropriate integration later. Tests do not supply the preserving mechanism.
 8. **Measure uncertainty, not everything.** Keep good defaults within explicit constraints. For consequential decisions retain the practice/revision, trigger, action and native evidence in the existing run record. Separate reported use from observed behavior; leave unknown measurements unknown.
-9. **Leave touched code cheap to model.** A fresh weaker coding model should be able to predict a touched unit's representative behavior from the unit plus a small explicit contract/dependency context. Do not trade local simplicity for hidden coupling or abstraction mazes.
+9. **Leave touched code cheap to model.** A fresh weaker coding model should be able to predict a touched unit's representative behavior from the unit plus a small explicit contract/dependency context; avoid hidden coupling and needless indirection.
 
 ## Completion boundary
 
@@ -78,7 +78,7 @@ See [instruction/context adherence experiments](../../experiments/instruction-co
 | Efficiency control-plane decision order | [`../principles/efficiency-control-plane.md`](../principles/efficiency-control-plane.md) |
 | Prompt-prefix/cache stability | [`../local-codex/prefix-stability.md`](../local-codex/prefix-stability.md) |
 | Context, prompt, `AGENTS.md`, skills, instruction placement | [`../local-codex/prompts-skills-agents.md`](../local-codex/prompts-skills-agents.md) and [`../principles/context-economics.md`](../principles/context-economics.md) |
-| Any worker launch/reuse; delegation, model routing, budgets, fan-out | [`../../skills/efficient-execution/SKILL.md`](../../skills/efficient-execution/SKILL.md) and [`../local-codex/subagents.md`](../local-codex/subagents.md) |
+| Any worker launch/reuse; named model/effort choices, API versus Codex, budgets, fan-out | [`../../skills/efficient-execution/SKILL.md`](../../skills/efficient-execution/SKILL.md) and [`../local-codex/subagents.md`](../local-codex/subagents.md) |
 | Benchmarks and resource comparisons | [`../local-codex/benchmarking.md`](../local-codex/benchmarking.md) |
 | Exact local tooling and quiet outputs | [`../local-codex/tooling.md`](../local-codex/tooling.md) |
 | Reuse/invalidation | [`../execution/read-once-write-once.md`](../execution/read-once-write-once.md) and [`../execution/caching-and-prefetching.md`](../execution/caching-and-prefetching.md) |

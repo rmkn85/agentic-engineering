@@ -1,6 +1,6 @@
 # Execution surfaces and usage pools
 
-Reviewed: 2026-09-15
+Model routing reviewed: 2026-10-04. Usage-pool examples below retain their 2026-09-15 review date and are not current quota promises.
 
 Efficiency decisions should separate three different questions:
 
@@ -16,11 +16,13 @@ Choose the cheapest capable combination that preserves the required outcome and 
 
 Do not spend a scarce model or agentic allowance merely because it is available. Conversely, do not downgrade model quality or force work through an awkward surface solely to save quota when that creates retries, lost context, or lower-quality output.
 
+For concrete choices use the [named model and effort policy](../local-codex/subagents.md#named-model-and-effort-policy): user-directed Astra planning, Sol/Medium substantial coding/orchestration, mostly Luna/Medium or Low workers, and intentional bounded Sol/High escalation. No Astra or above-High workers. The permitted pairs are instruction policy, not a missing native allowlist. API prices must not be presented as subscription-credit conversions.
+
 ## Route coupled synthesis separately from routine execution
 
 Model capability is most valuable where one decision must reconcile several uncertain concerns at once. Examples include translating an experiential goal into architecture, preserving a product invariant through a cross-layer redesign, converging art direction, authored assets and runtime constraints, interpreting visual and runtime evidence together, or diagnosing a failure whose cause may cross state, timing, rendering and resource boundaries.
 
-"Bounded" describes the assignment's ownership and context, not the model strength it requires. A bounded specialist may be stronger than the orchestrator coordinating it. Consider a stronger, scarcer model for a bounded synthesis or diagnosis pass when most of these are true:
+"Bounded" describes the assignment's ownership and context, not the model strength it requires. A bounded specialist may be stronger than the orchestrator coordinating it, but must remain within the explicit worker policy. Consider stronger allowed reasoning for a bounded synthesis or diagnosis pass when most of these are true:
 
 - the desired outcome is clear enough to judge but the implementation route is materially ambiguous;
 - several interacting boundaries must change coherently;
@@ -32,7 +34,7 @@ Use judgment across the factors; they are not a numeric score or fixed threshold
 
 Use a sufficiently capable cheaper worker for bounded implementation when the contract, owned files, dependencies and acceptance checks are already explicit. This includes routine code changes and asset production after the reference, format, budgets and review criteria are settled. Use deterministic tools for exact inspection and repetition: state snapshots, counters, replay setup, captures, diffs, builds, tests and controlled measurements.
 
-Select capability from the executors and models exposed by the current run. Do not route from a remembered model catalog. If the coordinator cannot judge or integrate the specialist's artifact, raise the integration decision to a capable executor too. Named models belong in dated examples and evidence only; operational routing should survive their renaming or removal.
+Select from the named policy AND executors exposed by the current run. Verify live support rather than assuming a dated catalog is installed. If a model disappears or is renamed, retain the capability goal but do not silently treat an unapproved successor as allowed. If the coordinator cannot judge or integrate the specialist's artifact, preserve that decision for authorized escalation; this never authorizes an Astra worker.
 
 A practical progression is:
 
@@ -49,7 +51,7 @@ This is a handoff pattern, not a permanent model assignment. After the difficult
 
 Do not reserve a strong model for high-volume mechanical work, unconstrained variant generation, repeated test execution, or broad repository reading that exact tooling or bounded workers can perform. Conversely, do not split a tightly coupled synthesis across independent workers merely to reduce per-worker cost; reconciliation can cost more than keeping the decision coherent.
 
-These criteria are an **engineering hypothesis**, not a measured stronger-versus-cheaper-model saving. Validate consequential routing changes on representative accepted work, including retries and rework. OpenAI's [Building games with Astra](https://developers.openai.com/blog/how-to-build-games-with-astra), reviewed September 15, 2026, illustrates this approach through coupled visual/runtime diagnosis, editable asset production and repeatable comparisons. Its model name identifies the source, not a permanent routing target; the article does not establish comparative model savings. Approved references, an explicit authority boundary, a repeatable scenario and an ordinary-input journey make a specialist's decision testable by later executors.
+These criteria are an **engineering hypothesis**, not a measured stronger-versus-cheaper-model saving. Validate consequential routing changes on representative accepted work, including retries and rework. OpenAI's [Building games with Astra](https://developers.openai.com/blog/how-to-build-games-with-astra), reviewed September 15, 2026, illustrates this approach through coupled visual/runtime diagnosis, editable asset production and repeatable comparisons. That historical model example does not override the current worker policy or establish comparative model savings. Approved references, an explicit authority boundary, a repeatable scenario and an ordinary-input journey make a specialist's decision testable by later executors.
 
 ## Execution surfaces
 
@@ -98,13 +100,13 @@ Use cloud intentionally when the cloud environment itself creates value:
 
 Do not choose cloud merely because a task is large. Local and cloud Codex draw from the same broad Work/Codex agentic allowance on ChatGPT plans; actual usage still varies with model, task, context, tools, reasoning, and where the task runs.
 
-See [local-first execution](local-first.md).
+See [local-first execution](local-first.md). Hosted Responses API multi-agent is not interchangeable with independently configured Codex workers: see the [API boundary](../local-codex/subagents.md#responses-api-multi-agent-is-a-different-surface) before claiming mixed-model delegation or copying configuration keys between surfaces.
 
 ## Usage pools are a resource too
 
 For ChatGPT plans, ordinary Chat and agentic Work/Codex do not necessarily consume the same allowance.
 
-As documented by OpenAI on the review date:
+As documented by OpenAI on the 2026-09-15 review date:
 
 - regular Chat model limits are separate from Work/Codex allowances;
 - Work and Codex share an agentic usage allowance and credit pool where supported;
@@ -118,29 +120,29 @@ Therefore, **pool selection can be part of efficient scheduling**. A semantic re
 
 Current product limits are volatile. Treat this section as a dated example, not a permanent rule.
 
-OpenAI currently documents:
+OpenAI documented on 2026-09-15:
 
-- manually selected GPT-5.6 Sol Medium/High/Extra High uses a Chat reasoning allowance; the public help page does not publish one universal numeric Pro-$200 quota for that allowance;
-- GPT-6 Pro Chat on Pro $200 has a published allowance of 200 messages per week;
-- GPT-5.6 Sol Pro has a separate 170 messages per day, with GPT-6 Pro + Sol Pro also subject to a combined 200-message daily ceiling;
-- GPT-6 Pro and Sol Pro Chat limits are separate from Work/Codex allowances;
-- Work and Codex share the plan's agentic allowance.
+- manually selected GPT-5.6 Sol Medium/High/Extra High uses a Chat reasoning allowance; the public help page did not publish one universal numeric Pro-$200 quota for that allowance;
+- GPT-6 Pro Chat on Pro $200 had a published allowance of 200 messages per week;
+- GPT-5.6 Sol Pro had a separate 170 messages per day, with GPT-6 Pro + Sol Pro also subject to a combined 200-message daily ceiling;
+- GPT-6 Pro and Sol Pro Chat limits were separate from Work/Codex allowances;
+- Work and Codex shared the plan's agentic allowance.
 
 The practical implication is not "always use Sol". It is:
 
 > If ordinary Sol at the required reasoning level is already capable of the semantic task, do not automatically consume scarcer Astra Chat or Work/Codex capacity.
 
-Reserve stronger or scarcer resources for cases where they materially improve success probability, quality, or total work required.
+Reserve stronger or scarcer resources for cases where they materially improve success probability, quality, or total work required, within the owner's authorization and current routing policy.
 
 ## A useful scheduling pattern
 
 For mixed repository work:
 
 ```text
-Chat / capable model
+Chat / user-selected capable model
     deep planning, semantic analysis, independent audit
             ↓
-Local Codex
+Local Codex / Sol coordinator, mostly Luna workers
     repository mutation, search, build/test/validation loop
             ↓
 Chat

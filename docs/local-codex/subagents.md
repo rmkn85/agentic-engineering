@@ -6,59 +6,96 @@ Platform defaults are a baseline for unconstrained choices, not permission to in
 
 The broader decision order—deterministic operation → cheapest capable worker → stronger reasoning only at uncertainty boundaries—is summarized in the [efficiency control plane](../principles/efficiency-control-plane.md). Worker escalation always remains within the dispatch ceiling.
 
+## Named model and effort policy
+
+Reviewed **2026-10-04**. These are explicit repository operating defaults, not a universal optimum, a native Codex allowlist, or measured savings. No additional policy file or custom-agent installation is needed. Stricter owner constraints take precedence. Validate support in the live client/account once per run; do not silently substitute a new model when a named choice is unavailable.
+
+| Assignment | Deliberate selection | Boundary |
+| --- | --- | --- |
+| Exact inventory, formatting, known tests, structured filtering | Deterministic tool | No worker just to run a known command |
+| Routine extraction, classification, structured summary, small explicit edit or established-rubric check | `gpt-6-luna` / `low` | Preserve evidence and required instructions |
+| Focused implementation, tests against a clear contract, localized diagnosis or review needing judgment | `gpt-6-luna` / `medium` | Normal coding-worker starting point |
+| Same bounded problem requiring deeper edge-case reasoning or hypothesis checking | `gpt-6-luna` / `high` | State the particular reasoning need; do not raise effort for a large batch merely because it is large |
+| Ambiguous cross-boundary implementation, complex research/tool use, or synthesis exceeding Luna's demonstrated/expected capability | `gpt-6.1-sol` / `medium` | Normal main coding/orchestration choice; worker use needs a task-specific capability reason |
+| Difficult coupled debugging, consequential correctness review or deeper analysis | `gpt-6.1-sol` / `high` | A specific unresolved decision, not a blanket reviewer setting |
+| Hardest owner-led planning or exceptional maximum-intelligence decision | User-selected `gpt-6-astra`, effort chosen for that planning task | Never an autonomously dispatched worker; hardest planning may justify High, ordinary planning need not use Astra |
+
+**Allowed autonomous worker pairs:** Luna at `low`, `medium` or `high`; Sol at `medium` or `high`. **Excluded:** Astra, other unapproved models, and `xhigh`, `max` or `ultra` worker effort. This replaces the undefined word "premium" and the earlier Medium-only ceiling. A coordinator can intentionally escalate to an allowed Sol/High pair without asking again; it cannot add models or raise the ceiling on its own.
+
+Choose **model and effort jointly** for the actual goal. A focused assignment usually needs less reasoning than orchestration, but small scope can still contain a hard semantic decision. More files, visual input, independence or a "reviewer" title do not establish that need. An observed failure or a concrete explanation of anticipated coupling can justify escalation; do not purchase a doomed cheap attempt merely to tick a box. Missing instructions, tools, data, permissions or a broken test harness are not automatically model-capability failures. After an accepted decision, return routine implementation/checking to Luna or exact tools.
+
+A rough **80/20 Luna/Sol assignment mix** and, among Medium/High assignments, roughly **80/20 Medium/High** can be useful review expectations. Low should displace Medium whenever adequate. They are not quotas, minimum allocations, workload partitions or spending caps. Do not create tasks, force weak execution, or add Sol/High work to satisfy a ratio. Investigate a persistent expensive skew in the existing run record; acceptance and total cost decide whether it is justified.
+
+### Evidence and economics
+
+OpenAI's [GPT-6 practical guide](https://openai.com/index/practical-guide-building-gpt-6/) distinguishes focused Luna work, complex Sol work and hardest Astra reasoning; it associates Low with routine work, Medium with judgment and High with deeper analysis. Its general Codex advice is to start from the model's default and adjust to the task.
+
+The [Luna](https://developers.openai.com/api/docs/models/gpt-6-luna) and [Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol) API pages list Medium as their default. The separate [Codex subagents guide](https://learn.chatgpt.com/docs/agent-configuration/subagents) recommends High as an explicit Luna starting setting and Low for Astra. This repository deliberately tries Luna Medium/Low for bounded work; that is an economy policy requiring acceptance checks, not a claim about Codex's universal default. [Astra's model page](https://developers.openai.com/api/docs/models/gpt-6-astra) documents its supported effort levels.
+
+Standard API text prices on the review date, per million tokens:
+
+| Model | Input | Cached input | Output |
+| --- | ---: | ---: | ---: |
+| Luna | $0.10 | $0.01 | $0.50 |
+| Sol | $2.00 | $0.10 | $10.00 |
+| Astra | $10.00 | $1.00 | $50.00 |
+
+These rates do not convert subscription credits, include all service/tool/long-context charges, or predict token counts at a given effort. At equal uncached input/output volumes, Sol's listed rates are 20 times Luna's. A hypothetical 80 Luna / 20 Sol mix with equal tokens per assignment would therefore put about 83% of worker model spend in Sol. Assignment share and spending share are different. Likewise, changing a Luna main agent to Sol is a capability upgrade, not intrinsically a cost reduction; measure the whole accepted workflow, including coordinator usage, caching, retries and repairs.
+
 ## Executor-routing checkpoint
 
 Before a substantial batch of reading, editing, or validation, choose who performs it. A one-line choice in the existing plan is enough; this is not a new planning document or a pause for approval.
 
-| Work | Preferred executor when applicable | Return / acceptance |
-| --- | --- | --- |
-| File inventory, hashes, exact search, formatting, known command batch | Deterministic tool/script | Machine-readable result, exit status, retained logs |
-| Independent source extraction, routine edits, command selection and failure triage | Bounded worker within the explicit model/effort ceiling | Findings with source locations, changes, checks, failures and uncertainties |
-| Coupled semantic, spatial, perceptual, or cross-boundary decision | Capable specialist within the worker ceiling, otherwise the coordinator | Decision artifact supported by original evidence and explicit acceptance boundaries |
-| Integration | Coordinator capable of judging and reconciling the returned artifact | Accepted integration or a stated escalation |
-
 Reading a complete corpus does not ordinarily require the orchestrator to ingest every byte: independent readers can cover defined portions, preserve contradictions and cite original evidence. Instructions that explicitly require the main agent's own read still take precedence. Do not substitute a summary for required source coverage or let a worker silently omit difficult material.
 
-Choose an outcome-sized assignment, not one agent per command or document. Keep an immediate decision local when the coordinator is capable and transfer would cost more than it saves; otherwise route the bounded decision to a compliant capable specialist and start useful independent work. For a large routine batch retained locally, state the actual reason: required direct inspection, no compliant authorized worker/tool, coupling, transfer overhead, or demonstrated worker unreliability. "Defaults" alone does not explain ignoring an available independent split after the user requested efficient delegation.
+Choose an outcome-sized assignment, not one agent per command or document. Keep an immediate decision local when the coordinator is capable and transfer would cost more than it saves; otherwise route the bounded decision to an allowed capable worker and start useful independent work. For a large routine batch retained locally, state the actual reason: required direct inspection, no compliant authorized worker/tool, coupling, transfer overhead, or demonstrated worker unreliability. "Defaults" alone does not explain ignoring an available independent split after the user requested efficient delegation.
 
-Model choice is separate from spawning. Select the required capability before a model name: for example, coherent spatial synthesis, visual-reference interpretation, cross-boundary reasoning, tool fluency, or perceptual review. Inspect the models, effort levels, tools, executors and available cost/usage information exposed in the current run. Establish a small explicit allowlist of non-premium worker model/effort pairs, honoring stricter owner limits; never include a very expensive model. Choose the cheapest adequate pair by expected total cost through acceptance, not nominal token price alone. A low-cost coordinator may dispatch a stronger specialist only within that ceiling.
+Model choice is separate from spawning. Inspect the live models, effort levels, tools, executors and available cost/usage information, then select the cheapest adequate pair from the named policy. Reuse that inspected mapping until relevant configuration, availability or evidence changes. The policy already supplies the permitted pairs: do not refuse delegation merely because no custom allowlist file is installed. Unsupported selection or no adequate allowed pair does block that route; continue with exact tools/the authorized coordinator where adequate.
 
-Do not infer availability or price from documentation examples, an earlier run, or a model family name. Reuse the inspected mapping during the run; refresh only after a relevant configuration, availability or evidence change. An absent mapping or unestablished ceiling blocks delegation rather than falling back to parent settings. Named models in dated evidence are illustrations, not stable routing interfaces or future availability promises.
-
-The coordinator must still be able to judge and integrate the specialist's artifact. If it cannot, report the unresolved integration requirement or use an authorized non-worker route; never bypass the worker ceiling. Reuse relevant findings and artifacts without preserving an expensive configuration merely to avoid a small handoff.
+The coordinator must still be able to judge and integrate the artifact. If it cannot, preserve the unresolved requirement for an authorized decision; never buy an Astra worker or silently switch the coordinator to Astra. Reuse findings without preserving an expensive configuration merely to avoid a small handoff.
 
 ### Launch preflight
 
-This contract applies to **every launch, fork, resume and follow-up**, not just substantial new batches. Keep its receipt in the existing launch/task record; do not add a separate tracker.
+This contract applies to **every launch, fork, resume and follow-up**. Keep its receipt in the existing launch/task record; do not add a tracker or perform repeated model research.
 
-- **Explicit selection.** Set model, reasoning effort and bounded context through supported launch controls or an explicitly selected role whose effective configuration has been inspected. `inherit`, omitted cost settings and unresolved automatic selection are invalid. Selecting the same inexpensive model as the parent is allowed only as an independent explicit choice. Check role/config precedence: a label or a sentence in the worker prompt does not set the runtime model.
-- **Capability ceiling.** Use the run's non-premium allowlist. Start routine extraction, implementation and critique against an established rubric on the cheapest adequate pair. The starter effort ceiling is medium where the host supports a low/medium/high scale; use only supported levels and honor stricter owner limits. A different effort ceiling requires explicit owner policy, not worker self-escalation. A visual or independent-review label never authorizes a premium model. Escalate only the evidenced unresolved decision, within the ceiling; otherwise return it to the coordinator.
-- **Finite budgets.** Before dispatch, allocate a numeric time or total-token budget for the assignment and a finite aggregate budget for delegated work in the batch. Include input/context and reasoning cost where measurable. The starter attempt limit is one execution plus one targeted repair; workers do not redelegate. These are conservative policy defaults, not measured optima. Follow-ups, replacements, retries and any explicitly authorized descendants debit the same assignment and aggregate allocations; restarting a worker does not reset them. Budget exhaustion returns evidence and the unresolved decision, not automatic retries or an increased allowance. The coordinator may continue authorized work, but must not disguise a budget overrun as a new assignment or claim completion.
-- **Context and reuse.** Prefer a fresh bounded handoff. Do not use a full-history fork that prevents explicit overrides. Reuse only when the existing worker's known model, effort, retained context and remaining budget still comply and reuse is cheaper overall than a short handoff. Existing expensive workers are not grandfathered in. Retain necessary permissions and repository instructions; context minimization must not remove safety or acceptance constraints.
-- **Fail closed.** Missing required selection/budget, unsupported overrides, an unestablished ceiling or a disallowed resolved setting means do not dispatch or continue that worker. Use exact tools or the already-authorized coordinator where adequate. Record requested versus resolved settings when observable; missing telemetry stays unknown, not verified compliance. Inspect a representative launch before fan-out; a discovered mismatch requires stopping further dispatch and correcting the route. Do not claim that post-launch inspection prevented the first call's cost.
+- **Explicit selection.** Set an allowed supported model, reasoning effort and bounded context through actual launch controls or an explicitly selected inspected role. Omitted/inherited cost settings are invalid. The same model as the parent can be chosen independently and explicitly. A model name inside a prompt does not itself set the runtime model. Inspect role/config precedence and choose an override-capable launch path; do not use a full-history fork that defeats selection.
+- **Intentional escalation.** Use the named policy, not an undefined price category. Luna Medium is the focused coding default; Low for routine work; Sol or High needs a concise task-specific reason. Coordinator-authorized Sol/High is within policy, not a new owner-approval gate. Keep costly judgment bounded and route down afterward.
+- **Finite budgets.** Before dispatch, allocate numeric assignment and aggregate delegation limits in time or total tokens according to the workload and owner limits. Do not invent a universal numeric optimum. Include input/context and reasoning where measurable. The starter attempt limit remains one execution plus one targeted repair; workers do not redelegate. Follow-ups, replacements, retries and any explicitly authorized descendants debit the same allocations. A restart or new assignment label cannot reset them. At exhaustion, return evidence and unresolved work rather than automatically increasing spend; necessary authorized coordinator work can continue without claiming incomplete work is done.
+- **Context and reuse.** Prefer a fresh bounded handoff. Reuse only when the worker's known model, effort, retained context and remaining budget remain appropriate for the new subtask. Reusing an allowed Sol/High worker for a routine follow-up still needs a cost justification; its previous escalation is not permanent permission. Transfer useful findings without repeating completed work. Context minimization must retain permissions, applicable repository instructions, evidence and acceptance constraints.
+- **Verification and rejection.** No dispatch through unsupported or out-of-policy controls, and no continuation after a disallowed resolved setting is discovered. Record requested/resolved settings when observable; absent telemetry is unknown, not verified compliance. Inspect a representative launch before multiplying the pattern. A mismatch stops further dispatch until corrected; post-launch inspection cannot prevent the first call's cost. Label soft limits honestly; a required hard cap unavailable on the host blocks that path.
 
 A compact receipt is sufficient:
 
 ```text
 Outcome / scope: <bounded artifact and acceptance>
-Selected role/model/effort: <explicit supported allowed pair; why adequate>
+Selected model/effort: <allowed supported pair; why adequate or escalation needed>
 Context: <bounded inputs or inspected compliant reuse>
 Budget: <numeric assignment and aggregate limits; remaining; attempts>
 Enforcement: <native hard controls / soft checkpoints / unavailable>
 Resolved: <observed model/effort/context or unknown; evidence reference>
 ```
 
-### Native controls are not a prose guarantee
+### Native Codex configuration
 
-Reviewed 2026-10-04 against OpenAI's [Subagents documentation](https://learn.chatgpt.com/docs/agent-configuration/subagents): Codex supports `agents.default_subagent_model`, `agents.default_subagent_reasoning_effort` and `agents.max_concurrent_threads_per_session`, plus explicit `model` and `model_reasoning_effort` in custom agent files. Custom-file values can override spawn/default selections; inspect both fields and precedence. See the commented [configuration example](../../configs/codex/efficient-local.config.toml).
+The reviewed [Codex documentation](https://learn.chatgpt.com/docs/agent-configuration/subagents) supports `[agents]` defaults and custom agent files. Effective model/effort precedence is **custom agent file → explicit spawn value → corresponding `[agents]` default → parent fallback**. Set both fields in any selected role; inspect personal and project roles, not just the main config. With no effort supplied by spawn/defaults, explicitly selecting a model uses its model-default effort before custom-file overrides.
 
-Explicit inexpensive defaults are a safety net, not a substitute for intentional selection and not an enforceable maximum. A concurrency limit bounds simultaneous threads, not cumulative usage. Prefer existing native restrictions and budget controls when the host exposes them; verify their scope and reject fallback paths that bypass them. Do not invent unsupported configuration keys or introduce a new orchestration service merely to restate the policy.
+The opt-in [configuration example](../../configs/codex/efficient-local.config.toml) sets Sol/Medium for the main agent and Luna/Medium for workers. Defaults are a safety net, not an allowlist or hard ceiling. Keep behavioral routing in the skill or applicable `AGENTS.md`; no new configuration schema is needed. The current public [configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference) documents `[agents]`, not `[features.multi_agent_v2]` or `multi_agent_mode_hint_text`. An older/internal stanza's behavior must be verified against the installed client, not guessed from its name; do not rely on its prose to configure models.
 
-The [configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference), reviewed on the same date, describes rollout-budget tracking as under development. Tracking, reminders, a context-window limit and a short output requirement are not proof of a hard spending cap. Mark each budget as native-enforced or a soft checkpoint. If an owner requires a hard cap and the host cannot enforce it, do not delegate through that path. This repository's Markdown and commented examples do not install runtime enforcement or establish measured savings.
+Merge rather than replace unrelated permissions, approvals, tools and intentional compaction settings. Do not copy private workstation configuration into this public repository. Check a fresh run's effective settings and existing role overrides before fan-out; changing a file does not reconfigure already-running workers.
+
+A concurrency setting is not a cumulative spending cap. The reference's rollout-budget tracking is under development; tracking, reminders, context windows and short output instructions are not hard enforcement. Use actual host restrictions where available, mark each budget native-enforced or soft, and do not invent budget/allowlist keys or build another orchestration service for this policy.
+
+### Responses API multi-agent is a different surface
+
+Reviewed 2026-10-04 against the [Responses multi-agent guide](https://developers.openai.com/api/docs/guides/responses-multi-agent).
+
+The hosted beta shares the request's model and tools among agents. It therefore does **not** provide Sol-root/Luna-worker routing through `multi_agent.enabled`; no per-worker model override is documented there. Do not enable that path as an implementation of this mixed-model policy. An explicitly authorized homogeneous API workflow is a different choice; heterogeneous API work needs separately model-selected requests through an already-authorized executor, not invented hosted parameters.
+
+`max_concurrent_subagents` defaults to 3, covers active descendants and excludes the root; it does not cap total agents, depth or spending. Hosted collaboration calls are server-executed; applications handle ordinary function calls. WebSocket continuation can reduce tool-result waiting. Agents' contexts compact separately and automatically; `/responses/compact`, `reasoning.summary` and `max_tool_calls` are unsupported in this mode. Preserve attribution and unresolved acceptance. Apply shared-tool permission boundaries and avoid competing writes; separate context is not a permission boundary or a lower-price guarantee.
 
 ### Capability escalation and de-escalation
 
-Route up within the worker ceiling when a bounded decision combines concerns a routine executor demonstrably failed to reconcile. Do not force a wasteful failed attempt when existing evidence already establishes the capability gap; the higher pair must still be allowed. A 3D asset, level, or presentation assignment can qualify when it couples spatial composition, navigation or camera behavior, lighting/materials, approved visual references, runtime constraints, and perceptual review. The artifact category alone is not a reason to escalate. If no allowed worker is adequate, keep the coupled decision with the coordinator rather than buying a premium worker or weakening acceptance.
+A 3D asset, level, or presentation assignment can warrant deeper reasoning when it couples spatial composition, navigation or camera behavior, lighting/materials, approved visual references, runtime constraints, and perceptual review. The artifact category alone is not a reason to escalate. Choose an allowed adequate pair, or keep the coupled decision with the coordinator without weakening acceptance.
 
 Route down after the specialist or coordinator converts ambiguity into an accepted decision artifact: approved references, scene boundaries, constraints, fixtures, measurable budgets, or repeatable acceptance scenarios. Exact edits, builds, captures, and tests can then return to deterministic tools or cheaper capable workers. Re-escalate only when new evidence reopens the coupled decision; an ordinary failing check follows routine diagnosis first.
 
