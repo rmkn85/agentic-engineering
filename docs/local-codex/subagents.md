@@ -25,7 +25,15 @@ Model choice is separate from spawning. Select the required capability before a 
 
 Do not infer availability from documentation, an earlier run, or a model family name. If live discovery is unavailable, use only a platform-supported default or report the routing choice as unresolved. Record the requested and resolved tier/capability when the harness reports them. An omitted model that inherits the orchestrator is not evidence of lower-cost delegation. Named models in dated evidence are illustrations, not stable routing interfaces or promises about future models.
 
-The coordinator must still be able to judge and integrate the specialist's artifact. If it cannot, escalate the integration decision too. Reuse relevant worker context rather than restarting completed work just to change tiers.
+The coordinator must still be able to judge and integrate the specialist's artifact. If it cannot, escalate the integration decision too. Reuse relevant worker context when it saves total cost; do not preserve an expensive configuration merely to avoid a small handoff.
+
+### Launch preflight
+
+Set the model, reasoning effort and context scope explicitly when the runtime supports them. Start routine extraction, implementation and review against an established rubric on the cheapest capable exposed tier at low or moderate effort. A visual critique label alone does not justify a frontier model or maximum reasoning.
+
+Check the launch mode before sending: a full-history fork may inherit the parent configuration and disallow overrides. Use a bounded or empty fork with a sufficient handoff when needed to select a cheaper worker. A follow-up to an existing worker preserves its expensive configuration; retained context is useful only when it outweighs that cost. Escalate a specific unresolved decision after a demonstrated capability failure, rather than escalating the whole batch in advance.
+
+Record the requested model/effort/context in the ordinary launch and report resolved settings only when the runtime exposes them. If overrides are unsupported, disclose inheritance and justify it or keep the bounded work with deterministic tools/the coordinator. A written policy does not itself change runtime defaults or constitute a cost-savings measurement.
 
 ### Capability escalation and de-escalation
 
