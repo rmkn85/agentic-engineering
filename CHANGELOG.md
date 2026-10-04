@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added an instruction-only completion boundary to the operating corpus and adoption templates: continue necessary authorized work before finalizing, repair relevant verification failures, and distinguish checkpoints from completion. Added a single-prompt behavioral regression protocol without claiming measured reliability or introducing runtime infrastructure.
 - Made executor routing capability-based so a low-cost coordinator can dispatch a bounded stronger specialist, with explicit launch contracts, live availability checks, de-escalation, and visual/3D acceptance cases.
 - Removed personal environment residue from public guidance and references, generalized the local CLI/editor setup, and added recurring whole-corpus privacy review guidance.
 - Initial repository foundation.

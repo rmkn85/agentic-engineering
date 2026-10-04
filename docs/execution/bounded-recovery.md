@@ -24,6 +24,8 @@ known bounded recovery?
 
 The important properties are **bounded**, **observable**, and **verification-gated**.
 
+**Escalation is not task termination.** Exhausting a mechanical retry budget transfers the problem to diagnosis or a revised authorized approach, not automatically to the user. Repaired failures still require verification; apply the [completion boundary](../agent-corpus/README.md#completion-boundary) before ending the task.
+
 ## Starter taxonomy
 
 | Failure signal | First response | Escalate when |
