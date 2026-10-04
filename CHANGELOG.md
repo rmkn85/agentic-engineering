@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Replaced justified-inheritance exceptions with an explicit fail-closed worker dispatch contract covering launch, fork, resume and follow-up: non-premium model/effort allowlists, bounded context, finite assignment/aggregate budgets, no automatic budget resets and no premium-worker escalation. Updated the skill trigger and operating corpus, documented current native Codex defaults and their enforcement limits, and added proposed behavioral regression cases. Starter ceilings are policy choices, not measured optima; no runtime enforcement or cost saving is claimed.
 - Added an instruction-only completion boundary to the operating corpus and adoption templates: continue necessary authorized work before finalizing, repair relevant verification failures, and distinguish checkpoints from completion. Added a single-prompt behavioral regression protocol without claiming measured reliability or introducing runtime infrastructure.
 - Made executor routing capability-based so a low-cost coordinator can dispatch a bounded stronger specialist, with explicit launch contracts, live availability checks, de-escalation, and visual/3D acceptance cases.
 - Removed personal environment residue from public guidance and references, generalized the local CLI/editor setup, and added recurring whole-corpus privacy review guidance.

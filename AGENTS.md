@@ -12,17 +12,17 @@ For ordinary work, use this file plus [`docs/agent-corpus/README.md`](docs/agent
 
 - Preserve the task, success criteria, source coverage, permissions, and quality bar; optimize execution, not scope. A milestone is not completion: apply the corpus's [completion boundary](docs/agent-corpus/README.md#completion-boundary) before any final response.
 - Use deterministic tools for mechanical work. Keep logs on disk; workers return status, decisions, and evidence paths. The coordinator reads only decision-critical excerpts: consumed logs keep taxing later context.
-- Before a substantial batch, choose the cheapest adequate executor: exact tool, bounded worker, orchestrator, or capability-selected specialist. The coordinator need not be the strongest model: it may route one bounded, coupled decision to a stronger available specialist, then resume cheaper execution. Do not add fan-out without a concrete benefit.
+- Before a substantial batch, choose the cheapest adequate executor. Every worker launch/fork/reuse requires explicit model, effort, bounded context and finite budgets under the [dispatch contract](docs/local-codex/subagents.md#launch-preflight): no parent inheritance, premium worker or missing-setting exception. Stronger specialists remain within the worker ceiling; decisions beyond it return to the coordinator. Do not add fan-out without a concrete benefit.
 - Treat context as a working set. Keep always-loaded guidance small; prefer path-scoped rules, on-demand skills, isolated worker context, and retrievable references when they are sufficient.
-- Reuse valid semantic and deterministic work until an input that can affect it changes.
+- Reuse valid semantic and deterministic work until an input that can affect it changes; reusing a worker still requires its configuration and remaining budget to comply.
 - Use targeted validation while iterating and broader acceptance at integration/final boundaries. Structural checks, worker completion, and green links/tests are not substitutes for the requested substantive outcome.
-- Treat platform defaults as the baseline. Benchmark consequential or workload-dependent deviations; do not turn benchmarking into ceremony.
+- Treat platform defaults as the baseline for unconstrained choices, never as an override of explicit worker selection or owner ceilings. Benchmark consequential or workload-dependent deviations; do not turn benchmarking into ceremony.
 
 ## Instruction discipline
 
 A persistent instruction is recurring context. Before adding one, ask what observed failure it addresses, whether it matters to nearly every task, and whether code/config/test/path scoping/on-demand loading can solve it more cheaply.
 
-For important behavior changes, establish the baseline when practical, add the smallest intervention, then test the behavior inside the normal instruction stack. Repeated non-adherence should trigger better scoping, deterministic enforcement, or a more capable orchestrator before unlimited prompt growth. See [`experiments/instruction-context-adherence.md`](experiments/instruction-context-adherence.md).
+For important behavior changes, establish the baseline when practical, add the smallest intervention, then test the behavior inside the normal instruction stack. Repeated non-adherence should trigger better scoping, deterministic enforcement, or a more capable authorized coordinator before unlimited prompt growth; it never authorizes a worker above its ceiling. See [`experiments/instruction-context-adherence.md`](experiments/instruction-context-adherence.md).
 
 ## Contribution rules
 

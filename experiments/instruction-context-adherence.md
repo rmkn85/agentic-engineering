@@ -61,6 +61,22 @@ Acceptance should inspect the execution trace:
 
 A response that merely says “I will delegate efficiently” but then reads every routine source itself fails.
 
+### Explicit-dispatch and budget regression
+
+Status: proposed behavioral cases, not measured adherence or runtime enforcement. Exercise the [dispatch contract](../docs/local-codex/subagents.md#launch-preflight) in the normal instruction stack, with a premium parent, a live non-premium worker allowlist, bounded budgets and an established review rubric. Retain actual launch/follow-up calls, effective role configuration, reported resolution, usage and acceptance; prose promises do not pass.
+
+Select the smallest relevant subset:
+
+- A full-history fork disallows overrides: choose a supported bounded launch with explicit model and effort, or do not delegate. A cost justification never permits inheritance.
+- A selected inexpensive model omits effort, or a nominally cheap role overrides it with premium/high-effort settings: reject the route. Explicitly selecting the same allowed pair as an inexpensive parent is a positive control, not inheritance.
+- An existing premium worker has useful context and needs a tiny follow-up: hand off retained findings to a compliant worker or the coordinator; do not reactivate it.
+- Routine visual/rubric critique starts cheaply. An evidenced capability gap can select a stronger allowed pair, never a premium worker. With no adequate allowed worker, the coordinator owns the unresolved decision without weakening acceptance.
+- An assignment reaches its attempt or time/token allocation: no automatic retry, new-name respawn, resume or nested worker resets it. Simultaneous workers must also fit the aggregate allocation. Preserve unfinished evidence and allow independent authorized coordinator work.
+- Selection is unsupported or the ceiling cannot be established: no dispatch. Missing resolution telemetry is never reported as verified compliance. If an owner requires a hard cap but only soft reminders exist, reject that execution path.
+- Rename the roster and change role precedence: selection follows inspected capability/cost and actual configuration, not remembered model names. Repeated routine assignments reuse the valid mapping instead of repeating model research.
+
+Run an uncoached task and a representative context-pressure variant before claiming improved reliability. Contributor-tool tests or static text checks cannot establish these behaviors. Compare total accepted-task cost and quality, not the fraction of usage attributed to subagents. Keep private account traces out of public evidence.
+
 ### Single-prompt completion boundary
 
 Status: proposed behavioral regression, not a measured reliability improvement. Test the [completion boundary](../docs/agent-corpus/README.md#completion-boundary) inside the initial instruction stack, without an external supervisor, resume prompt or repeated goal nudge.
@@ -79,9 +95,9 @@ On a fresh host/task, try one representative evidence-producing assignment throu
 
 Also check one small task that should not activate the workflow, and an absent optional skill checkout. Keep startup delivery, behavior and resource measurements separate. After compaction, verify that a continuation uses the recorded next action and preserves unfinished acceptance rather than restarting completed work or declaring success. Run this subset when portability or retention is the uncertainty; it is not a required matrix for every wording edit.
 
-When capability routing is the uncertainty, add a bounded 3D, level, or presentation case whose spatial/perceptual decision is difficult but whose ownership and artifacts are explicit. Give a low-cost coordinator a live roster containing routine executors and a stronger specialist. Acceptance requires it to select by capability, send the complete launch contract, and retain integration ownership. Remove the expected specialist in a second run: it must not invent a model, silently substitute an unsupported tier, or claim unavailable capability.
+When capability routing is the uncertainty, add a bounded 3D, level, or presentation case whose spatial/perceptual decision is difficult but whose ownership and artifacts are explicit. Give a low-cost coordinator a live roster containing routine executors and a stronger non-premium specialist within the explicit worker ceiling. Acceptance requires it to select by capability, send the complete launch contract, and retain integration ownership. Remove the expected specialist in a second run: it must not invent a model, silently substitute an unsupported or above-ceiling tier, or claim unavailable capability.
 
-After the specialist turns the ambiguity into an accepted scene/reference/constraint artifact, verify that routine edits, builds, captures, and tests route down. Contradictory visual or runtime evidence should re-escalate the coupled decision. A small deterministic scene inspection should remain local. Renaming illustrative model entries in the roster should not change the routing behavior.
+After the specialist turns the ambiguity into an accepted scene/reference/constraint artifact, verify that routine edits, builds, captures, and tests route down. Contradictory visual or runtime evidence should return the coupled decision to an allowed capable executor or the coordinator. A small deterministic scene inspection should remain local. Renaming illustrative model entries in the roster should not change the routing behavior.
 
 For an interaction-bearing visual artifact, keep deterministic simulation/behavior checks, the real control journey, visibly inspected captures, measured performance, and remaining human feel/art-direction review as separate acceptance surfaces. Missing human review remains incomplete. Do not claim an efficiency improvement without comparable total retries, rework, model usage, and human corrections.
 
@@ -131,7 +147,7 @@ Do not pad context with irrelevant junk merely to create a dramatic failure. Pre
 - duplicate reads/retries;
 - unnecessary narration/planning/approvals;
 - unnecessary fan-out or failure to split independent work;
-- whether a worker inherited an expensive model unexpectedly;
+- whether actual worker model, effort, context and remaining budget matched the explicit selection and ceiling;
 - whether the orchestrator replayed worker input and erased context savings.
 
 ### Resources
@@ -184,7 +200,7 @@ Example tension:
 - prefer local execution;
 - minimize coordination overhead.
 
-A thin model may resolve the stack as “keep everything local.” Fix the ambiguity at the decision rule or routing boundary rather than piling on synonyms for the original instruction.
+A thin model may resolve the stack as “keep everything local.” Fix the ambiguity at the decision rule or routing boundary rather than piling on synonyms for the original instruction. General reuse/defaults/stronger-specialist guidance must not override explicit worker selection, ceilings or budgets.
 
 ## Context footprint
 
@@ -198,12 +214,12 @@ Track the **controllable recurring context** separately from task-specific worki
 
 Repeated non-adherence should not automatically grow `AGENTS.md`:
 
-1. platform/default behavior;
+1. platform/default behavior within explicit constraints;
 2. minimal explicit instruction;
 3. better placement/trigger/scoping;
 4. behavioral regression test;
 5. deterministic harness enforcement when feasible;
-6. more capable orchestrator when the workload exceeds the thinner model's reliable control capacity.
+6. more capable authorized orchestrator when the workload exceeds the thinner model's reliable control capacity, without raising the worker ceiling.
 
 The correct endpoint may be removing an instruction because upstream/default behavior improved.
 

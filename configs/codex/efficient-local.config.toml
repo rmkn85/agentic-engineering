@@ -3,6 +3,8 @@
 # IMPORTANT: this is NOT a "better than Codex defaults" profile.
 # Start with current Codex defaults and add only overrides that solve a concrete
 # problem in your environment. Settings below are examples, mostly commented out.
+# Worker model/effort selection is an explicit policy boundary, not permission to
+# inherit parent cost settings. See docs/local-codex/subagents.md#launch-preflight.
 # For a short skill router, see docs/adoption/overlays.md#portable-skill-routing.
 # Use the host's supported instruction mechanism; do not assume another runtime's
 # custom configuration keys or personal paths work here.
@@ -38,11 +40,30 @@
 # [skills]
 # max_context_tokens = 2000
 
-# Do not impose a concurrency cap merely because fan-out can be expensive. If the
-# platform's normal behavior is appropriate, keep it. Add a cap only for a concrete
-# quota/rate-limit/coordination problem and revisit it when Codex changes.
+# Native subagent defaults: safety net against accidental parent inheritance.
+# Reviewed 2026-10-04:
+# https://learn.chatgpt.com/docs/agent-configuration/subagents
+# Replace the placeholder with a live-verified allowed non-premium model. Check
+# that the chosen effort is supported and within the owner's ceiling. Each
+# dispatch must still intentionally select its effective model/effort/context.
 # [agents]
+# default_subagent_model = "<live-verified-economy-model>"
+# default_subagent_reasoning_effort = "low"
 # max_concurrent_threads_per_session = 2
+#
+# The concurrency value is an optional workload cap, not a universal optimum or
+# total-spend limit. Explicit spawn settings and custom agent files can override
+# these defaults; inspect effective precedence and set BOTH model and
+# model_reasoning_effort in any selected custom role. Defaults do not enforce a
+# model allowlist, effort maximum, per-worker token budget or aggregate spend cap.
+# If compliant selection cannot be established, disable multi-agent tools in the
+# existing [agents] table until configured, rather than silently inheriting:
+# enabled = false
+#
+# Use supported native hard restrictions where available. Label instruction-only
+# attempt/time/token budgets as soft checkpoints; rollout-budget tracking is not
+# evidence of a hard cap. Do not copy invented budget/allowlist keys into config.
 
 # Do not disable stable platform caches/snapshots without a specific reason.
-# Prefer inheriting future upstream improvements automatically.
+# Prefer inheriting future upstream improvements automatically where they do not
+# conflict with explicit worker selection, budget or permission constraints.
