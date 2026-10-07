@@ -4,6 +4,8 @@ The acceptance target is a capable newcomer given only a repository location and
 
 This extends the existing [execution corpus](../agent-corpus/README.md) and [local overlays](overlays.md). It does not replace a project's task authority, branching policy, package manager, CI or publisher. No new task database, agent orchestrator, mandatory central checkout, automatic policy download, or personal IDE configuration is required.
 
+Use the [specification contract](../specifications/README.md) from the first meaningful change. For a new adoption or an update to an existing/active project, follow [standards migration](standards-migration.md): select the relevant profile, preserve local adaptations and owned work, and distinguish a wording change from a behavioral change. Standards adoption must improve the assigned engineering work rather than replace it with a compliance project.
+
 ## Boundary and prerequisite
 
 Repository automation starts after the host can read the repository and run its declared base tooling. It cannot manufacture account consent, network access, credentials, licensed data, physical hardware or an authorized deployment destination. Provision these once through the host's supported setup. Classify a missing prerequisite once with its owner and retry condition; do not make every task rediscover it or broaden permissions to work around it.
@@ -17,6 +19,7 @@ Keep one discoverable root entry, normally `AGENTS.md`, with a short route to an
 | Need | Repository-owned binding |
 | --- | --- |
 | Start/resume | Current instructions, task authority and small continuation record |
+| Specification | Authoritative requirements, relevant standards/profile, inherited contracts and independent acceptance checks |
 | Source safety | Expected repository, selected remote, permitted current branch and synchronization route |
 | Preparation | Idempotent source-only bootstrap and selected locked environment; explicit expensive/real-resource opt-ins |
 | Fast validation | Exact native command used during local work |
@@ -57,7 +60,7 @@ A source push, successful tests, accepted artifact, successful publisher and ver
 
 ## Capability-based adoption
 
-Every maintained repository gets source safety, bounded context, interruption recovery, evidence integrity and privacy. Apply additional lessons by actual process needs, not by whether the repository previously suffered that incident:
+Every maintained repository gets source safety, bounded context, interruption recovery, requirements integrity, evidence integrity and privacy. Apply additional lessons by actual process needs, not by whether the repository previously suffered that incident:
 
 | Process property | Additional requirement |
 | --- | --- |
@@ -78,6 +81,8 @@ Maintain reusable mechanisms here. Adopters copy a reviewed subset and its requi
 
 Ordinary work needs no network fetch of this knowledge base. Upgrades are explicit reviewed changes. Compare old upstream, new upstream and local content; refuse unexpected overwrites. Do not fail a build because a newer upstream version exists. Keep organization/product additions outside exact shared copies. Promote a useful local improvement back upstream after anonymization; preserve private evidence with its original owner.
 
+For standards changes, retain applicable editions, semantic differences and disposition of material gaps in the existing record. The [migration procedure](standards-migration.md#existing-and-active-work) covers unknown prior provenance, stable legacy code, changed contracts, compatibility and rollback limits. An inherited safety or quality obligation cannot be silently deferred as paperwork.
+
 Codex, Cursor, Copilot and JetBrains do not necessarily deliver the same files to every execution surface. Native adapters route to the local entry; they are not independent handbooks. Changing a file is not proof an already-running host reloaded it. Test workspace-root, repository-root and worker entry separately.
 
 ## Acceptance, not installed-file counting
@@ -87,5 +92,7 @@ Run the same bounded feature task from: a clean cold checkout; a clean stale che
 For each trial record requested task, start/source identity, actual host/model setting where available, native commands, changed paths, check/candidate/artifact identities, human interventions, infrastructure retries and final user-visible result. Compare against the same acceptance bar. Measure tokens only when actual usage is available; file size and invocation counts are proxies, not savings proof.
 
 Mechanical fixtures validate the helper, not the entire newcomer journey. A low-cost-model run, real host instruction delivery, full environment bootstrap, cross-repository integration and actual deployment each require their own executed evidence. Keep unrun layers explicitly open. For interface adoption, also run a small ordinary UI task without explicitly requesting accessibility; verify that the contract is delivered, applied and tested, not merely copied. Use its [behavioral probes](../interfaces/accessible-interfaces.md#behavioral-regression-probes), and keep unrun host/user trials open. Retain the simple-task negative case: do not load the research archive or every skill to edit one function; an API-only change must not invent visual-interface work.
+
+For specification adoption, use the [specification-integrity probes](../../experiments/specification-integrity.md) to check semantic preservation, independent verification and safe migration under normal instructions. Acknowledging the new standard is not evidence of applying it. Preserve the active task and continue it after the bounded upgrade.
 
 Related: [Git write recovery](../collaboration/git-write-safety.md), [recovery skill](../../skills/recovering-interrupted-work/SKILL.md), [method improvement](../../skills/improving-execution-guidance/SKILL.md), and [anonymized lessons and source notes](../../references/portable-contributor-lessons-2026-09.md).

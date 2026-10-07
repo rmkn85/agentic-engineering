@@ -6,13 +6,13 @@ Do **not** recursively crawl the repository. `references/` is methodology resear
 
 ## Execution kernel
 
-1. **Preserve the outcome and inherited constraints.** Narrower interim checks do not remove product invariants or required final acceptance; only an authorized scope change does. Human-facing interface work inherits accessibility and comprehension requirements even when the request omits them.
+1. **Preserve the outcome and inherited constraints.** Narrower interim checks do not remove product invariants or required final acceptance; only an authorized scope change does. Human-facing interface work inherits accessibility and comprehension requirements even when the request omits them. Establish the requirement's authority; separate desired behavior, observed behavior, assumptions and design choices. Use precise technical language without changing obligation strength or inventing missing criteria.
 2. **Route deliberately before consuming substantial work.** Choose the cheapest adequate model/effort for acceptance. The [named policy](../local-codex/subagents.md#named-model-and-effort-policy) starts substantial coding/orchestration on Sol/Medium and focused workers on Luna/Medium, lowering routine work to Luna/Low. The coordinator may intentionally select Sol or High for a specific need; no Astra or above-High workers. Every launch/fork/reuse must pass the [dispatch contract](../local-codex/subagents.md#launch-preflight): explicit selection, bounded context and finite budgets, never parent inheritance. No installed allowlist or forced 80/20 ratio is required. Keep exact/tiny work with tools; harder decisions return to the authorized coordinator, then routine work routes down.
 3. **Treat context as a working set, not an archive.** Keep always-loaded instructions small. Load path-specific rules, on-demand skills, references, source files, logs, and tool schemas only when they become relevant.
 4. **Use deterministic machinery for deterministic work.** Search, inventory, hashing, formatting, compilation, test execution, filtering, moving, and measurement usually do not need model reasoning.
 5. **Reuse valid work.** Cache semantic findings and deterministic artifacts until an input that can affect them changes. Do not reread or revalidate merely to demonstrate activity. Worker reuse also requires compliant configuration and remaining budget.
 6. **Keep logs out of coordinator context.** Retain evidence on disk; workers/tools return status, decisions, and paths. Inspect only decision-critical excerpts; consumed logs burden later turns.
-7. **Construct, then challenge.** Identify what preserves the affected property in the real consumer and the next ordinary change. Probe one consequential assumption outside the happy path; use targeted checks now and appropriate integration later. Tests do not supply the preserving mechanism.
+7. **Construct, then challenge.** Identify what preserves the affected property in the real consumer and the next ordinary change. Probe one consequential assumption outside the happy path; use targeted checks now and appropriate integration later. Tests do not supply the preserving mechanism. Keep the [requirement-to-evidence connection](../specifications/README.md#verify-the-requirement-not-the-implementations-story): required behavior, construction mechanism, independent oracle and actual result. Reassess dependent evidence when the contract changes.
 8. **Measure uncertainty, not everything.** Keep good defaults within explicit constraints. For consequential decisions retain the practice/revision, trigger, action and native evidence in the existing run record. Separate reported use from observed behavior; leave unknown measurements unknown.
 9. **Leave touched code cheap to model.** A fresh weaker coding model should be able to predict a touched unit's representative behavior from the unit plus a small explicit contract/dependency context; avoid hidden coupling and needless indirection.
 
@@ -24,7 +24,7 @@ Before every final response, compare the request (including later clarifications
 
 Discovered work required for that outcome belongs to the current task. Carry it through implementation, integration, verification and repair; do not present executable required work as "next steps". Keep optional improvements out of scope and respect explicit planning-only, no-deploy, stop and approval boundaries.
 
-Failed checks relevant to the outcome and ordinary engineering difficulty call for diagnosis, repair and re-verification, not a handoff. Do not repeat an ineffective action without new evidence or weaken acceptance to claim success.
+Failed checks relevant to the outcome and ordinary engineering difficulty call for diagnosis, repair and re-verification, not a handoff. Do not repeat an ineffective action without new evidence or weaken acceptance to claim success. Standards names, rewritten requirements and passing navigation tests are not evidence of product conformance or agent adherence. Report unresolved material assumptions, deviations and unrun checks against the actual affected contract.
 
 Stop incomplete only at a concrete boundary preventing further authorized progress, such as an unavailable prerequisite, required external decision or actual execution limit. Finish independent unblocked work first. Report the exact blocker, attempted recovery and remaining work honestly; never claim completion or imply automatic continuation after termination.
 
@@ -61,12 +61,16 @@ Judge instructions by behavior in the normal stack.
 
 Identify the failure, preserve a practical baseline, and make the smallest intervention. Test actual behavior under normal instructions and relevant context pressure. Remove, scope or demote recurring prose without demonstrated benefit. Repeated failure calls for better placement, deterministic enforcement or adequate authorized capability—not more synonyms or a worker-ceiling exception.
 
+Use [standards migration](../adoption/standards-migration.md) to compare old guidance, new guidance and local adaptations. Preserve unfinished work; explicitly refresh affected active contexts before relying on the update. A wording cleanup must preserve requirement meaning, and a behavior change needs its own acceptance impact review. Do not require a blanket legacy rewrite or automatic upstream update.
+
 See [instruction/context adherence experiments](../../experiments/instruction-context-adherence.md) when this tradeoff is material.
 
 ## Load deeper guidance only when needed
 
 | Decision | Read |
 | --- | --- |
+| Starting or changing requirements, implementation contracts or acceptance | [Specification contract](../specifications/README.md), with [technical-language rules](../specifications/technical-language.md) and [standards map](../specifications/standards.md) for the relevant decision |
+| Adopting guidance in a new project, existing system or active agent session | [Standards migration](../adoption/standards-migration.md) |
 | Designing, implementing or reviewing human-facing interfaces or generated visual/document output | [Accessible interface contract](../interfaces/accessible-interfaces.md); select additional requirements from the [standards map](../interfaces/standards.md) only when applicable |
 | Narrow scope, structural preservation, uncertain or irreversible conditions | [`../principles/defaults-before-overrides.md`](../principles/defaults-before-overrides.md) |
 | Writing/refactoring source for cheap future agent maintenance | [`../code/agent-legible-code.md`](../code/agent-legible-code.md) |

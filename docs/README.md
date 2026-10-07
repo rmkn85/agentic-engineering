@@ -12,6 +12,13 @@ Do **not** treat the documentation tree as a startup checklist. In particular, [
 
 - [Quick wins without major refactoring](adoption/quick-wins.md)
 - [Local overlays](adoption/overlays.md)
+- [Start and migrate with engineering standards](adoption/standards-migration.md) — new projects, bounded legacy upgrades, active-agent refresh and an adoption handoff.
+
+## Specification and engineering integrity
+
+- [Specification, implementation and evidence](specifications/README.md) — authoritative requirements, preserving mechanisms, independent checks and scoped completion claims.
+- [Precise technical language](specifications/technical-language.md) — STE-informed writing, BCP 14, EARS-adapted requirements and semantic-preserving rewrites.
+- [Engineering standards and methods](specifications/standards.md) — applicable requirements, quality, testing, lifecycle, security and formal-method references, with edition and evidence limits.
 
 ## Concrete methodologies
 
@@ -50,6 +57,7 @@ Do **not** treat the documentation tree as a startup checklist. In particular, [
 ## Behavioral experiments
 
 - [Instruction and context adherence](../experiments/instruction-context-adherence.md)
+- [Specification integrity and standards migration](../experiments/specification-integrity.md)
 - [Agent legibility](../experiments/agent-legibility.md)
 - [Diagnostic feedback](../experiments/diagnostic-feedback.md)
 - [Skill routing](../experiments/skill-routing.md)
