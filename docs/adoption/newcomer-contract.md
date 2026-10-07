@@ -61,6 +61,7 @@ Every maintained repository gets source safety, bounded context, interruption re
 
 | Process property | Additional requirement |
 | --- | --- |
+| Human-facing interfaces or generated visual/document output | [Accessible interface contract](../interfaces/accessible-interfaces.md), applicable standards, native accessibility checks, rendered comprehension and honest human/assistive-technology evidence |
 | Multiple writers | Explicit write boundaries, independent preparation and one integration owner; classify collisions |
 | Multiple repositories | Exact source vector, scoped environments and installed-provider/consumer tests |
 | Large/private data or devices | Small deterministic fixtures/replay; explicit real-resource gates; no silent synthetic fallback |
@@ -85,6 +86,6 @@ Run the same bounded feature task from: a clean cold checkout; a clean stale che
 
 For each trial record requested task, start/source identity, actual host/model setting where available, native commands, changed paths, check/candidate/artifact identities, human interventions, infrastructure retries and final user-visible result. Compare against the same acceptance bar. Measure tokens only when actual usage is available; file size and invocation counts are proxies, not savings proof.
 
-Mechanical fixtures validate the helper, not the entire newcomer journey. A low-cost-model run, real host instruction delivery, full environment bootstrap, cross-repository integration and actual deployment each require their own executed evidence. Keep unrun layers explicitly open. Retain the simple-task negative case: do not load the research archive or every skill to edit one function.
+Mechanical fixtures validate the helper, not the entire newcomer journey. A low-cost-model run, real host instruction delivery, full environment bootstrap, cross-repository integration and actual deployment each require their own executed evidence. Keep unrun layers explicitly open. For interface adoption, also run a small ordinary UI task without explicitly requesting accessibility; verify that the contract is delivered, applied and tested, not merely copied. Use its [behavioral probes](../interfaces/accessible-interfaces.md#behavioral-regression-probes), and keep unrun host/user trials open. Retain the simple-task negative case: do not load the research archive or every skill to edit one function; an API-only change must not invent visual-interface work.
 
 Related: [Git write recovery](../collaboration/git-write-safety.md), [recovery skill](../../skills/recovering-interrupted-work/SKILL.md), [method improvement](../../skills/improving-execution-guidance/SKILL.md), and [anonymized lessons and source notes](../../references/portable-contributor-lessons-2026-09.md).

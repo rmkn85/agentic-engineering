@@ -23,6 +23,11 @@ Do **not** treat the documentation tree as a startup checklist. In particular, [
 - [Runtime feedback](runtime/README.md) — progressive logging/telemetry/diagnostic evidence, postmortem bundles, self-monitoring and failure diagnosis.
 - [Postmortem bundles](runtime/postmortem-bundles.md) — offline crash evidence graphs: compact manifest first, deeper immutable artifacts behind links.
 
+## Interface quality
+
+- [Accessible interfaces by default](interfaces/accessible-interfaces.md) — implementation and acceptance requirements for human comprehension, assistive access and consistent machine semantics.
+- [Applicable interface standards](interfaces/standards.md) — web baseline and scoped native, game, document, language, API and security extensions; source/claim limits.
+
 ## General principles
 
 - [Context economics](principles/context-economics.md) — context residency, instruction cost, progressive disclosure, context pressure, and lower-bound footprint auditing.

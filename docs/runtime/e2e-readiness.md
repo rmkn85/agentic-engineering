@@ -55,6 +55,14 @@ In restricted environments, isolate writable runtime state in task-owned locatio
 
 For graphics-dependent claims, identify the renderer that actually ran or report it as unknown. A successful WebGL or native frame may use software rendering or another fallback. That can prove functional rendering, but it cannot support hardware-performance, driver or acceleration claims.
 
+## Interface accessibility and comprehension
+
+For human-facing changes, apply the [accessible interface contract](../interfaces/accessible-interfaces.md) before choosing acceptance checks. Accessibility is inherited, not an opt-in feature or a separate polish phase.
+
+Keep rendered comprehension, accessible operation and machine-semantic checks separate. Inspect the actual pixels at intended viewing sizes for purpose, state, relationships and next action; reading labels from DOM/OCR or a specification does not pass that gate. Exercise applicable keyboard/focus, resize/reflow, contrast, dynamic-state and assistive-technology behavior on the ordinary task path. A scanner or accessibility-tree snapshot alone does not prove accessible operation, and none of these replaces required human usability testing.
+
+Record build/surface, criterion, method, result and evidence in the existing acceptance record. Reuse the repository's native test commands and CI rather than inventing a second acceptance system. Mark unavailable assistive-technology/human checks blocked or not run, not passed. A genuine not-applicable decision needs a scope reason, not a missing tool. New or worsened barriers on the changed journey must be repaired or exposed as unresolved limitations before any completion claim.
+
 ## Keep evidence levels distinct
 
 | Claim | Required evidence | Does not establish |

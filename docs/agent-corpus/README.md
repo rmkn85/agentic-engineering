@@ -6,7 +6,7 @@ Do **not** recursively crawl the repository. `references/` is methodology resear
 
 ## Execution kernel
 
-1. **Preserve the outcome and inherited constraints.** Narrower interim checks do not remove product invariants or required final acceptance; only an authorized scope change does.
+1. **Preserve the outcome and inherited constraints.** Narrower interim checks do not remove product invariants or required final acceptance; only an authorized scope change does. Human-facing interface work inherits accessibility and comprehension requirements even when the request omits them.
 2. **Route deliberately before consuming substantial work.** Choose the cheapest adequate model/effort for acceptance. The [named policy](../local-codex/subagents.md#named-model-and-effort-policy) starts substantial coding/orchestration on Sol/Medium and focused workers on Luna/Medium, lowering routine work to Luna/Low. The coordinator may intentionally select Sol or High for a specific need; no Astra or above-High workers. Every launch/fork/reuse must pass the [dispatch contract](../local-codex/subagents.md#launch-preflight): explicit selection, bounded context and finite budgets, never parent inheritance. No installed allowlist or forced 80/20 ratio is required. Keep exact/tiny work with tools; harder decisions return to the authorized coordinator, then routine work routes down.
 3. **Treat context as a working set, not an archive.** Keep always-loaded instructions small. Load path-specific rules, on-demand skills, references, source files, logs, and tool schemas only when they become relevant.
 4. **Use deterministic machinery for deterministic work.** Search, inventory, hashing, formatting, compilation, test execution, filtering, moving, and measurement usually do not need model reasoning.
@@ -67,6 +67,7 @@ See [instruction/context adherence experiments](../../experiments/instruction-co
 
 | Decision | Read |
 | --- | --- |
+| Designing, implementing or reviewing human-facing interfaces or generated visual/document output | [Accessible interface contract](../interfaces/accessible-interfaces.md); select additional requirements from the [standards map](../interfaces/standards.md) only when applicable |
 | Narrow scope, structural preservation, uncertain or irreversible conditions | [`../principles/defaults-before-overrides.md`](../principles/defaults-before-overrides.md) |
 | Writing/refactoring source for cheap future agent maintenance | [`../code/agent-legible-code.md`](../code/agent-legible-code.md) |
 | Bounded complexity review, cross-file relationship discovery, or external-tool usage/effect evidence | [`../../skills/using-external-practices/SKILL.md`](../../skills/using-external-practices/SKILL.md) |
