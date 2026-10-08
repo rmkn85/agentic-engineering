@@ -143,5 +143,27 @@ class SpecificationGuidanceNavigationTests(unittest.TestCase):
                 self.assertFalse(any(line.rstrip() != line for line in text.splitlines()))
 
 
+    def test_resilience_routes_from_normal_and_scoped_entries(self):
+        recovery = 'docs/execution/bounded-recovery.md'
+        for entry in ('AGENTS.md', 'docs/agent-corpus/README.md',
+                      'docs/interfaces/accessible-interfaces.md', EXPERIMENT):
+            self.assert_route(entry, (recovery,))
+        self.assert_route(recovery, (EXPERIMENT, 'docs/interfaces/accessible-interfaces.md', MIGRATION))
+
+    def test_resilience_links_and_anchors_resolve(self):
+        # Structural routing only; these checks do not judge comprehension.
+        for name in ('docs/execution/bounded-recovery.md',
+                     'docs/interfaces/accessible-interfaces.md'):
+            source = ROOT / name
+            text = source.read_text(encoding='utf-8')
+            self.assertTrue(text.endswith('\n'))
+            self.assertFalse(any(line.rstrip() != line for line in text.splitlines()))
+            for target, anchor in local_links(source, text, ROOT):
+                with self.subTest(source=name, target=str(target), anchor=anchor):
+                    self.assertTrue(target.is_file(), f'Missing target: {target}')
+                    if anchor:
+                        self.assertIn(anchor, heading_ids(target.read_text(encoding='utf-8')))
+
+
 if __name__ == '__main__':
     unittest.main()

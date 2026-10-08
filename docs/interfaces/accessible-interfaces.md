@@ -16,11 +16,11 @@ Reuse the approved project profile and native components. Put applicable standar
 
 ### Human visual comprehension
 
-Make purpose, current state, relevant relationships and the primary next action discoverable in the actual rendering at its intended size. Use meaningful grouping, position, alignment, scale, contrast and conventional cues before adding explanatory prose. Maintain a stable hierarchy; reserve emphasis for real priority or exceptions.
+Preserve complete meaning in the specification; show the minimum sufficient meaning for the current human task. Orientation, action, monitoring and investigation need different detail. Make purpose, state, relationships and the next action discoverable through grouping, position, alignment, scale, contrast and conventional cues. Reserve emphasis for genuine priority.
 
 Keep short, familiar visible labels where they identify controls, values or ambiguous symbols. Do not replace labels with obscure icons, hide necessary instructions in metadata, or depend only on color, shape, sound or location. Arrows must represent real direction or relationships. More badges, cards, borders and animation do not establish clarity.
 
-Remove irrelevant content before compressing text. Defer secondary detail through discoverable disclosure, without hiding task-critical information, risks or frequent controls. Preserve useful expert views. There is no universal word budget, group count or single-focal-point rule for every workspace.
+Remove irrelevant attention demands before adding explanation. Add a label, cue or example only to resolve a specific ambiguity. Stage secondary detail without hiding task-critical information, warnings or frequent controls; preserve useful expert views. Neither minimum words nor maximum information density is the objective.
 
 Limit unnecessary interruptions, motion and layout shifts; honor relevant motion, contrast and text-size preferences. Preserve task state across ordinary errors and interruptions. Support recovery and make consequential actions understandable before execution. A first-time user must not need the design document to discover the normal start-to-result journey.
 
@@ -54,9 +54,17 @@ Select a representative end-to-end task before implementation. Add repeatable ch
 
 Follow the [E2E evidence rules](../runtime/e2e-readiness.md). Report **passed**, **failed**, **blocked** or **not run**, with build/surface identity and evidence. Use **not applicable** only with a concrete scope reason, never for unavailable tooling. Finish independent work when a check is blocked, but do not claim unverified accessibility or human acceptance.
 
-Thumbnail/blur and grayscale checks can diagnose hierarchy or color dependence. They are heuristics, not comprehension proof, disability simulations or substitutes for contrast/color-vision testing. Brief first-impression tests may help; their timings and thresholds are project hypotheses, not ISO/WCAG requirements. Judge task success and confusion, not minimum words, maximum visible information or aesthetics alone.
+### Comprehension under degradation
 
-If the intended action is not perceptible, fix the composition or interaction rather than merely adding another explanatory panel. Text-centric automated evaluation is a risk to guard against, not a proven universal mechanism of all models.
+Apply the [controlled-disturbance method](../execution/bounded-recovery.md#controlled-disturbances). Declare what must be understood at a glance, in ordinary use and on deliberate inspection. Select viewing conditions from the task or explicit test request; record which checks gate acceptance and which are diagnostics before evaluating the result.
+
+For image reduction, blur, noise, skew, rotation or color reduction, record the capture/state, dimensions, transformation order and parameters. One-fifth width and height tests detail loss; a smaller live viewport tests responsive layout. A 37-degree rotation can challenge grouping, but need not preserve text readability or absolute directional meaning unless required by the use case. Fine values may disappear while a declared critical-state distinction must survive. Test individual transformations before relevant combinations. Grayscale is not a substitute for contrast or color-vision checks.
+
+Use fresh, context-limited evaluators. For novice/ELI5 checks, provide only the intended user's task and background, not the specification or builder's explanation. Ask what the screen is for, what to do first, what should change and how success is recognized; observe the task, not just verbal repetition. A model critic is not a human usability trial.
+
+Include an altered-state control that requires a different answer and an information-loss control that requires uncertainty. A reviewer repeating the baseline explanation fails. Configured timings and distortions are project criteria, not ISO/WCAG thresholds or disability simulations. Failed required comprehension cannot be averaged away by scanner success, attractive styling or a stronger model's vote. Unrun checks remain open.
+
+If the intended action is not perceptible, fix composition or interaction rather than add another explanatory panel. Text-centric evaluation is a risk, not a proven universal mechanism of all models.
 
 ## Completion and deviations
 
