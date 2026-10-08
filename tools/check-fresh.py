@@ -82,8 +82,8 @@ def exercise(source: Path, command: list[str], output: Path, timeout: int) -> di
                "state": "failed", "command": command, "scenarios": [],
                "limits": ["not_remote_auth", "not_model_or_IDE_trial",
                           "not_dependency_install_or_deployment", "not_a_sandbox"]}
-    env = environment(output / "control-home")
     try:
+        env = environment(output / "control-home")
         source = Path(git(source, env, "rev-parse", "--show-toplevel"))
         candidate = git(source, env, "rev-parse", "HEAD")
         tree = git(source, env, "rev-parse", "HEAD^{tree}")
@@ -147,10 +147,14 @@ def exercise(source: Path, command: list[str], output: Path, timeout: int) -> di
         receipt["reason"] = str(error) if isinstance(error, TrialFailure) else "trial_io_failure"
         if receipt["scenarios"]:
             log = Path(receipt["scenarios"][-1]["log"])
-            if log.is_file():
+            try:
                 with log.open("rb") as stream:
-                    stream.seek(max(0, log.stat().st_size - 3000))
+                    stream.seek(0, os.SEEK_END)
+                    stream.seek(max(0, stream.tell() - 3000))
                     receipt["failure_excerpt"] = stream.read(3000).decode("utf-8", errors="replace")
+            except OSError:
+                # Losing diagnostics must not erase the original failure.
+                receipt["evidence_error"] = "failure_log_unavailable"
     receipt["wall_seconds"] = round(time.monotonic() - started, 3)
     return receipt
 
@@ -165,10 +169,23 @@ def main(argv=None) -> int:
     if not command or not 1 <= args.timeout <= 3600:
         parser.error("provide -- COMMAND [ARGS]; timeout must be 1..3600 seconds")
     # Retain logs on failure/success. Never delete user-named output directories.
-    output = Path(tempfile.mkdtemp(prefix="contributor-trial-"))
+    try:
+        output = Path(tempfile.mkdtemp(prefix="contributor-trial-"))
+    except OSError:
+        print(json.dumps({"schema": 1, "scope": "committed_source_native_check",
+                          "state": "failed", "reason": "trial_storage_unavailable",
+                          "command": command, "scenarios": []}, sort_keys=True))
+        return 1
     result = exercise(Path(args.source).resolve(), command, output, args.timeout)
     result["evidence_directory"] = str(output)
-    (output / "receipt.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    try:
+        (output / "receipt.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    except OSError:
+        # Preserve check results, but do not certify evidence delivery.
+        result["check_state"] = result["state"]
+        result["state"] = "failed"
+        result.setdefault("reason", "receipt_write_failed")
+        result["evidence_error"] = "receipt_write_failed"
     print(json.dumps(result, sort_keys=True))
     return 0 if result["state"] == "passed" else 1
 

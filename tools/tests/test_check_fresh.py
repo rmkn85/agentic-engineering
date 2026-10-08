@@ -1,5 +1,7 @@
 """Real local-Git trials of native commands, not file-presence checks."""
+import errno
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
@@ -141,6 +143,92 @@ class FreshTests(unittest.TestCase):
         output = Path(tempfile.mkdtemp(dir=self.base))
         result = fresh.exercise(self.source, ["make", "check"], output, 10)
         self.assertEqual(result["state"], "passed", result)
+
+
+    def test_control_storage_failure_returns_nonpassing_receipt(self):
+        # Deterministic ENOSPC injection, not filling the host disk.
+        with mock.patch.object(fresh, "environment", side_effect=OSError(errno.ENOSPC, "fixture disk full")):
+            result = self.exercise()
+        self.assertEqual(result["state"], "failed")
+        self.assertEqual(result["reason"], "trial_io_failure")
+        self.assertEqual(result["scenarios"], [])
+        self.assertEqual((self.source / "value.txt").read_text(), "new\n")
+
+    def test_log_read_failure_preserves_original_command_failure(self):
+        original_open = Path.open
+        reached = []
+
+        def fail_diagnostic_read(path, mode="r", *args, **kwargs):
+            if path.name == "cold-native.log" and mode == "rb":
+                reached.append(path)
+                raise OSError(errno.EIO, "fixture diagnostic read failed")
+            return original_open(path, mode, *args, **kwargs)
+
+        with mock.patch.object(Path, "open", fail_diagnostic_read):
+            result = self.exercise("raise SystemExit(7)")
+        self.assertTrue(reached, "Fault must reach the diagnostic boundary")
+        self.assertEqual(result["state"], "failed")
+        self.assertEqual(result["reason"], "command_exit_7")
+        self.assertEqual(result["evidence_error"], "failure_log_unavailable")
+        self.assertNotIn("failure_excerpt", result)
+        self.assertEqual(len(result["scenarios"]), 1)
+
+    def test_temp_directory_failure_does_not_start_checks(self):
+        output = io.StringIO()
+        with mock.patch.object(fresh.tempfile, "mkdtemp", side_effect=OSError(errno.ENOSPC, "fixture disk full")), \
+                mock.patch.object(fresh, "exercise") as execute, \
+                mock.patch("sys.stdout", output):
+            code = fresh.main(["--source", str(self.source), "--", sys.executable, "-c", "pass"])
+        execute.assert_not_called()
+        result = json.loads(output.getvalue())
+        self.assertEqual(code, 1)
+        self.assertEqual(result["state"], "failed")
+        self.assertEqual(result["reason"], "trial_storage_unavailable")
+        self.assertEqual(result["scenarios"], [])
+        self.assertNotIn("evidence_directory", result)
+
+    def test_receipt_write_failure_preserves_check_outcome_and_fails_delivery(self):
+        original_write = Path.write_text
+        reached = []
+
+        def fail_receipt_write(path, *args, **kwargs):
+            if path.name == "receipt.json":
+                reached.append(path)
+                raise OSError(errno.ENOSPC, "fixture disk full")
+            return original_write(path, *args, **kwargs)
+
+        for native_code, check_state, reason in (
+                ("pass", "passed", "receipt_write_failed"),
+                ("raise SystemExit(7)", "failed", "command_exit_7")):
+            with self.subTest(check_state=check_state):
+                trial_dir = Path(tempfile.mkdtemp(dir=self.base))
+                output = io.StringIO()
+                with mock.patch.object(fresh.tempfile, "mkdtemp", return_value=str(trial_dir)), \
+                        mock.patch.object(Path, "write_text", fail_receipt_write), \
+                        mock.patch("sys.stdout", output):
+                    code = fresh.main(["--source", str(self.source), "--", sys.executable, "-c", native_code])
+                result = json.loads(output.getvalue())
+                self.assertEqual(code, 1)
+                self.assertEqual(result["state"], "failed")
+                self.assertEqual(result["check_state"], check_state)
+                self.assertEqual(result["reason"], reason)
+                self.assertEqual(result["evidence_error"], "receipt_write_failed")
+                self.assertEqual(result["candidate"], self.git("rev-parse", "HEAD"))
+                self.assertEqual((self.source / "value.txt").read_text(), "new\n")
+        self.assertEqual(len(reached), 2, "Both receipt-write injections must execute")
+
+    def test_cli_positive_control_persists_matching_receipt(self):
+        trial_dir = Path(tempfile.mkdtemp(dir=self.base))
+        output = io.StringIO()
+        with mock.patch.object(fresh.tempfile, "mkdtemp", return_value=str(trial_dir)), \
+                mock.patch("sys.stdout", output):
+            code = fresh.main(["--source", str(self.source), "--", sys.executable, "-c", "pass"])
+        result = json.loads(output.getvalue())
+        self.assertEqual(code, 0)
+        self.assertEqual(result["state"], "passed")
+        self.assertEqual(result, json.loads((trial_dir / "receipt.json").read_text()))
+        self.assertEqual(len(result["scenarios"]), 2)
+        self.assertEqual(self.git("status", "--porcelain"), "")
 
 
 if __name__ == "__main__":
