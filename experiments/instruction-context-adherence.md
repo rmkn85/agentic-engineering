@@ -16,6 +16,14 @@ Add a launch-delivery check to the smallest relevant experiment: capture the act
 
 Separate retrieval/output tokens used by the run from the total-token budget (including supplied context and any runtime accounting). Report both when available; do not call either a measured saving without a non-inferior outcome and comparable runs. Do not claim universal guaranteed model compliance or measured savings from this protocol alone.
 
+### Task state and evidence classification
+
+Use this bounded case set when a real run shows one or more of these gaps: an old paused directive overrides the current active task authority; the same task/error dump is retried without new evidence; an invalid fixture failure is reported as a product failure; or passing assertions close a player-experience claim although its required capture never completed. These are demonstrated failure patterns, not evidence of prevalence.
+
+Evaluate the normal chain with one fresh, uncoached task and one continuation resumed from its retained state. Do not restate the expected behavior in either prompt. Record the launch cwd and instructions actually delivered at startup and resume; for each relevant rule distinguish **selected** (the source or practice chosen), **loaded** (present in that run's delivered context), and **applied** (observable decision or action). A post hoc file read can diagnose absent delivery, but cannot count as automatic loading. Keep the original traces and acceptance evidence in the existing run record; this procedure adds no telemetry format or runtime gate.
+
+Acceptance checks only the demonstrated gaps: use current task authority to resolve stale notes; require a changed condition or discriminating evidence before repeating an identical operation; verify that the fixture performs the required journey before attributing its failures to the product; and keep capture-dependent experience open until capture completion and actual inspection. Retain positive controls for a still-paused current task, an informative bounded retry, a valid fixture reproducing a product defect, and a completed inspected capture that supports a scoped judgment. A structurally valid case or coached instruction read is not a behavioral pass. Report startup delivery, resumed delivery, behavior, product evidence and resource measurements separately; do not claim improved reliability or savings unless comparable accepted runs support them.
+
 ## RED → GREEN → REFACTOR for instructions
 
 1. **RED — establish the failure.** Run the representative task without the proposed new instruction or with the current baseline. Record the actual execution trace and acceptance result. If the behavior already works reliably, first question whether another persistent rule is needed.
