@@ -8,7 +8,7 @@ The broader decision order—deterministic operation → cheapest capable worker
 
 ## Named model and effort policy
 
-Reviewed **2026-10-04**. These are explicit repository operating defaults, not a universal optimum, a native Codex allowlist, or measured savings. No additional policy file or custom-agent installation is needed. Stricter owner constraints take precedence. Validate support in the live client/account once per run; do not silently substitute a new model when a named choice is unavailable.
+Routing policy reviewed **2026-10-11**; the evidence/prices below retain their original review date, **2026-10-04**. These are explicit repository operating defaults, not a universal optimum, a native Codex allowlist, or measured savings. No additional policy file or custom-agent installation is needed. Owner constraints and explicit scoped exceptions apply, subject to higher-priority runtime rules. Validate support in the live client/account once per run; do not silently substitute a new model when a named choice is unavailable.
 
 | Assignment | Deliberate selection | Boundary |
 | --- | --- | --- |
@@ -18,9 +18,29 @@ Reviewed **2026-10-04**. These are explicit repository operating defaults, not a
 | Same bounded problem requiring deeper edge-case reasoning or hypothesis checking | `gpt-6-luna` / `high` | State the particular reasoning need; do not raise effort for a large batch merely because it is large |
 | Ambiguous cross-boundary implementation, complex research/tool use, or synthesis exceeding Luna's demonstrated/expected capability | `gpt-6.1-sol` / `medium` | Normal main coding/orchestration choice; worker use needs a task-specific capability reason |
 | Difficult coupled debugging, consequential correctness review or deeper analysis | `gpt-6.1-sol` / `high` | A specific unresolved decision, not a blanket reviewer setting |
-| Hardest owner-led planning or exceptional maximum-intelligence decision | User-selected `gpt-6-astra`, effort chosen for that planning task | Never an autonomously dispatched worker; hardest planning may justify High, ordinary planning need not use Astra |
+| Hardest owner-led planning or exceptional maximum-intelligence decision | User-selected `gpt-6-astra`, effort chosen for that planning task | Owner-led planning; a designated substantial co-developer lane requires the explicit exception below |
 
-**Allowed autonomous worker pairs:** Luna at `low`, `medium` or `high`; Sol at `medium` or `high`. **Excluded:** Astra, other unapproved models, and `xhigh`, `max` or `ultra` worker effort. This replaces the undefined word "premium" and the earlier Medium-only ceiling. A coordinator can intentionally escalate to an allowed Sol/High pair without asking again; it cannot add models or raise the ceiling on its own.
+**Ordinary autonomous worker pairs:** Luna at `low`, `medium` or `high`; Sol at `medium` or `high`. **Excluded by default:** Astra and other unapproved models. `xhigh`, `max` or `ultra` worker effort remains excluded. This replaces the undefined word "premium" and the earlier Medium-only ceiling. A coordinator can intentionally escalate to an allowed Sol/High pair without asking again; it cannot add models or raise the ceiling on its own.
+
+### Explicit owner exception: designated co-developer
+
+When the owner explicitly authorizes it, the coordinator MAY occasionally select
+`gpt-6-astra` / `high` for a substantial independent parallel development lane,
+subject to higher-priority runtime restrictions and supported native controls.
+The authorization may persist across turns within its stated scope; do not ask
+again for each qualifying lane. This is an intentional scoped exception, not an
+automatic escalation or a new ordinary worker default.
+
+Record the lane's sustained outcome, why the harder model is needed, disjoint
+owned paths, shared interfaces, finite numeric assignment/aggregate budget and
+integration point. A lane such as UX alongside loading/runtime repair can qualify;
+a small temporary extraction, command, review or bookkeeping task does not.
+The coordinator continues its independent lane and owns integration. Existing
+permission, evidence, acceptance and no-redelegation rules still apply. End or
+route down the costly assignment when its lane ends; do not reuse the exception
+for routine follow-ups. Use supported collaboration tools, not a nested CLI or
+sandbox workaround. If this route is unavailable, continue authorized independent
+work and retain its actual limits.
 
 Choose **model and effort jointly** for the actual goal. A focused assignment usually needs less reasoning than orchestration, but small scope can still contain a hard semantic decision. More files, visual input, independence or a "reviewer" title do not establish that need. An observed failure or a concrete explanation of anticipated coupling can justify escalation; do not purchase a doomed cheap attempt merely to tick a box. Missing instructions, tools, data, permissions or a broken test harness are not automatically model-capability failures. After an accepted decision, return routine implementation/checking to Luna or exact tools.
 
@@ -52,7 +72,7 @@ Choose an outcome-sized assignment, not one agent per command or document. Keep 
 
 Model choice is separate from spawning. Inspect the live models, effort levels, tools, executors and available cost/usage information, then select the cheapest adequate pair from the named policy. Reuse that inspected mapping until relevant configuration, availability or evidence changes. The policy already supplies the permitted pairs: do not refuse delegation merely because no custom allowlist file is installed. Unsupported selection or no adequate allowed pair does block that route; continue with exact tools/the authorized coordinator where adequate.
 
-The coordinator must still be able to judge and integrate the artifact. If it cannot, preserve the unresolved requirement for an authorized decision; never buy an Astra worker or silently switch the coordinator to Astra. Reuse findings without preserving an expensive configuration merely to avoid a small handoff.
+The coordinator must still be able to judge and integrate the artifact. If it cannot, preserve the unresolved requirement for an authorized decision; do not purchase stronger workers merely to escape that judgment boundary or silently switch the coordinator to Astra. The owner-authorized co-developer exception above has its own scope. Reuse findings without preserving an expensive configuration merely to avoid a small handoff.
 
 ### Launch preflight
 
