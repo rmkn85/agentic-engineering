@@ -4,11 +4,11 @@ Subagents are useful. They also duplicate model calls, context, tool use, and co
 
 Platform defaults are a baseline for unconstrained choices, not permission to inherit worker cost settings. The explicit dispatch contract below takes precedence over general advice to preserve defaults, reuse context or select a stronger specialist.
 
-The broader decision order—deterministic operation → cheapest capable worker → stronger reasoning only at uncertainty boundaries—is summarized in the [efficiency control plane](../principles/efficiency-control-plane.md). Worker escalation always remains within the dispatch ceiling.
+The broader decision order—deterministic operation → cheapest capable worker → stronger reasoning only at uncertainty boundaries—is summarized in the [efficiency control plane](../principles/efficiency-control-plane.md). Automatic worker escalation remains within the default dispatch ceiling; explicit owner exceptions are scoped below.
 
 ## Named model and effort policy
 
-Reviewed **2026-10-04**. These are explicit repository operating defaults, not a universal optimum, a native Codex allowlist, or measured savings. No additional policy file or custom-agent installation is needed. Stricter owner constraints take precedence. Validate support in the live client/account once per run; do not silently substitute a new model when a named choice is unavailable.
+Routing exceptions reviewed **2026-10-11**; the model/pricing references below retain their **2026-10-04** review date. These are explicit repository operating defaults, not a universal optimum, a native Codex allowlist, or measured savings. No additional policy file or custom-agent installation is needed. Stricter owner constraints and higher-priority runtime instructions take precedence. Validate support in the live client/account once per run; do not silently substitute a new model when a named choice is unavailable.
 
 | Assignment | Deliberate selection | Boundary |
 | --- | --- | --- |
@@ -18,9 +18,31 @@ Reviewed **2026-10-04**. These are explicit repository operating defaults, not a
 | Same bounded problem requiring deeper edge-case reasoning or hypothesis checking | `gpt-6-luna` / `high` | State the particular reasoning need; do not raise effort for a large batch merely because it is large |
 | Ambiguous cross-boundary implementation, complex research/tool use, or synthesis exceeding Luna's demonstrated/expected capability | `gpt-6.1-sol` / `medium` | Normal main coding/orchestration choice; worker use needs a task-specific capability reason |
 | Difficult coupled debugging, consequential correctness review or deeper analysis | `gpt-6.1-sol` / `high` | A specific unresolved decision, not a blanket reviewer setting |
-| Hardest owner-led planning or exceptional maximum-intelligence decision | User-selected `gpt-6-astra`, effort chosen for that planning task | Never an autonomously dispatched worker; hardest planning may justify High, ordinary planning need not use Astra |
+| Hardest owner-led planning or exceptional maximum-intelligence decision | User-selected `gpt-6-astra`, effort chosen for that planning task | Not an automatic worker escalation; ordinary planning need not use Astra |
+| Substantial independent co-development lane with explicit owner authorization | Owner-authorized model/effort, for example `gpt-6-astra` / `high` | Scoped exception below; not a small task, temporary reviewer or default fan-out |
 
-**Allowed autonomous worker pairs:** Luna at `low`, `medium` or `high`; Sol at `medium` or `high`. **Excluded:** Astra, other unapproved models, and `xhigh`, `max` or `ultra` worker effort. This replaces the undefined word "premium" and the earlier Medium-only ceiling. A coordinator can intentionally escalate to an allowed Sol/High pair without asking again; it cannot add models or raise the ceiling on its own.
+**Default autonomous worker pairs:** Luna at `low`, `medium` or `high`; Sol at `medium` or `high`. Astra, other unapproved models, and `xhigh`, `max` or `ultra` worker effort are excluded from automatic escalation. A coordinator can intentionally escalate to an allowed Sol/High pair without asking again; it cannot grant itself a new exception. Explicit owner-authorized co-development is governed below.
+
+### Explicitly authorized co-developer lane
+
+An owner may authorize an occasional stronger co-developer for a substantial
+independent lane, including `gpt-6-astra` / `high`. Authorization can cover a
+defined class of lanes for the current work; do not ask again for each qualifying
+assignment. Record the authorization and why this lane qualifies in the existing
+task record. This is deliberate co-development, not a workaround for the default
+worker ceiling or permission to upgrade small transient tasks.
+
+The lane needs an end-to-end deliverable, owned files/contracts, an integration
+case, finite assignment/aggregate budget and stop conditions. Keep it alive while
+its context serves that lane, with bounded checkpoints and no descendant fan-out.
+Shared contract changes and final integration remain coordinated. The coordinator
+must be able to judge the result; the stronger model does not replace verification.
+
+Use actual supported model/effort controls and label requested versus observed
+settings honestly. All higher-priority runtime/model restrictions and owner limits
+still apply. A local exception cannot bypass them; preserve the authorized lane
+intent and report the specific execution limitation if it blocks dispatch. This
+exception changes neither platform defaults nor routine worker selection.
 
 Choose **model and effort jointly** for the actual goal. A focused assignment usually needs less reasoning than orchestration, but small scope can still contain a hard semantic decision. More files, visual input, independence or a "reviewer" title do not establish that need. An observed failure or a concrete explanation of anticipated coupling can justify escalation; do not purchase a doomed cheap attempt merely to tick a box. Missing instructions, tools, data, permissions or a broken test harness are not automatically model-capability failures. After an accepted decision, return routine implementation/checking to Luna or exact tools.
 
@@ -52,15 +74,15 @@ Choose an outcome-sized assignment, not one agent per command or document. Keep 
 
 Model choice is separate from spawning. Inspect the live models, effort levels, tools, executors and available cost/usage information, then select the cheapest adequate pair from the named policy. Reuse that inspected mapping until relevant configuration, availability or evidence changes. The policy already supplies the permitted pairs: do not refuse delegation merely because no custom allowlist file is installed. Unsupported selection or no adequate allowed pair does block that route; continue with exact tools/the authorized coordinator where adequate.
 
-The coordinator must still be able to judge and integrate the artifact. If it cannot, preserve the unresolved requirement for an authorized decision; never buy an Astra worker or silently switch the coordinator to Astra. Reuse findings without preserving an expensive configuration merely to avoid a small handoff.
+The coordinator must still be able to judge and integrate the artifact. If it cannot, preserve the unresolved requirement for an authorized decision; do not self-authorize an Astra worker or silently switch the coordinator to Astra. Reuse findings without preserving an expensive configuration merely to avoid a small handoff.
 
 ### Launch preflight
 
 This contract applies to **every launch, fork, resume and follow-up**. Keep its receipt in the existing launch/task record; do not add a tracker or perform repeated model research.
 
-- **Explicit selection.** Set an allowed supported model, reasoning effort and bounded context through actual launch controls or an explicitly selected inspected role. Omitted/inherited cost settings are invalid. The same model as the parent can be chosen independently and explicitly. A model name inside a prompt does not itself set the runtime model. Inspect role/config precedence and actual override exposure. In native V2 choose `fork_turns` explicitly: it defaults to `all`; `none` or a positive integer string bounds inherited history. Current V2 full-history forks can override model/effort and roles; reject a path only when its actual controls defeat selection, not from a remembered blanket limitation.
+- **Explicit selection.** Set an allowed supported model, reasoning effort and bounded context through actual launch controls or an explicitly selected inspected role. Omitted/inherited cost settings are invalid. The same model as the parent can be chosen independently and explicitly. A model name inside a prompt does not itself set the runtime model. Inspect role/config precedence and actual override exposure. In native V2 choose `fork_turns` explicitly: it defaults to `all`; `none` or a positive integer string bounds inherited history. Fork/override compatibility varies by exposed client schema. If a full-history fork prevents explicit model/effort selection, use a supported bounded-context mode. Inspect actual controls rather than treating an earlier source audit as the current runtime contract.
 - **Intentional escalation.** Use the named policy, not an undefined price category. Luna Medium is the focused coding default; Low for routine work; Sol or High needs a concise task-specific reason. Coordinator-authorized Sol/High is within policy, not a new owner-approval gate. Keep costly judgment bounded and route down afterward.
-- **Finite budgets.** Before dispatch, allocate numeric assignment and aggregate delegation limits in time or total tokens according to the workload and owner limits. Do not invent a universal numeric optimum. Include input/context and reasoning where measurable. The starter attempt limit remains one execution plus one targeted repair; workers do not redelegate. Follow-ups, replacements, retries and any explicitly authorized descendants debit the same allocations. A restart or new assignment label cannot reset them. At exhaustion, return evidence and unresolved work rather than automatically increasing spend; necessary authorized coordinator work can continue only within applicable native budgets, without claiming incomplete work is done.
+- **Finite budgets.** Before dispatch, allocate numeric assignment and aggregate delegation limits in time or total tokens according to the workload and owner limits. Do not invent a universal numeric optimum. Include input/context and reasoning where measurable. The starter attempt limit for a bounded temporary assignment remains one execution plus one targeted repair. A sustained co-developer uses its declared lane checkpoints and total allocation rather than a new allowance per edit. Workers do not redelegate. Follow-ups, replacements, retries and any explicitly authorized descendants debit the same allocations. A restart or new assignment label cannot reset them. At exhaustion, return evidence and unresolved work rather than automatically increasing spend; necessary authorized coordinator work can continue only within applicable native budgets, without claiming incomplete work is done.
 - **Context and reuse.** Prefer a fresh bounded handoff. Reuse only when the worker's known model, effort, retained context and remaining budget remain appropriate for the new subtask. Reusing an allowed Sol/High worker for a routine follow-up still needs a cost justification; its previous escalation is not permanent permission. Native V2 `followup_task` has no model/effort override fields: transfer findings to a newly configured worker when downgrading. Context minimization must retain permissions, applicable repository instructions, evidence and acceptance constraints.
 - **Verification and rejection.** No dispatch through unsupported or out-of-policy controls, and no continuation after a disallowed resolved setting is discovered. Record requested/resolved settings from native evidence when observable; absent telemetry is unknown, not verified compliance. Metadata visibility is not a resolved-settings receipt. Inspect a representative launch before multiplying the pattern. A mismatch stops further dispatch until corrected; post-launch inspection cannot prevent the first call's cost. Distinguish soft allocations, native exhaustion boundaries and exact billing ceilings; a required hard cap unavailable on the host blocks that path.
 
