@@ -4,7 +4,10 @@ Reviewed **2026-10-04** against OpenAI Codex source snapshot [`d0759639f20af955a
 
 This corrects the earlier recommendation to replace `[features.multi_agent_v2]` with `[agents]` merely because the public configuration page did not enumerate the former. The typed configuration and runtime explicitly support V2 and its hints. **Absence from a documentation index is not evidence of removal or equivalence.** Preserve working behavior until its replacement is verified.
 
-The [named routing policy](subagents.md#named-model-and-effort-policy) remains unchanged: Sol/Medium for substantial orchestration, mostly Luna/Low or Medium workers, intentional bounded Luna/High or Sol/Medium/High escalation, and no autonomous Astra or above-High workers. The [configuration example](../../configs/codex/efficient-local.config.toml) now preserves V2 policy while setting worker defaults.
+The current [named routing policy](subagents.md#named-model-and-effort-policy)
+is maintained separately from this dated runtime audit. Apply its ordinary
+worker defaults and explicit owner-authorized co-developer exceptions; do not
+use this historical audit to override a current scoped authorization.
 
 ## 1. Separate activation, behavioral policy, and cost selection
 
@@ -76,7 +79,7 @@ Sources: [typed feature configuration][fields], [runtime defaults and constants]
 
 V2 uses canonical task paths such as `/root/checks` and agent mailboxes. Its wait tool waits for mailbox activity/final-status notifications or steered user input, not necessarily completion of one specific child; timeout does not stop the worker. `interrupt_agent` interrupts a turn while leaving the agent available. Shared-state writes still require explicit ownership; separate model context is not filesystem isolation. [Sources: tools and child runtime settings.][tool-spec] [child]
 
-Avoid reflexive polling and duplicate coordinator work. Keep workers on disjoint deliverables, return decisive evidence, and integrate only after relevant acceptance. "Workers do not redelegate" is an instruction-level boundary here, not something established by V1's `max_depth`. Concurrency, depth, total worker calls, time, tokens and billed usage are different quantities.
+Avoid reflexive polling and duplicate coordinator work. Keep workers on disjoint deliverables, return decisive evidence, and integrate only after relevant acceptance. Restrictions on which agents may delegate are instruction-level boundaries here, not something established by V1's `max_depth`. Concurrency, depth, total worker calls, time, tokens and billed usage are different quantities.
 
 Custom Responses-compatible providers must support the actual V2 tool transport, including the encrypted message fields used in its schema. Historical provider errors are evidence to inspect compatibility, not a reason to silently fall back to a differently priced model/backend. The July model-catalog report is also not a current benchmark or universal failure.
 

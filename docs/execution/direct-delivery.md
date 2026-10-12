@@ -82,10 +82,11 @@ data limits are not interchangeable. Do not add staged sample counts, approval
 steps, independent reviews or full-suite reruns to every reversible edit unless
 the existing contract or the changed risk requires them.
 
-Keep exact tools and small coupled tasks local. Delegate substantial independent
-outcomes under the existing [dispatch contract](../local-codex/subagents.md#launch-preflight).
-A sustained co-developer owns a lane through implementation and validation; it
-does not duplicate the coordinator's investigation. Serialize shared-contract
+Keep short exact operations and tightly coupled judgment local. Delegate when
+context isolation, domain continuity or independent progress repays coordination,
+under the existing [dispatch contract](../local-codex/subagents.md#launch-preflight).
+Sustained domain owners and co-developers retain relevant context through feedback
+and validation; they do not duplicate the coordinator's investigation. Serialize shared-contract
 changes and final integration. Keep one current acceptance contract across lanes.
 
 This method is a response to a failure pattern, not a guarantee of first-attempt

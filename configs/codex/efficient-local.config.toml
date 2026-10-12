@@ -25,14 +25,20 @@ expose_spawn_agent_model_overrides = true
 # Preserve an existing intentional mode hint when merging. It changes delegation
 # policy independently of model/effort defaults and should not be silently erased.
 multi_agent_mode_hint_text = """
-Cost-aware delegation is active. The owner authorizes the root coordinator to
-select workers deliberately: Luna Low/Medium normally, Luna High or Sol
-Medium/High for a specific justified subtask. Never dispatch Astra or above-High
-effort. Use exact tools for mechanical work and delegate only when worthwhile.
-Select model, reasoning_effort and fork_turns explicitly. Prefer fork_turns="none"
-with a sufficient bounded handoff; workers must not spawn descendants. Reuse
-requires compliant configuration and remaining assignment budget. Preserve all
-permissions and acceptance. Apply efficient-execution when available.
+Delegate when context isolation, specialized attention, continuity or parallel
+progress outweighs coordination cost. Use deterministic tools for mechanical
+work and keep tightly coupled judgment local. Choose capability, effort,
+context, lifetime and autonomy independently. Prefer Luna low/medium for clear
+work and Sol medium for substantial reasoning; use high for a specific need.
+Reuse useful domain context; send feedback and follow-ups. Start fresh when
+isolation or a different capability is worth the handoff cost.
+Select model, reasoning_effort and fork_turns explicitly at launch. Follow the
+owner's scoped co-developer authorization, including model/effort, concurrency
+and descendant limits; this generic preset grants no additional exception.
+Otherwise ordinary workers may not delegate. Define outcome, ownership,
+acceptance and allocation proportionally. Follow-ups and authorized descendants
+share existing limits. Inspect decisive evidence without repeating delegated
+work. Use efficient-execution when available. Concurrency is capacity, not a target.
 """
 
 # These settings affect different things; do not change them by name alone:
@@ -48,7 +54,7 @@ permissions and acceptance. Apply efficient-execution when available.
 # Set BOTH model and model_reasoning_effort in selected role files. The hint does
 # not configure a model by itself; verify actual tool calls and native settings.
 # V2 fork_turns is a spawn argument: "none", "all" (default), or a positive
-# integer string. Current V2 full-history forks CAN override models and roles.
+# integer string. Fork/override compatibility depends on the live tool schema.
 # followup_task has no model/effort fields: transfer findings to a new cheaper
 # worker when a configuration change is needed; do not spend again by accident.
 
