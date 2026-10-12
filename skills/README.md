@@ -7,6 +7,7 @@ For adoption across hosts and repositories, use [portable skill routing](../docs
 ## Execution
 
 - [`efficient-execution`](efficient-execution/SKILL.md) — long/repository-heavy/tool-heavy work where repeated model work, noisy context, fan-out, or broad validation may materially affect cost.
+- [`steering-delivery`](steering-delivery/SKILL.md) — checkpoint-driven Technical Delivery Lead responsibility for the existing coordinator: assess direction and investment, execute authorized corrections, and retain decision rationale/effect in tasks or commit messages.
 - [`recovering-interrupted-work`](recovering-interrupted-work/SKILL.md) — interrupted tasks, stale source, changed hosts or ambiguous writes; preserve existing task authority and work.
 - [`improving-execution-guidance`](improving-execution-guidance/SKILL.md) — recurring execution friction; improve the smallest mechanism, generalize safely and verify behavior without changing the requested outcome.
 - [`hardening-ci-delivery`](hardening-ci-delivery/SKILL.md) — CI, runner, artifact, release, deployment, or rerun failures; preserve test acceptance while making delivery resilient.

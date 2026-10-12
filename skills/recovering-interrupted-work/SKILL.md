@@ -13,6 +13,8 @@ Compare the recorded checkpoint with current source and affected interfaces. Reu
 
 Classify the blocker: unavailable tool/transport, denied capability, missing declared dependency, stale source, ownership conflict, failed hypothesis, implementation defect or inadequate acceptance. Prefer the existing safe route. One diagnosis and revisit condition replaces repeated setup attempts; do not alter system privileges or copy credentials.
 
+For substantial resumed work, apply [steering-delivery](../steering-delivery/SKILL.md) before the next batch: assess the previous intervention, recover cumulative consumption and limits, and re-evaluate the retained next action against current authority and evidence. Record any justified redirection and its rationale in the task or commit message; update affected workers and continue without a routine approval request. A new session does not reset the budget or validate an old plan.
+
 Continue the smallest useful owned increment. Leave source identity, decisive evidence, unresolved state and one next action in the existing task record at a natural checkpoint. Persist useful work through the authorized Git path and verify the remote result. An unavailable physical device or production resource remains an explicit acceptance boundary.
 
 Output: recovered checkpoint, work retained, checks actually run, exact remaining blocker and next executable action. No private reasoning transcript, hidden background-work promise or invented completion.
