@@ -48,9 +48,13 @@ it should not become an archive the next agent must reread.
 
 Progress means a required scenario works, a concrete obstruction was removed, or
 evidence changed the next decision. Test totals, commits and reports support that
-claim; they are not substitute outcomes. If successive increments leave the same
-primary gap unchanged, reconsider the mechanism and work ordering before another
-similar patch. Keep the working parts; do not restart discovery wholesale.
+claim; they are not substitute outcomes. At checkpoints, apply
+[delivery steering](../../skills/steering-delivery/SKILL.md): assess the current
+trajectory and previous intervention, then execute the justified next action.
+If successive increments leave the same primary gap unchanged, reconsider the
+mechanism and work ordering before another similar patch. Keep the working parts;
+do not restart discovery wholesale. Record the evidence-backed rationale and
+subsequent effect in the task or commit message, not in source/configuration.
 
 ## Performance work must change the user's wait
 

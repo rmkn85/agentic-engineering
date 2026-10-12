@@ -2,7 +2,7 @@
 
 Practical, measurable techniques for accomplishing the **same agentic engineering task** with less model usage, less wall-clock time, less repeated computation, less human attention, and fewer retries.
 
-This repository does **not** prescribe product architecture, project management, task decomposition, or what software should be built. The task, intended result, and quality bar are inputs. The subject here is how to execute that same work more efficiently.
+This repository does **not** decide what product should be built, set product priorities, or grant scope and permission changes. The task, intended result, and quality bar are inputs. It guides efficient execution and technical delivery steering within that contract: the coordinator may revise the implementation approach, sequencing, decomposition and forecasts, but not silently change the requested outcome.
 
 ## Optimization invariant
 
@@ -29,6 +29,12 @@ Treat the model as the expensive probabilistic component inside a mostly determi
 - Prefer mechanically favorable optimizations such as valid caching, warm deterministic state, concise model-visible logs, and exact local tools.
 - Deviate from defaults only for a concrete reason; benchmark only when the tradeoff is non-obvious, consequential, or workload-dependent.
 - Treat explicit large-scale orchestration and fan-out as costed choices, not signals of sophistication.
+
+## Delivery steering
+
+For substantial iterative work, the existing coordinator acts as a Technical Delivery Lead using [`steering-delivery`](skills/steering-delivery/SKILL.md). At checkpoints it compares verified progress and resource use with the authorized outcome, changes an ineffective next action when justified, updates the forecast and active worker briefs, and continues without a routine user nudge. It can also decide that difficult work deserves another bounded investment or that accepted work is complete.
+
+Decision explanations and subsequent effect belong in existing task history or coherent commit messages, **not source code, code comments, configurations or generated product artifacts**. Keep spending authority separate from forecasts and elapsed time separate from active effort, tokens, calls, expenditure and rework. See [records and adoption](docs/execution/delivery-steering.md) and [behavioral trials](experiments/delivery-steering.md). No permanent manager agent, parallel tracker or background service is required; skill availability is not proof of host invocation or effectiveness.
 
 ## Efficiency control plane
 
@@ -117,6 +123,7 @@ The local stack includes:
 - [minimal global AGENTS.md](templates/global-AGENTS-efficient.md)
 - [source-scoped agent-legibility template](templates/source-AGENTS-agent-legible.md)
 - [optional efficiency skill](skills/efficient-execution/SKILL.md)
+- [checkpoint delivery-steering skill](skills/steering-delivery/SKILL.md)
 - tools for [quiet command execution](tools/quiet-run), [verified observation recall](tools/observation-recall.py), [repo inventory](tools/repo-index.py), [instruction-footprint inventory](tools/instruction-footprint.py), and [Codex JSONL benchmark capture](tools/codex-bench.py)
 
 ## Repository map

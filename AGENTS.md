@@ -10,7 +10,7 @@ For ordinary work, use this file plus [`docs/agent-corpus/README.md`](docs/agent
 
 ## Execution invariants
 
-- Preserve the task, success criteria, source coverage, permissions, and quality bar; optimize execution, not scope. A milestone is not completion: apply the corpus's [completion boundary](docs/agent-corpus/README.md#completion-boundary) before any final response.
+- Preserve the task, success criteria, source coverage, permissions, and quality bar; optimize execution, not scope. A milestone is not completion: apply the corpus's [completion boundary](docs/agent-corpus/README.md#completion-boundary) before any final response. For substantial iterative work, use [delivery steering](skills/steering-delivery/SKILL.md) at checkpoints: revise and execute the justified in-scope next action, and retain decision rationale and observed effect in tasks or commit messages, never source/configuration.
 - Apply the [specification contract](docs/specifications/README.md): preserve requirement authority and meaning, connect construction to independent evidence, and never invent requirements or weaken acceptance. Use [incremental migration](docs/adoption/standards-migration.md) for existing or active work; preserve local rules and unfinished work.
 - Apply the [interface contract](docs/interfaces/accessible-interfaces.md) by default: accessible operation, rendered human comprehension and machine semantics are independent obligations. New barriers are not polish; expose limitations and unrun checks rather than claiming conformance.
 - Use deterministic tools for mechanical work. Keep logs on disk; workers return status, decisions, and evidence paths. The coordinator reads only decision-critical excerpts: consumed logs keep taxing later context.

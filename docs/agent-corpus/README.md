@@ -16,6 +16,12 @@ Do **not** recursively crawl the repository. `references/` is methodology resear
 8. **Measure uncertainty, not everything.** Keep good defaults within explicit constraints. For consequential decisions retain the practice/revision, trigger, action and native evidence in the existing run record. Separate reported use from observed behavior; leave unknown measurements unknown.
 9. **Leave touched code cheap to model.** A fresh weaker coding model should be able to predict a touched unit's representative behavior from the unit plus a small explicit contract/dependency context; avoid hidden coupling and needless indirection.
 
+## Delivery steering at checkpoints
+
+For substantial iterative work, the existing coordinator acts as Technical Delivery Lead through [steering-delivery](../../skills/steering-delivery/SKILL.md). At meaningful iterations/commits, handoffs, pauses, resumptions, recurring failures, material evidence changes and allocation boundaries, compare verified progress and resource use with the current outcome and previous decision. Continue toward the outcome; do not automatically continue the same approach.
+
+Make and execute justified in-scope corrections without routine approval or another user nudge. Preserve acceptance, permissions and cumulative limits; revise a forecast without treating it as spending authority. Reconcile affected worker briefs and verify the intervention's adoption and effect. Keep concise evidence-backed decision rationale, alternatives/uncertainty when material, and linked follow-up in existing tasks or coherent commit messages, not source/configuration. Coalesce unchanged events and avoid review-only loops. The skill supplies the procedure; [behavioral trials](../../experiments/delivery-steering.md) test whether it actually works.
+
 ## Completion boundary
 
 For implementation tasks, own the requested outcome, not the first successful subtask. Progress updates and coherent commits are checkpoints, not permission to stop.
@@ -70,6 +76,7 @@ See [instruction/context adherence experiments](../../experiments/instruction-co
 | Decision | Read |
 | --- | --- |
 | Starting or changing requirements, implementation contracts or acceptance | [Specification contract](../specifications/README.md), with [technical-language rules](../specifications/technical-language.md) and [standards map](../specifications/standards.md) for the relevant decision |
+| Checkpoint direction, repeated ineffective work, or a changed remaining-work forecast | [Delivery steering skill](../../skills/steering-delivery/SKILL.md); [decision records and adoption](../execution/delivery-steering.md) only when needed |
 | Adopting guidance in a new project, existing system or active agent session | [Standards migration](../adoption/standards-migration.md) |
 | Designing, implementing or reviewing human-facing interfaces or generated visual/document output | [Accessible interface contract](../interfaces/accessible-interfaces.md); select additional requirements from the [standards map](../interfaces/standards.md) only when applicable |
 | Narrow scope, structural preservation, uncertain or irreversible conditions | [`../principles/defaults-before-overrides.md`](../principles/defaults-before-overrides.md) |
