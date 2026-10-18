@@ -8,6 +8,14 @@ Before changing a consequential boundary, identify **protected properties, minim
 
 First remove fragile dependencies. Rebuild disposable caches; keep unique state and checkpoints at the required durability boundary. Reduce round trips and repeated work; use bounded queues, explicit ownership and established transactions. Drop optional work under pressure before protected behavior. Label stale, pending and unknown results. Slow hardware may reduce throughput, not silently weaken correctness, access or security. Desktop throttling is not proof of embedded-target timing or behavior.
 
+## Choose diagnosis investment before deeper work
+
+Before opening larger artifacts, adding probes or pursuing root cause, choose a finite diagnosis investment in the existing task record. Base it on the blocked outcome, reversibility and risk, recurrence, and the cheapest probe that can distinguish the current hypotheses. Declare scope, elapsed-time/attempt/resource or cost limits, the question, success observation and stop condition. These are task-specific bounds, not a universal minute cap or percentage. A hypothesis is not a verified cause.
+
+At the checkpoint compare evidence and remaining value with that investment. Stop diagnosis, continue independent work, use an authorized fallback, or repair the reusable dependency when justified. Renew only for a new decision or discriminating evidence; neither a different query, respawn nor renamed operation resets the cumulative budget. Preserve uncertainty and the original outcome when a diagnosis is unnecessary or blocked.
+
+For example, an optional documentation lookup returning quota exhaustion may justify inspecting the exact response and existing cached result once, recording the provider gate, then continuing from available sources. Changing library names does not test a provider-wide quota hypothesis. A repeated critical runtime fault that blocks protected service may justify a larger bounded investigation: compare the exact build with known-good evidence and run one contained discriminating probe, then repair and verify the shared dependency. Neither case requires a complete root-cause investigation by default; criticality alone does not authorize unlimited diagnosis.
+
 ## Recovery loop
 
 ```text

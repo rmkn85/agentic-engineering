@@ -7,6 +7,8 @@ description: Use when diagnosing a runtime crash, exception, failing job/test/bu
 
 Goal: reach the next correct hypothesis/fix with the least fresh evidence context while preserving access to the original artifacts.
 
+Before deeper diagnosis, **choose the investment** in the existing task record: blocked outcome, reversibility/risk, recurrence, cheapest discriminating probe, finite scope/time/attempt/resource or cost limits, success observation and stop condition. Follow [bounded recovery](../../docs/execution/bounded-recovery.md#choose-diagnosis-investment-before-deeper-work). At the checkpoint stop, continue independent work, use an authorized fallback or repair the reusable dependency; renew only for new evidence or a new decision, preserving cumulative limits across respawns. Optional docs quota may need one response/cache inspection; a repeated critical runtime fault may warrant a larger contained investigation. Neither implies a universal cap or mandatory full root-cause analysis. Keep hypotheses separate from verified causes.
+
 1. **Start from the smallest trustworthy index.** Read the failure capsule, manifest, failed target/test identity, crash header, or equivalent before opening full logs/stacks/dumps.
 2. **Decide live vs postmortem.** Do not assume the target still exists. If it crashed or is unreachable, follow artifact references only. If live queries are available, use them as additional evidence, not as a substitute for durable crash artifacts.
 3. **Establish identity first.** Confirm release/build/commit, runtime, environment/config fingerprint, operation and correlation IDs. A wrong binary/environment assumption can invalidate every later inference.
