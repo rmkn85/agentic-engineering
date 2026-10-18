@@ -22,6 +22,11 @@ from practice_feedback import analyze, load_record
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCK = ROOT / "configs/external-practices.json"
+SKILLS = {
+    "ponytail-review": ("ponytail", "skills/ponytail-review/SKILL.md"),
+    "caveman-review": ("caveman", "skills/caveman-review/SKILL.md"),
+    "caveman-commit": ("caveman", "skills/caveman-commit/SKILL.md"),
+}
 
 
 def write_json(path, data):
@@ -101,6 +106,32 @@ def verified_source(source, pin):
         raise ValueError("upstream revision mismatch; do not reset an existing checkout")
     if git(source, "status", "--porcelain", "--untracked-files=no"):
         raise ValueError("upstream tracked files are dirty")
+
+
+def verified_skill(source, pin, name):
+    """Read only an allowlisted skill, identical to the pinned Git blob.
+
+    A clean status alone can miss assume-unchanged files or untracked overlays.
+    Never execute the selected text or interpret it as Git-effect authorization.
+    """
+    if name not in SKILLS:
+        raise ValueError("unsupported skill")
+    tool, relative = SKILLS[name]
+    declared = pin["skill"] if tool == "ponytail" else pin["skills"][name]["path"]
+    if declared != relative:
+        raise ValueError("skill path differs from reviewed allowlist")
+    path = source
+    for part in Path(relative).parts:
+        path = path / part
+        if path.is_symlink():
+            raise ValueError("skill path must not contain symlinks")
+    content = path.read_bytes()
+    if content != git(source, "show", pin["revision"] + ":" + relative):
+        raise ValueError("skill bytes differ from pinned Git blob")
+    sha256 = hashlib.sha256(content).hexdigest()
+    if tool == "caveman" and sha256 != pin["skills"][name]["sha256"]:
+        raise ValueError("skill bytes differ from reviewed sha256")
+    return relative, content, sha256
 
 
 def interpreter(source):
@@ -216,12 +247,14 @@ def execute(args):
             stage = "not_used"
         elif args.action == "setup":
             setup(args.tool, pin, source, run)
-        elif args.tool == "ponytail":
+        elif args.action == "load":
             verified_source(source, pin)
-            skill = source / pin["skill"]
-            emitted = skill.read_text(encoding="utf-8")
-            (bundle / "upstream-skill.md").write_bytes(skill.read_bytes())
-            usage["skill"] = pin["skill"]
+            name = getattr(args, "skill", "ponytail-review")
+            relative, content, sha256 = verified_skill(source, pin, name)
+            emitted = content.decode("utf-8")
+            (bundle / "upstream-skill.md").write_bytes(content)
+            usage.update(skill=relative, skill_sha256=sha256,
+                         upstream_repository=pin.get("repository"))
             stage = "loaded"
         else:
             graphify(args, pin, source, cache, bundle, env, run, usage)
@@ -366,9 +399,11 @@ def main():
     for action in ("setup", "skip", "load", "build", "query", "path", "explain"):
         p = sub.add_parser(action)
         if action in {"setup", "skip"}:
-            p.add_argument("tool", choices=("ponytail", "graphify"))
+            p.add_argument("tool", choices=("ponytail", "graphify", "caveman"))
         else:
             p.set_defaults(tool="ponytail" if action == "load" else "graphify")
+        if action == "load":
+            p.add_argument("--skill", choices=tuple(SKILLS), default="ponytail-review")
         p.add_argument("--task", required=True, help="existing task/run identity, not a new project tracker")
         p.add_argument("--why", required=True)
         p.add_argument("--scope", default=".")
@@ -388,6 +423,8 @@ def main():
     p.add_argument("--include-cache", type=Path, action="append", default=[],
                    help="additional explicitly authorized private cache; no workspace discovery")
     args = parser.parse_args()
+    if args.action == "load":
+        args.tool = SKILLS[args.skill][0]
     args.repo = args.repo.resolve()
     args.cache = (args.cache or args.repo / ".agent-cache" / "external-practices").resolve()
     try:

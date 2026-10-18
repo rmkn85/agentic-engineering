@@ -1,6 +1,6 @@
-# Ponytail and Graphify: upstream reuse with observable use
+# Scoped upstream practices with observable use
 
-Reviewed: 2026-09-26. Entry point: [using-external-practices](../../skills/using-external-practices/SKILL.md).
+Reviewed: 2026-10-18. Entry point: [using-external-practices](../../skills/using-external-practices/SKILL.md).
 
 ## Adoption decisions
 
@@ -8,6 +8,7 @@ Reviewed: 2026-09-26. Entry point: [using-external-practices](../../skills/using
 | --- | --- | --- |
 | [Ponytail](https://github.com/DietrichGebert/ponytail) | Whole pinned checkout; unmodified `ponytail-review` skill emitted on demand for bounded complexity review | Persistent full/ultra persona, host/global hooks, automatic acceptance of a smaller diff |
 | [Graphify](https://github.com/Graphify-Labs/graphify) | Actual pinned `graphifyy` package in an isolated editable installation; local code extraction, query, explain and path | Hosted platform, graph database, MCP service, semantic docs/media ingestion, global graph-first rules |
+| [Caveman](https://github.com/JuliusBrussee/caveman) | Whole pinned checkout; only unmodified `caveman-review` and `caveman-commit` text emitted on explicit selection | Persistent persona, installer, hooks, CLI/engine execution, shrink, proxy/provider rewriting, routing, automatic memory, Cavecrew presets and learn application |
 
 The [pin file](../../configs/external-practices.json) is the installation source
 of truth. This is a supported-component integration, not a fork, rewritten skill,
@@ -44,6 +45,73 @@ spawn a model: the available agent must read and apply the emitted review skill.
 Whole-session Ponytail modes are not automatically injected or claimed tested.
 The setup requires Git/network access; Graphify also needs Python 3.10+ and venv/pip.
 The core regression suite remains Python 3.9+/Git only, with no external packages.
+
+## Caveman scoped writing
+
+The reviewed source is
+[`bad48a0e1df55e05e3f52249afa35ecc1909ee76`](https://github.com/JuliusBrussee/caveman/tree/bad48a0e1df55e05e3f52249afa35ecc1909ee76).
+Review covered the selected
+[`caveman-review`](https://github.com/JuliusBrussee/caveman/blob/bad48a0e1df55e05e3f52249afa35ecc1909ee76/skills/caveman-review/SKILL.md)
+and [`caveman-commit`](https://github.com/JuliusBrussee/caveman/blob/bad48a0e1df55e05e3f52249afa35ecc1909ee76/skills/caveman-commit/SKILL.md)
+skills, plus `LICENSE`, `NOTICE`, `LICENSE-MIT` and `LICENSING.md`. At this pin
+the repository uses Apache-2.0 and retains legacy MIT contribution notices; older
+split-license descriptions do not describe this pin. Setup retains these files
+with the entire checkout; this corpus does not vendor or rewrite the skills.
+This is a bounded source review, not an audit of the whole upstream runtime.
+
+```sh
+python3 "$AE/tools/external_practices.py" --repo "$PROJECT" setup caveman \
+  --task setup-external-practices --why 'Enable scoped writing skills'
+python3 "$AE/tools/external_practices.py" --repo "$PROJECT" load \
+  --skill caveman-review --task CHANGE-123 --why 'Write actionable review findings'
+python3 "$AE/tools/external_practices.py" --repo "$PROJECT" load \
+  --skill caveman-commit --task CHANGE-123 --why 'Draft the reviewed change message'
+```
+
+`load` without `--skill` retains the existing Ponytail behavior. Only these named
+skills and `ponytail-review` are accepted; arbitrary paths and other Caveman
+capabilities are rejected. Before emission the adapter checks the checkout's exact
+revision, tracked cleanliness, nonsymlink skill path, and byte equality with its
+pinned Git blob. Caveman's selected bytes must also match the reviewed SHA-256
+in the lock. Receipts retain the selected path/digest and unchanged bytes. No
+upstream script, installer, engine, hook or skill command is executed by loading.
+
+Apply only to the requested writing phase. The upstream review skill prefers one
+line per finding, preserves locations and concrete fixes, allows questions for
+uncertainty, and expands security, architecture and onboarding explanations. The
+commit skill drafts text only. Existing repository conventions and required
+trailers take precedence over its Conventional Commits/length preferences.
+Neither loading nor drafting authorizes staging, committing, amending, publishing,
+approval or posting a review. Authorization still comes from the current task.
+
+Compression must preserve **negation, probability/uncertainty, numeric units,
+conditions/exceptions, exact identifiers, source revision, ownership and each
+check's state**. Do not turn “may fail if cold” into “fails”, missing measurements
+into zero, a negative delta into a positive one, or green units into completed
+render/device/integration acceptance. Expand when a reader needs fuller reasoning
+to assess correctness, risk, a disagreement or an unresolved claim. Terseness is
+a presentation preference, never a scope or quality reduction.
+
+For diagnostics use the existing [observation economy](../execution/observation-economy.md)
+route: `quiet-run` retains raw output, and `observation-recall.py` verifies and
+retrieves exact bounded evidence. Its default failure preview is only the tail;
+a buried cause may require literal search or an earlier line range. No Caveman
+shrink engine or new semantic-summary layer is enabled.
+
+Cavecrew contributes a reporting idea only: return locations, result, checks,
+limitations and recoverable evidence. Its presets, fixed worker counts, file
+thresholds, pipeline and model rules are not adopted. A reread is source
+inspection, not a test. `caveman learn` may be considered separately as an
+explicitly authorized, diagnostic-only analysis of private traces; this adapter
+neither installs nor invokes it. Learn reports are observations with attribution
+limits, not authority to rewrite instructions, apply fixes, offload memory or
+claim savings. Keep any chosen report in the existing private run record.
+
+Expected tradeoff: shorter writing may reduce repeated prose, but loading and
+checking another skill costs work and terse findings can lose meaning. Outcome,
+token and cost effects remain unknown without comparable accepted tasks. The
+[behavioral cases](../../experiments/instruction-context-adherence.md#scoped-compression-and-evidence-recall)
+separate those claims from offline adapter checks. Do not activate on every task.
 
 For a considered nonuse, `skip graphify --task CHANGE-123 --why 'Exact symbol lookup is sufficient'`
 records `not_used`; do not require this ceremony on every trivial edit.

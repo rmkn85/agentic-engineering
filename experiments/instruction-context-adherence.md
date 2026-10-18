@@ -32,6 +32,54 @@ Acceptance checks only the demonstrated gaps: use current task authority to reso
 
 Do not manufacture a failing baseline when the task is unsafe or costly merely to satisfy the protocol. Existing observed failures can serve as the baseline when recorded clearly.
 
+### Scoped compression and evidence recall
+
+Status: offline adapter/recall regressions plus a proposed behavioral comparison;
+no measured token, cost or development-quality improvement. The on-demand
+[Caveman boundary](../docs/adoption/external-practices.md#caveman-scoped-writing)
+leaves the always-loaded corpus unchanged. Test only when terse output is useful.
+
+Use the same small authorized review or commit-message task, source, model,
+permissions and acceptance in baseline and explicitly loaded candidate arms.
+Retain actual selected/loaded/applied evidence and output in the existing run
+record. Do not paste the desired answer into the prompt or count a reread as a
+test. A coached interpretation case is diagnostic evidence only.
+
+| Case | Acceptance |
+| --- | --- |
+| Negation, uncertainty and conditions | Preserve “must not”, “may”, probability bounds, and “unless/only if” exceptions; expand if a fragment becomes ambiguous. |
+| Exact facts and authority | Preserve exact IDs, symbol locations, source/candidate revision, owner, numbers and units; project conventions and required trailers survive skill preferences. |
+| Missing, zero and negative | Distinguish absent measurements, measured zero, uncertain estimates and a negative delta; do not invent a success or saving. |
+| Rare buried failure | An early cause followed by hundreds of routine lines is absent from the default tail; recover it by verified bounded recall before diagnosis. |
+| Tampered artifact | Changed raw bytes fail the receipt hash check; do not reinterpret unverified output as the original run. |
+| Stale candidate | A matching historical log hash for candidate A does not establish the current candidate B; preserve A's result and mark B unverified until its relevant check runs. |
+| Mixed acceptance surfaces | Green unit checks leave render, physical device and integration checks explicitly unrun; neither source inspection nor a worker vote closes them. |
+| Skill scope | Load only the named writing skill; draft text without Git effects, review posting, persistent persona, provider changes or memory actions. |
+| Need for explanation | Security, architecture, ownership conflict and uncertain causality retain sufficient rationale and evidence even when that requires paragraphs. |
+
+The contributor tests mechanically establish bounded skill selection, exact
+pinned bytes, dirty/revision/path/symlink rejection, and preserved unknown outcomes.
+The buried-failure regression uses 300 later progress lines and exact recall of
+the earlier ID/condition/unit plus distinct missing/zero/negative and unrun check
+lines. Existing hash-tamper tests reject changed raw evidence. These prove tool
+mechanics, not a model's diagnosis, stale-candidate judgment, semantic fidelity or
+automatic startup loading. The remaining table rows need actual behavioral traces.
+Measure total accepted-task usage and correction/rework, including skill loading
+and retrieval overhead, before claiming any saving.
+
+One fresh Luna/Low disposable diagnostic case on 2026-10-18 recovered an early
+`E_SCENE_17` error from a 403-line, 11,812-byte quiet-run log after the tail hid
+it through exact bounded recall. The response also preserved the handoff's
+`-0.25 ms` delta, uncertain attribution and unavailable GPU timing. The worker
+distinguished historical candidate A evidence from current candidate B and kept render/device acceptance open despite
+a misleading “verified” reread claim. The coordinator inspected the response and
+trace. Workspace instructions were delivered; the engineering skill and compact
+reference were explicitly routed and manually read. Game-specific instructions
+were neither supplied nor read. This supports narrow artifact-backed recovery,
+not automatic discovery, full startup compliance, context-pressure robustness,
+live-game acceptance or causal savings; private artifacts remain in that run's
+existing evidence record.
+
 ## Core matrix
 
 For a consequential rule or instruction group, select the smallest subset of these cases that resolves the decision:

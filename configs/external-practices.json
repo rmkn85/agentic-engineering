@@ -1,6 +1,6 @@
 {
   "schema": "external-practices/v1",
-  "reviewed": "2026-09-26",
+  "reviewed": "2026-10-18",
   "ponytail": {
     "repository": "https://github.com/DietrichGebert/ponytail",
     "revision": "e3ba2aa6f1e6f0bc4d69eb09c9f0d0a93af56156",
@@ -15,5 +15,21 @@
     "version": "0.9.68",
     "mode": "local-code-only",
     "license": "Apache-2.0; retain upstream notices"
+  },
+  "caveman": {
+    "repository": "https://github.com/JuliusBrussee/caveman",
+    "revision": "bad48a0e1df55e05e3f52249afa35ecc1909ee76",
+    "mode": "scoped-writing-only",
+    "license": "Apache-2.0; retain LICENSE, NOTICE, LICENSE-MIT and LICENSING.md",
+    "skills": {
+      "caveman-review": {
+        "path": "skills/caveman-review/SKILL.md",
+        "sha256": "599330563f19b5c59c3efddffcd7e8d9098b74c29817ab422ccd3253b103fcb8"
+      },
+      "caveman-commit": {
+        "path": "skills/caveman-commit/SKILL.md",
+        "sha256": "c788a282fc75b981b421dfdad5d84ea7f83f946c126daa39cfc7d3f97845e193"
+      }
+    }
   }
 }

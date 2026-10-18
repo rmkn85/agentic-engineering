@@ -1,6 +1,6 @@
 ---
 name: using-external-practices
-description: Use for consequential cross-file relationship discovery with Graphify, or bounded overengineering review with Ponytail, when these upstream capabilities could improve the current authorized task.
+description: Use for consequential relationship discovery with Graphify, bounded complexity review with Ponytail, or explicitly scoped Caveman review comments and commit-message drafting.
 ---
 
 # Scoped upstream capabilities
@@ -35,16 +35,26 @@ product scope. Do not add global hooks, services, or another instruction stack.
    whole-session persona. Record findings with locations and concrete replacements;
    accept, reject, or defer them against the actual contract. No mandatory second
    model, repeated review loop, line-count target, or reduced testing quota.
-6. **Close only consequential uses.** `assess RUN --status ... --effect ...`
+6. **Caveman:** explicitly select `load --skill caveman-review` or
+   `load --skill caveman-commit` for that writing phase only. Omitted `--skill`
+   still selects Ponytail. The adapter emits reviewed pinned bytes; it does not
+   execute upstream code, install hooks, change persona, or authorize Git effects.
+   Preserve local review/commit conventions, exact IDs, source/ownership, negation,
+   uncertainty, units, conditions/exceptions and check states. Missing, zero,
+   uncertain and negative are different. Expand when correctness needs fuller
+   reasoning; a one-line preference never removes evidence or required explanation.
+   Load is not application or a finding of safety. Use native `quiet-run` and
+   verified `observation-recall.py` for diagnostics; a tail preview is incomplete.
+7. **Close only consequential uses.** `assess RUN --status ... --effect ...`
    records the concrete decision/effect and native evidence. State unchanged,
    harmful and unknown effects too. Loading is not application; a successful CLI
    is not accepted development. Do not infer tokens, cost, avoided bugs or savings.
    Use an existing matched benchmark when attribution is consequential.
-7. **Surface the evidence.** Add the receipt/report path to the existing handoff or
+8. **Surface the evidence.** Add the receipt/report path to the existing handoff or
    run record. `report` gives counts/costs by tool, operation and fixture/live kind;
    `report --details` shows where, why, revision, effect and evidence. Reports can
    combine explicitly named private cache roots; never publish private work traces.
 
 Read `docs/adoption/external-practices.md` for commands, supported scope, retention,
 upgrade/uninstall and the remaining validation boundaries. The method does not
-require either tool to be installed for normal development or `make check`.
+require these optional tools to be installed for normal development or `make check`.
