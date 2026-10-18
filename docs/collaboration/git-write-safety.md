@@ -8,6 +8,16 @@ Resolve the intended repository, actual checkout, current HEAD, authorized branc
 
 No one should switch a shared working directory under another active writer. Prefer isolated preparation when local policy permits it. Direct-to-main projects can still serialize actual writes and integrate coherent deltas; this guide does not impose pull requests or a universal branch policy.
 
+## Parallel worktrees and PR coordination
+
+Use a separate owned worktree/branch for each independent writing lane when concurrent edits, builds or checkouts could collide. Reuse a suitable owned worktree before creating another. A read-only review or tiny serialized edit may need no new checkout. Record the repository, worktree, branch/base, owned paths, shared interfaces and integration owner in the existing assignment. Never copy uncommitted changes implicitly or assume isolated worktrees isolate shared ports, caches, credentials, services or Git metadata.
+
+Make early coherent commits so work survives interruption. Where the repository uses PRs, open one coherent PR per independently integrable outcome and use its URL plus exact base/head identities as the coordination point. Describe behavior and acceptance, keep it current as scope changes, and report whether it is draft, checked, reviewed, merged or blocked. A PR link is not proof of integration. Prefer compact event-driven status and maintained CI-log activity commands supervised by Luna; do not reread full logs or ask approval for inline retrieval commands.
+
+One owner integrates shared-contract changes and serializes merges. Refresh remote/base evidence before integration; review the actual diff and required checks for the candidate head. Reconcile semantic conflicts and run affected integration checks on the resulting candidate. Preserve valid evidence whose inputs did not change; rerun checks invalidated by the new base. Coordinate cross-PR dependencies explicitly rather than independently editing competing contracts. Follow the repository's existing merge/approval policy and never infer merge authority from write access. In a direct-to-main project, apply the same ownership, coherent-commit and exact-result checks through its native route.
+
+After read-back confirms the integrated result and required evidence is durable, retire the worker and archive/remove only its owned worktree and temporary branch through the supported route. First inspect dirty, untracked and ignored files, unpushed commits, open PRs and active users; preserve any useful source/data/evidence. Do not delete unrelated worktrees, force-remove a dirty checkout, or treat a merged PR as proof that every ignored artifact is disposable. Shared caches have their own lifecycle. Keep an unresolved or independently useful lane recoverable in its existing handoff.
+
 ## Classify rather than blindly retry
 
 | Observed failure | Correct response |

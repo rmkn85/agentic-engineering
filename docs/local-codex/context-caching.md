@@ -91,6 +91,18 @@ For a host-specific trial, use a one-off `codex -c model_auto_compact_token_limi
 
 Prefer coherent milestones. If context pressure appears mid-change, first save the exact in-progress state and next action, then compact using the host's supported control. A note or short worker return does not itself remove earlier context.
 
+### Use a larger model window deliberately
+
+Reviewed **2026-10-18**. Sol 6.1 can retain a larger coherent engineering working set, but API capacity and a particular Codex client's advertised capacity are different evidence. The [API model page](https://developers.openai.com/api/docs/models/gpt-6.1-sol) lists 1,050,000 tokens; one inspected native Codex catalog advertises 500,000 with a 95% effective-window setting. That is an observed client limit, not a universal Codex entitlement or a promise that every token is available for source. Inspect the actual selected model's catalog, effective settings and reserves once per run. Do not set `model_context_window` to the API maximum to bypass a smaller supported client window.
+
+Use Sol 6.1/Medium for sustained work whose contracts, implementation, tests and current evidence need to stay together: for example, one cross-module change with shared invariants. Keep that owner across coherent iterations rather than repeatedly rebuilding its context. Load the relevant related sources; keep unrelated backlog history and verbose CI output outside the window. Luna can supervise routine operations and return compact evidence while Sol retains the engineering decisions. Use Astra for the demanding creative/complex decision, then transfer its accepted result instead of copying its entire history.
+
+Before adopting a larger-window model, inspect old fixed compaction overrides. A 220,000-token threshold still triggers at that size on a 500,000-token model. The [configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference) documents that leaving `model_auto_compact_token_limit` unset uses the model default. Start there unless an intentional measured override is needed; preserve unrelated settings and validate a fresh run. If testing a different threshold, use a bounded private profile/one-off override, leave response/reasoning headroom, and compare accepted outcome, reconstruction, compactions, input/cache usage and wall time. A larger window is capacity, not a requirement to fill it or proof of better recall.
+
+This also handles model switching without assigning a Sol-sized global threshold to Astra. In the reviewed [native source](https://github.com/openai/codex/blob/main/codex-rs/protocol/src/openai_models.rs), an absent per-model/configured limit derives from 90% of the resolved raw window; a supplied limit is clamped to that boundary. With the inspected catalog's absent per-model limit, the source-derived thresholds are 450,000 for Sol 6.1's 500,000 window and 244,800 for Astra/Luna's 272,000 window. The separate 95% usable-window calculation gives 475,000 and 258,400. These calculations are not observed runtime trigger events, and the displayed context counter may use a different accounting base. Keep `model_auto_compact_token_limit_scope = "total"` for the full-context boundary. Do not invent a model-name table, modify the provider-owned catalog or install a watcher to rewrite global settings on every model switch. If a deliberately earlier threshold is needed, use a supported explicit profile/one-off override and verify it applies to the intended run.
+
+The API page also lists higher full-request rates above 272K input tokens (2× input/cache, 1.5× output). API rates do not establish Codex subscription-credit accounting. Larger retained context can reduce reconstruction and still increase total inference cost; measure the accepted workflow before claiming savings. Keep the [model/effort and allowance policy](subagents.md#named-model-and-effort-policy) unchanged by context size.
+
 ## Cache invalidation
 
 Never turn “do not reread” into dogma. Reuse prior semantic work while its inputs remain valid.
@@ -103,6 +115,14 @@ A unit becomes dirty when an input that can alter its conclusion changes, for ex
 - compiler/test evidence contradicting the prior conclusion
 
 This is incremental compilation applied to model work.
+
+## Cache lifecycle and cleanup
+
+Give each temporary working set an owner, purpose and reuse boundary using the existing task/artifact location. Reuse deterministic build/dependency caches and semantic findings while their source/dependency/configuration inputs remain valid. A cache hit is usable only for the same relevant identity; do not silently reuse a stale executable, index or capture as evidence for a newer candidate. Share read-only pinned caches where supported; isolate mutable outputs and use the tool's native locking rather than concurrent writers in one cache directory.
+
+Classify before clearing. Source, downloaded asset/license provenance, user data, accepted captures and required evidence are durable even if ignored by Git or stored under a directory called cache. Preserve them in the owner's normal artifact store before deleting task-local scratch, failed variants and reconstructible intermediates. At integration/retirement release the task's temporary cache, stop its consumers and prune only its owned paths with the maintained cleanup command. Check containment, symlinks, active users and outstanding handoffs; preview destructive cleanup where supported. Keep useful shared build/package caches under their native quota/eviction policy instead of flushing them after every commit.
+
+Do not use blanket cache deletion to repair an unexplained failure. Invalidate the input-dependent entry or run a bounded cold-cache comparison when that distinguishes a stale-cache hypothesis. Preserve the decisive before/after evidence, then clear obsolete scratch promptly. Disk cleanup and conversation compaction are different operations: deleting files or closing a worktree does not remove already-loaded model context, and compaction does not delete on-disk caches.
 
 ## References
 

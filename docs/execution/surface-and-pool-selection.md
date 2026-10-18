@@ -1,6 +1,6 @@
 # Execution surfaces and usage pools
 
-Model routing reviewed: 2026-10-04. Usage-pool examples below retain their 2026-09-15 review date and are not current quota promises.
+Model routing reviewed: 2026-10-18. Usage-pool examples below retain their 2026-09-15 review date and are not current quota promises.
 
 Efficiency decisions should separate three different questions:
 
@@ -16,7 +16,7 @@ Choose the cheapest capable combination that preserves the required outcome and 
 
 Do not spend a scarce model or agentic allowance merely because it is available. Conversely, do not downgrade model quality or force work through an awkward surface solely to save quota when that creates retries, lost context, or lower-quality output.
 
-For concrete choices use the [named model and effort policy](../local-codex/subagents.md#named-model-and-effort-policy): user-directed Astra planning, Sol/Medium substantial coding/orchestration, mostly Luna/Medium or Low workers, and intentional bounded Sol/High escalation. No Astra or above-High workers. The permitted pairs are instruction policy, not a missing native allowlist. API prices must not be presented as subscription-credit conversions.
+For concrete choices use the [named model and effort policy](../local-codex/subagents.md#named-model-and-effort-policy): tools/Luna for routine operations, maintenance and monitoring; Sol 6.1/Medium for sustained engineering; Astra/Medium or High for demanding creative/complex decisions. Ultra requires the current explicit exhaust-before-reset instruction and ends at observed exhaustion, reset or the owner deadline. Select executor, model/effort and useful agent count for the next outcome; a saved app selection is not this decision. The permitted pairs are instruction policy, not a missing native allowlist. API prices must not be presented as subscription-credit conversions.
 
 ## Route coupled synthesis separately from routine execution
 
@@ -34,7 +34,7 @@ Use judgment across the factors; they are not a numeric score or fixed threshold
 
 Use a sufficiently capable cheaper worker for bounded implementation when the contract, owned files, dependencies and acceptance checks are already explicit. This includes routine code changes and asset production after the reference, format, budgets and review criteria are settled. Use deterministic tools for exact inspection and repetition: state snapshots, counters, replay setup, captures, diffs, builds, tests and controlled measurements.
 
-Select from the named policy AND executors exposed by the current run. Verify live support rather than assuming a dated catalog is installed. If a model disappears or is renamed, retain the capability goal but do not silently treat an unapproved successor as allowed. If the coordinator cannot judge or integrate the specialist's artifact, preserve that decision for authorized escalation; this never authorizes an Astra worker.
+Select from the named policy AND executors exposed by the current run. Verify live support rather than assuming a dated catalog is installed. If a model disappears or is renamed, retain the capability goal but do not silently treat an unapproved successor as allowed. If the coordinator cannot judge or integrate the specialist's artifact, preserve that decision for authorized escalation; buying a stronger worker does not remove the integration/acceptance boundary.
 
 A practical progression is:
 
