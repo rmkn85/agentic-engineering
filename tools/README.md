@@ -117,3 +117,48 @@ python3 tools/bench-compare.py \
 ```
 
 Acceptance must remain non-inferior before lower token/time numbers are called an improvement.
+
+## Bounded local Codex settings activity
+
+The executable `./tools/make` is a strict activity parser, **not GNU Make**.
+It accepts exactly one of these forms and one declared argument:
+
+```bash
+./tools/make codex-settings-plan HINT_FILE=/private/path/reviewed-hint.txt
+./tools/make codex-settings-apply PLAN_SHA256=<printed-lowercase-sha256>
+```
+
+This optional activity requires Python 3.11+ and standard-library `tomllib`.
+Normal `make check` still supports Python 3.9+; transformation tests skip when
+`tomllib` is unavailable. No packages are installed. There are no destination,
+profile, permission, model, command, GNU Make option or additional-goal overrides.
+Shell-quote the entire `HINT_FILE=...` argument when its path needs quoting.
+Do not pass hint contents as executable shell syntax.
+
+The destination is always the native `~/.codex/config.toml`. Planning reads an
+owned UTF-8 hint file with no group/other permissions, validates the TOML, and
+prepares exactly two changes: remove the top-level
+`model_auto_compact_token_limit` override and replace
+`features.multi_agent_v2.multi_agent_mode_hint_text` with that literal text.
+The helper requires both existing settings, an integer compaction override and
+an explicit `[features.multi_agent_v2]` section with a string hint assignment.
+Other spellings or ambiguous transformations can be refused. It compares the
+parsed result against precisely these allowed changes and retains unrelated
+text, comments, saved models and reasoning effort.
+
+Planning leaves the config unchanged. It saves only the allowed operations,
+hint and original/result digests in a mode-0600 JSON plan under a fixed,
+owned mode-0700 `codex-settings-<uid>` directory in the system temporary root.
+The printed SHA-256 identifies the exact plan. Apply verifies that receipt and
+the current config, creates a private original backup in the same cache, then
+atomically replaces the config while preserving its file mode. Repeating apply
+with the expected result reports `already_applied`. Retain the private cache
+for backup recovery according to your own retention policy; it contains private
+hint text and, after apply, a full private config backup. Do not publish it.
+
+Symlink paths, changed plans/configs and undeclared arguments are refused.
+Drift checks are not locks and do not exclude a simultaneous writer between the
+final check and replacement. Coordinate other config writers before apply.
+Output contains actions, digests and status; errors omit underlying parser/OS
+messages that could reveal private values. This wrapper constrains activity
+arguments; approval rules and operating-system permissions remain external.
