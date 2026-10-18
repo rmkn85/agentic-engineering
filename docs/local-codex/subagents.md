@@ -2,33 +2,50 @@
 
 Subagents are useful. They also duplicate model calls, context, tool use, and coordination. The correct policy is **not** "never delegate" and it is **not** "single agent is always best."
 
-Platform defaults are a baseline for unconstrained choices, not permission to inherit worker cost settings. The explicit dispatch contract below takes precedence over general advice to preserve defaults, reuse context or select a stronger specialist.
+Treat a saved app model selection as session/UI state, not an executor-routing plan. Select the executor, model, effort and useful agent count for the next outcome regardless of that selection. Changing a default cannot replace this decision. The explicit dispatch contract below takes precedence over general advice to preserve defaults, reuse context or select a stronger specialist.
 
-The broader decision order—deterministic operation → cheapest capable worker → stronger reasoning only at uncertainty boundaries—is summarized in the [efficiency control plane](../principles/efficiency-control-plane.md). Automatic worker escalation remains within the default dispatch ceiling; explicit owner exceptions are scoped below.
+The broader decision order—deterministic operation → cheapest capable worker → stronger reasoning at uncertainty boundaries—is summarized in the [efficiency control plane](../principles/efficiency-control-plane.md). Select for the next decision, not the most expensive phase in the task's history.
 
 ## Named model and effort policy
 
-Routing policy reviewed **2026-10-12**; the evidence/prices below retain their original review date, **2026-10-04**. These are explicit repository operating defaults, not a universal optimum, a native Codex allowlist, or measured savings. No additional policy file or custom-agent installation is needed. Owner constraints and explicit scoped exceptions apply, subject to higher-priority runtime rules. Validate support in the live client/account once per run; do not silently substitute a new model when a named choice is unavailable.
+Routing policy reviewed **2026-10-18**; the evidence/prices below retain their original review date, **2026-10-04**. These are explicit repository operating defaults, not a universal optimum, a native Codex allowlist, or measured savings. No additional policy file or custom-agent installation is needed. Owner constraints apply, subject to higher-priority runtime rules. Validate support in the live client/account once per run; do not silently substitute a new model when a named choice is unavailable.
 
 | Assignment | Deliberate selection | Boundary |
 | --- | --- | --- |
 | Exact inventory, formatting, known tests, structured filtering | Deterministic tool | Keep short commands local; a bounded worker may supervise long/noisy runs for context isolation |
-| Routine extraction, classification, structured summary, small explicit edit or established-rubric check | `gpt-6-luna` / `low` | Preserve evidence and required instructions |
+| Usage monitoring, Git staging/committing/publishing, CI-log triage, routine extraction, small explicit edit or established-rubric check | `gpt-6-luna` / `low` when model supervision is needed | Use deterministic commands first; route a discovered substantive defect separately |
 | Focused implementation, tests against a clear contract, localized diagnosis or review needing judgment | `gpt-6-luna` / `medium` | Normal coding-worker starting point |
 | Same bounded problem requiring deeper edge-case reasoning or hypothesis checking | `gpt-6-luna` / `high` | State the particular reasoning need; do not raise effort for a large batch merely because it is large |
-| Ambiguous cross-boundary implementation, complex research/tool use, or synthesis exceeding Luna's demonstrated/expected capability | `gpt-6.1-sol` / `medium` | Normal main coding/orchestration choice; worker use needs a task-specific capability reason |
+| Sustained engineering, cross-boundary implementation, reasoning with substantial execution, or synthesis beyond a bounded Luna assignment | `gpt-6.1-sol` / `medium` | Normal main coding/orchestration and substantial engineering-worker choice |
 | Difficult coupled debugging, consequential correctness review or deeper analysis | `gpt-6.1-sol` / `high` | A specific unresolved decision, not a blanket reviewer setting |
-| Hardest owner-led planning or exceptional maximum-intelligence decision | User-selected `gpt-6-astra`, effort chosen for that planning task | Owner-led planning; a designated substantial co-developer lane requires the explicit exception below |
+| Extremely creative or complex decisions: demanding graphics, advanced architecture, or comprehension of difficult academic work | `gpt-6-astra` / `medium`, or `high` for the specific coupled reasoning need | A bounded specialist outcome; hand implementation, tests, publication and monitoring back to the appropriate executor |
 
-**Ordinary autonomous worker pairs:** Luna at `low`, `medium` or `high`; Sol at `medium` or `high`. **Excluded by default:** Astra and other unapproved models. `xhigh`, `max` or `ultra` worker effort remains excluded. This replaces the undefined word "premium" and the earlier Medium-only ceiling. A coordinator can intentionally escalate to an allowed Sol/High pair without asking again; it cannot add models or raise the ceiling on its own.
+**Baseline pairs:** Luna at `low|medium|high`, Sol 6.1 at `medium|high`, Astra at `medium|high` for the demanding decisions above. These choices do not require a new approval prompt. Do not default an entire graphics, research or engineering project to its strongest specialist. `xhigh|max` requires explicit scoped owner authorization. **Ultra is forbidden except under the current explicit instruction to exhaust allowance before reset**, as defined below. A model's availability, default effort or a worker's old configuration grants no exception.
+
+### Ultra and allowance-bound work
+
+An Ultra exception requires the owner to explicitly request exhausting allowance **before a reset** in the active assignment. "Use Astra", "maximize usage", an expired/unrelated assignment's exception, or merely having remaining credits is insufficient. A valid scoped authorization survives resume until its stop boundary; do not ask for it again. Keep routine supervision on tools or Luna/Low even during that exception. Record the relevant allowance window, baseline/reset identity, deadline and stop conditions in the existing task state before starting.
+
+Stop allowance-bound work on the **first observed** owner deadline, exhausted included allowance (100% used in a required window), or reset of the relevant window. A reset ends the old authorization; it does not replenish that assignment's budget. `ordinaryUsageAllowed=true` or available paid credits does not authorize credit spending after exhaustion. Unknown usage must not be treated as remaining allowance. Preserve state and cancel affected agents and outstanding operations through supported controls; report any cancellation that cannot be confirmed. A later reset announcement is not authorization to resume an old backlog.
+
+Use native exhaustion/cancellation controls where available. Poll through deterministic tooling, with Luna/Low only when interpretation or supervision is necessary; never devote an Astra/Sol inference loop to watching counters. Bound the polling interval and account for in-flight work. This instruction is not a hard spending cap and cannot guarantee cancellation between observations. If the owner requires a hard cap the host cannot enforce, do not start that path.
+
+### Usage reasonableness checkpoints
+
+Use the native Codex usage API when exposed (`get_usage_limits` in the desktop app) from time to time during substantial work. Take a baseline when practical; revisit at meaningful progress/resource checkpoints, after unexpected retries, context growth or fan-out, and on resume when the last sample is stale. Do not turn this into an inference loop or a mandatory call per operation. Tools or Luna/Low collect a compact snapshot; the coordinator assesses it alongside the work. Use the existing task/steering record, not a second tracker.
+
+Compare depletion and elapsed time in the **same allowance window** with the rough expected work, accepted progress and remaining plan. Check the reset horizon and current authorization. Use the API's named limit buckets where available, keep overlapping/legacy views distinct, and treat absent values as unavailable. One snapshot cannot establish a depletion rate. Resets break simple subtraction; coarse, delayed or unchanged counters do not prove that work is free. There is no universal percentage, polling cadence, target burn rate or requirement to use spare allowance.
+
+If depletion is unexpectedly fast, check actual model/effort selections, retained input, retries, duplicated investigation, review and concurrent agents against the forecast. Also consider other account activity, shared pools, reporting lag and possible platform/accounting faults; the API reports shared account limits, not task-level attribution. Correlate native usage/evidence where available and keep the cause unknown when unsupported. Do not diagnose waste or a vendor fault from a percentage alone, or spend a large probe merely to investigate spending.
+
+Steer within authority: remove waste, reduce concurrency, route the next phase down, slow down, or stop costly work while reconciling an unexplained anomaly. Preserve acceptance and unfinished state. If acceleration would be useful, explain its expected benefit, extra resource use, uncertainty and reset horizon, then obtain owner approval **before materially increasing the spending pace**, unless that acceleration is already explicitly authorized in scope. A nearby reset is a reason to discuss the tradeoff, never automatic permission for fan-out, higher effort, Ultra or paid credits. These qualitative reviews supplement the owner's hard stop conditions; they do not create a new fixed budget or override one.
 
 ### Explicit owner exception: designated co-developer
 
 Use the owner's explicit authorization as the contract for designated substantial,
-independent parallel outcomes. For example, an owner may authorize the root to designate up to two autonomous co-developers using `gpt-6.1-sol` at
-`medium|high|xhigh` or `gpt-6-astra` at `medium`. A different explicit owner policy
-may narrow or replace these choices; this example does not grant permission in
-an unrelated deployment. Ordinary workers remain under the default ceiling.
+independent parallel outcomes, including concurrency, descendant limits and any
+specifically authorized model/effort exception. Co-developer autonomy alone does
+not authorize higher effort or Ultra. Ordinary workers use the baseline pairs.
 Authorization persists within its scope; do not ask again for each qualifying lane.
 
 Declare the sustained outcome, owned paths, shared interfaces, allocation and
@@ -39,7 +56,7 @@ continues independent work and owns final integration. Small extractions and
 routine reviews do not qualify as co-developer lanes. Use supported collaboration
 tools, not nested clients or permission workarounds.
 
-Choose **model and effort jointly** for the actual goal. A focused assignment usually needs less reasoning than orchestration, but small scope can still contain a hard semantic decision. More files, visual input, independence or a "reviewer" title do not establish that need. An observed failure or a concrete explanation of anticipated coupling can justify escalation; do not purchase a doomed cheap attempt merely to tick a box. Missing instructions, tools, data, permissions or a broken test harness are not automatically model-capability failures. After an accepted decision, use tools or a cheaper worker for routine work when that saves more than transferring context costs.
+Choose **model and effort jointly** for the actual goal. A focused assignment usually needs less reasoning than orchestration, but small scope can still contain a hard semantic decision. More files, visual input, independence or a "reviewer" title do not establish that need. An observed failure or a concrete explanation of anticipated coupling can justify escalation; do not purchase a doomed cheap attempt merely to tick a box. Missing instructions, tools, data, permissions or a broken test harness are not automatically model-capability failures. After an accepted decision, transfer the compact result to the appropriate executor. Useful history does not justify assigning a routine monitoring, Git or CI phase to an Astra worker.
 
 Model mix is an observation, not a target or expected ratio. Judge routing by
 accepted results and total cost, including reconstruction of useful context.
@@ -62,7 +79,7 @@ These rates do not convert subscription credits, include all service/tool/long-c
 
 ## Executor-routing checkpoint
 
-Before a substantial batch of reading, editing, or validation, choose who performs it. A one-line choice in the existing plan is enough; this is not a new planning document or a pause for approval.
+Before a substantial batch of reading, editing, or validation, choose who performs it and how many agents are useful. Consider tools/current coordinator, compliant reuse and a new worker; zero additional agents is a valid choice. Justify concurrent lanes by independent outcomes, context isolation or useful specialist attention, not a fixed quota or the model shown in the app. A one-line choice in the existing plan is enough; this is not a new planning document or a pause for approval.
 
 Reading a complete corpus does not ordinarily require the orchestrator to ingest every byte: independent readers can cover defined portions, preserve contradictions and cite original evidence. Instructions that explicitly require the main agent's own read still take precedence. Do not substitute a summary for required source coverage or let a worker silently omit difficult material.
 
@@ -70,7 +87,7 @@ Choose an outcome-sized assignment, not one agent per command or document. Keep 
 
 Model choice is separate from spawning. Inspect the live models, effort levels, tools, executors and available cost/usage information, then select the cheapest adequate pair from the named policy. Reuse that inspected mapping until relevant configuration, availability or evidence changes. The policy already supplies the permitted pairs: do not refuse delegation merely because no custom allowlist file is installed. Unsupported selection or no adequate allowed pair does block that route; continue with exact tools/the authorized coordinator where adequate.
 
-The coordinator must still be able to judge and integrate the artifact. If it cannot, preserve the unresolved requirement for an authorized decision; do not purchase stronger workers merely to escape that judgment boundary or silently switch the coordinator to Astra. The owner-authorized co-developer exception above has its own scope. Retain useful context when it saves total effort; transfer findings when a different capability or cheaper configuration repays the handoff cost.
+The coordinator must still be able to judge and integrate the artifact. If it cannot, preserve the unresolved requirement for an authorized decision; do not purchase stronger workers merely to escape that judgment boundary or silently switch the coordinator's runtime configuration. Retain useful context within the routing policy; transfer findings when the next phase needs a different executor.
 
 ### Routing examples and evidence limits
 
@@ -94,15 +111,16 @@ already prohibits them. Do not expand the instruction stack for each occurrence.
 Establish this contract at launch. Reuse it on resume and follow-up; state only changed scope, constraints or acceptance. Reconsider routing when capability, context, ownership or remaining allocation materially changes. Keep the receipt in the existing task record; do not add a tracker or repeat model research.
 
 - **Explicit selection.** Set an allowed supported model, reasoning effort and bounded context through actual launch controls or an explicitly selected inspected role. Omitted/inherited cost settings are invalid. The same model as the parent can be chosen independently and explicitly. A model name inside a prompt does not itself set the runtime model. Inspect role/config precedence and actual override exposure. In native V2 choose `fork_turns` explicitly: it defaults to `all`; `none` or a positive integer string bounds inherited history. Fork/override compatibility varies by exposed client schema. If a full-history fork prevents explicit model/effort selection, use a supported bounded-context mode. Inspect actual controls rather than treating an earlier source audit as the current runtime contract.
-- **Intentional escalation.** Use the named policy, not an undefined price category. Luna Medium is the focused coding default; Low for routine work; Sol or High needs a concise task-specific reason. Coordinator-authorized Sol/High is within policy, not a new owner-approval gate. Keep costly judgment bounded; route down when the savings exceed transfer and lost-context costs.
+- **Intentional selection.** Use the named policy: Luna/Low for routine supervision, Luna/Medium for bounded coding, Sol 6.1/Medium for sustained engineering, Astra/Medium or High for the demanding creative/complex decision. A concise task-specific reason is enough; no deliberately failed cheap trial or routine approval prompt is needed. Check the Ultra exception separately before any such launch or reuse.
 - **Finite budgets.** Before dispatch, allocate numeric assignment and aggregate delegation limits in time or total tokens according to the workload and owner limits. Do not invent a universal numeric optimum. Include input/context and reasoning where measurable. Choose stop conditions for the assignment; do not impose a universal repair count on iterative work. Sustained domain owners and co-developers use meaningful checkpoints and total allocations rather than a new allowance per edit. Only designated co-developers with explicit authorization may delegate ordinary subtasks. Follow-ups, replacements, retries and any explicitly authorized descendants debit the same allocations. A restart or new assignment label cannot reset them. At exhaustion, return evidence and unresolved work rather than automatically increasing spend; necessary authorized coordinator work can continue only within applicable native budgets, without claiming incomplete work is done.
-- **Context and reuse.** Choose fresh context or continuity by total expected effort. Reuse when the worker's known model, effort, retained context and remaining budget remain appropriate for the new subtask. A short routine follow-up can cost less than transferring useful context. Reassess at meaningful task boundaries, not every message; previous escalation is not permanent permission for unrelated work. Native V2 `followup_task` has no model/effort override fields: transfer findings to a newly configured worker when downgrading. Context minimization must retain permissions, applicable repository instructions, evidence and acceptance constraints.
+- **Context and reuse.** Choose fresh context or continuity by total expected effort within policy. Reuse only when the known model, effort, retained context and remaining budget fit the next phase. Do not reactivate an Ultra worker after its exception expires, even for a tiny follow-up. Native V2 `followup_task` has no model/effort override fields: transfer findings to a newly configured worker when routing changes. Context minimization must retain permissions, applicable repository instructions, evidence and acceptance constraints. For large coupled work, use the [larger-context procedure](context-caching.md#use-a-larger-model-window-deliberately).
 - **Verification and rejection.** No dispatch through unsupported or out-of-policy controls, and no continuation after a disallowed resolved setting is discovered. Record requested/resolved settings from native evidence when observable; absent telemetry is unknown, not verified compliance. Metadata visibility is not a resolved-settings receipt. Inspect a representative launch before multiplying the pattern. A mismatch stops further dispatch until corrected; post-launch inspection cannot prevent the first call's cost. Distinguish soft allocations, native exhaustion boundaries and exact billing ceilings; a required hard cap unavailable on the host blocks that path.
 
 A compact receipt is sufficient:
 
 ```text
 Outcome / scope: <bounded artifact and acceptance>
+Executor / count: <tools, coordinator, compliant reuse or new workers; useful concurrency and reason>
 Selected model/effort: <allowed supported pair; why adequate or escalation needed>
 Context: <bounded inputs or inspected compliant reuse>
 Budget: <numeric assignment and aggregate limits; remaining; attempts>
@@ -139,6 +157,14 @@ Route down after the specialist or coordinator converts ambiguity into an accept
 Give workers minimal context and disjoint write scopes. Workers keep logs on disk and return only results, evidence paths, validation, limitations, and unresolved decisions. The coordinator reviews decision-bearing source without replaying commands or importing logs already consumed by workers. When evidence is insufficient, request targeted worker investigation within its remaining allocation; read only excerpts needed for a coordinator decision.
 
 Revisit the choice at integration boundaries or when actual quality, cost, rate-limit, or collision evidence changes it. Do not narrate a routing choice before every tool call. A short direct command often has less overhead than any subagent.
+
+### Worker lifetime and integration
+
+Choose lifetime independently of model and autonomy. A short-lived worker owns one bounded result: inventory, CI triage, a focused patch or a review. Return the artifact/evidence and stop when its acceptance or allocation is reached; do not keep it polling or invent follow-up work. A long-lived domain owner is useful when several iterations share substantial invariants, design decisions or feedback. Keep that context and send concrete failures back to it, but give it checkpoints, a cumulative allocation and an explicit integration/retirement boundary. "Long-lived" does not grant higher effort, perpetual execution, nested delegation or permanent ownership.
+
+Reuse only while the executor still fits. Retire or replace a worker when its outcome is integrated, its next phase belongs to a different tier, its context is stale, or its allocation/authority ends. First preserve owned changes and a compact handoff: branch/worktree, source/head identities, accepted decisions, checks, evidence, pending PR and next action. A waiting worker is not an independent progress lane; use event-driven waits where available, not repeated inference. Stop/close through the host's supported controls and distinguish an idle/completed worker from a running one. Do not claim that a short return clears its old context.
+
+For concurrent writers, use [separate worktrees and an integration owner](../collaboration/git-write-safety.md#parallel-worktrees-and-pr-coordination). A shared filesystem is not write isolation, and separate worktrees still share repository metadata, remote refs and external resources. Do not switch another worker's checkout or merge through an active writer. Keep temporary evidence/cache with its owner and apply the [cache lifecycle](context-caching.md#cache-lifecycle-and-cleanup) before retiring the checkout.
 
 ### Handoff and retained context
 
