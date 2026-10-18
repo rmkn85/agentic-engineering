@@ -80,6 +80,27 @@ class ObservationRecallTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertFalse(result.stdout)
 
+    def test_buried_failure_remains_retrievable_beyond_tail(self):
+        result = subprocess.run(
+            [str(QUIET_RUN), "--", sys.executable, "-c",
+             "import sys; print('FAIL exact_id=CASE-079 retry=false latency=125 ms; cause uncertain unless cache warm'); "
+             "print('no measurements supplied'); print('measured_count=0; delta=-2 ms'); "
+             "print('unit=PASS; render=UNRUN; device=UNRUN; integration=UNRUN'); "
+             "[print('routine progress') for _ in range(300)]; sys.exit(7)"],
+            env={**os.environ, "QUIET_RUN_LOG_DIR": str(self.root / "buried")},
+            capture_output=True, check=False)
+        self.assertEqual(result.returncode, 7, result.stderr)
+        self.manifest_path = next((self.root / "buried").glob("*/manifest.json"))
+        excerpt = self.manifest_path.parent / "failure-excerpt.log"
+        self.assertNotIn(b"CASE-079", excerpt.read_bytes())
+        recalled = self.run_recall("--find", "CASE-079")
+        self.assertEqual(recalled.returncode, 0, recalled.stderr)
+        self.assertEqual(recalled.stdout,
+                         b"1:FAIL exact_id=CASE-079 retry=false latency=125 ms; cause uncertain unless cache warm\n")
+        self.assertEqual(self.run_recall("--lines", "2:3").stdout,
+                         b"no measurements supplied\nmeasured_count=0; delta=-2 ms\n"
+                         b"unit=PASS; render=UNRUN; device=UNRUN; integration=UNRUN\n")
+
 
 if __name__ == "__main__":
     unittest.main()

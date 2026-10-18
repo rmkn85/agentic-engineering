@@ -136,7 +136,9 @@ class ExternalPractices(unittest.TestCase):
                                   timeout=5, kind="fixture")
         output = io.StringIO()
         with patch.object(ep, "LOCK", lock), patch.object(ep, "checkout", return_value=self.source), \
-                patch.object(ep, "verified_source"), contextlib.redirect_stdout(output):
+                patch.object(ep, "verified_source"), \
+                patch.object(ep, "verified_skill", return_value=(self.pin["skill"], skill.read_bytes(), ep.digest(skill))), \
+                contextlib.redirect_stdout(output):
             result = ep.execute(args)
         receipt = next(self.cache.glob("runs/*/practice-feedback.json"))
         return result, receipt, output.getvalue()
@@ -192,6 +194,72 @@ class ExternalPractices(unittest.TestCase):
         (self.repo / "core.py").write_text("# modified\n")
         with self.assertRaisesRegex(ValueError, "dirty"):
             ep.verified_source(self.repo, pin)
+
+    def committed_skill(self, name="caveman-review"):
+        relative = ep.SKILLS[name][1]
+        skill = self.repo / relative
+        skill.parent.mkdir(parents=True, exist_ok=True)
+        skill.write_text("Fixture skill only.\n")
+        self.git("add", relative)
+        self.git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "skill")
+        pin = {"revision": self.git("rev-parse", "HEAD").decode().strip(),
+               "skills": {name: {"path": relative, "sha256": ep.digest(skill)}}}
+        return skill, pin
+
+    def test_reviewed_skills_are_exact_pinned_bytes(self):
+        for name in ("caveman-review", "caveman-commit"):
+            skill, pin = self.committed_skill(name)
+            relative, content, sha256 = ep.verified_skill(self.repo, pin, name)
+            self.assertEqual(relative, ep.SKILLS[name][1])
+            self.assertEqual(content, skill.read_bytes())
+            self.assertEqual(sha256, pin["skills"][name]["sha256"])
+
+    def test_skill_tamper_is_rejected_even_when_git_status_is_clean(self):
+        skill, pin = self.committed_skill()
+        self.git("update-index", "--assume-unchanged", str(skill.relative_to(self.repo)))
+        skill.write_text("Changed instruction.\n")
+        ep.verified_source(self.repo, pin)
+        with self.assertRaisesRegex(ValueError, "pinned Git blob"):
+            ep.verified_skill(self.repo, pin, "caveman-review")
+
+    def test_skill_paths_capabilities_and_review_digest_are_bounded(self):
+        _, pin = self.committed_skill()
+        for name in ("../SKILL.md", "caveman", "caveman-learn", "cavecrew"):
+            with self.assertRaisesRegex(ValueError, "unsupported skill"):
+                ep.verified_skill(self.repo, pin, name)
+        pin["skills"]["caveman-review"]["sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "reviewed sha256"):
+            ep.verified_skill(self.repo, pin, "caveman-review")
+        pin["skills"]["caveman-review"]["path"] = "../SKILL.md"
+        with self.assertRaisesRegex(ValueError, "allowlist"):
+            ep.verified_skill(self.repo, pin, "caveman-review")
+
+    def test_cli_load_routes_only_explicit_named_skills(self):
+        for name, tool in ((None, "ponytail"), ("caveman-review", "caveman"),
+                           ("caveman-commit", "caveman")):
+            argv = ["external_practices.py", "load", "--task", "fixture", "--why", "bounded draft"]
+            if name:
+                argv += ["--skill", name]
+            with patch.object(sys, "argv", argv), patch.object(ep, "execute", return_value=0) as execute:
+                self.assertEqual(ep.main(), 0)
+                args = execute.call_args.args[0]
+                self.assertEqual(args.tool, tool)
+                self.assertEqual(args.skill, name or "ponytail-review")
+        for name in ("../SKILL.md", "caveman-learn", "cavecrew"):
+            argv = ["external_practices.py", "load", "--skill", name, "--task", "fixture", "--why", "reject"]
+            with patch.object(sys, "argv", argv), contextlib.redirect_stderr(io.StringIO()), \
+                    patch.object(ep, "execute") as execute, self.assertRaises(SystemExit):
+                ep.main()
+            execute.assert_not_called()
+
+    @unittest.skipIf(os.name == "nt", "symlink permissions vary on Windows")
+    def test_skill_symlink_is_rejected(self):
+        skill, pin = self.committed_skill()
+        original = self.repo / "original.md"
+        skill.rename(original)
+        skill.symlink_to(original)
+        with self.assertRaisesRegex(ValueError, "symlink"):
+            ep.verified_skill(self.repo, pin, "caveman-review")
 
 
 if __name__ == "__main__":

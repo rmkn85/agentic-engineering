@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Network-enabled, bounded real-upstream fixture. Not a model-benefit benchmark."""
 from pathlib import Path
+import hashlib
 import json
 import os
 import subprocess
@@ -48,6 +49,27 @@ def main():
         pin = json.loads((ROOT / "configs/external-practices.json").read_text())["ponytail"]
         original = cache / "upstream" / ("ponytail-" + pin["revision"]) / pin["skill"]
         assert (loaded / "upstream-skill.md").read_bytes() == original.read_bytes(), "upstream skill was changed"
+        step("setup", "caveman")
+        pin = json.loads((ROOT / "configs/external-practices.json").read_text())["caveman"]
+        source = cache / "upstream" / ("caveman-" + pin["revision"])
+        for name in ("caveman-review", "caveman-commit"):
+            loaded = step("load", "--skill", name)
+            selected = pin["skills"][name]
+            content = (loaded / "upstream-skill.md").read_bytes()
+            assert content == (source / selected["path"]).read_bytes(), "Caveman skill was changed"
+            blob = subprocess.check_output(["git", "-C", str(source), "show",
+                                            pin["revision"] + ":" + selected["path"]])
+            assert content == blob, "Caveman skill differs from pinned Git blob"
+            sha256 = hashlib.sha256(content).hexdigest()
+            assert sha256 == selected["sha256"], "Caveman reviewed digest changed"
+            usage = json.loads((loaded / "execution.json").read_text())
+            receipt = json.loads((loaded / "practice-feedback.json").read_text())
+            assert usage["tool"] == "caveman" and usage["skill"] == selected["path"]
+            assert usage["upstream_repository"] == pin["repository"] and usage["skill_sha256"] == sha256
+            assert usage["executions"] == [], "Caveman load executed an upstream command"
+            assert receipt["practices"][0]["revision"] == pin["revision"]
+            assert receipt["practices"][0]["stage"] == "loaded"
+            assert receipt["outcome"]["status"] == "unverified", "loading is not accepted application"
         step("setup", "graphify")
         built = step("build")
         usage = json.loads((built / "execution.json").read_text())
@@ -74,7 +96,7 @@ def main():
         step("query", "sanitize_amount", expected=2)
         step("build")
         step("query", "sanitize_amount")
-        print("UPSTREAM_SMOKE_PASS: pinned skill, cross-file relation, scoped query, explain/path, reuse and invalidation")
+        print("UPSTREAM_SMOKE_PASS: pinned Ponytail/Caveman skills, cross-file relation, scoped query, explain/path, reuse and invalidation")
         print("This is a fixture: no live model, development improvement or causal savings measured.")
         return 0
     finally:

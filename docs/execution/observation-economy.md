@@ -85,6 +85,11 @@ A stable reference is useful only while its identity is trustworthy. Record enou
 
 When a relevant input changes, mark the prior observation stale rather than silently presenting it as current.
 
+Hash verification proves retained bytes, not current applicability. Bind the
+existing run/handoff to the tested source/candidate and compare it with the
+current candidate before reusing the result. A valid old log remains historical
+evidence after source changes; `observation-recall.py` does not infer freshness.
+
 ## Worker handoffs
 
 Workers should normally return:
@@ -118,6 +123,20 @@ Compaction may shorten the conversation; durable evidence makes it reconstructab
 ## Failure modes
 
 **Over-eager truncation:** a preview hides the useful error. Retain the full artifact and expose targeted retrieval.
+
+`quiet-run`'s failure excerpt is the final 80 lines by default, not a complete
+failure index. Use `python3 tools/observation-recall.py MANIFEST --find EXACT_ID`
+or `--lines START:COUNT` on `full-log` when the cause is earlier. Hash mismatch
+blocks recall; repair the evidence route rather than using unverified bytes as
+the same observation.
+
+Compact reports preserve negation, uncertainty, units, conditions/exceptions,
+exact IDs, source and owner, and individual check states. Missing data, measured
+zero, an uncertain estimate and a negative result must remain distinguishable.
+For example, “unit checks passed; render/device/integration unrun” does not close
+those other gates. Use fuller reasoning when a compact form would obscure the
+condition, source coverage or acceptance gap. See the
+[scoped compression cases](../../experiments/instruction-context-adherence.md#scoped-compression-and-evidence-recall).
 
 **Stale handle:** a receipt points to an older revision. Include revision/hash identity and explicit invalidation.
 
