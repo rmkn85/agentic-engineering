@@ -10,3 +10,9 @@ external-report:
 	@python3 tools/external_practices.py report
 external-smoke:
 	@python3 tools/check-external-practices.py
+
+.PHONY: context7-cache-plan context7-cache-apply
+context7-cache-plan:
+	@./tools/make context7-cache-plan SPEC_FILE=$(SPEC_FILE)
+context7-cache-apply:
+	@./tools/make context7-cache-apply PLAN_SHA256=$(PLAN_SHA256)

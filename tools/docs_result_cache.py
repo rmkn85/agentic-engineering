@@ -38,7 +38,10 @@ def timestamp(value):
 
 
 def request(path):
-    value = load(path)
+    return validate_request(load(path))
+
+
+def validate_request(value):
     if set(value) != {"provider", "operation", "arguments", "namespace", "source"}:
         raise ValueError("request requires exactly provider, operation, arguments, namespace, source")
     for key in ("provider", "operation", "namespace", "source"):
@@ -109,19 +112,19 @@ def record_read(root, reference):
     return body, str(path), envelope["sha256"]
 
 
-def run(args, now=None):
+def run(args, now=None, request_value=None, response_value=None):
     now = dt.datetime.now(dt.timezone.utc).timestamp() if now is None else now
     root = Path(args.cache_dir)
     for directory in (root, root / "records", root / "entries", root / "gates"):
         if directory.is_symlink():
             raise ValueError("cache directories must not be symlinks")
-    req = request(args.request)
+    req = request(args.request) if request_value is None else validate_request(request_value)
     key = digest(req)
     scope = digest({"provider": req["provider"], "namespace": req["namespace"]})
     entry = root / "entries" / (key + ".json")
     gate = root / "gates" / (scope + ".json")
     if args.command == "record":
-        response = load(args.response)
+        response = load(args.response) if response_value is None else response_value
         kind = args.kind
         if kind == "success":
             if args.valid_for is None or not math.isfinite(args.valid_for) or args.valid_for <= 0:
