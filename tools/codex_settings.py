@@ -129,6 +129,7 @@ def write_new(path, data, mode=0o600):
     checked_path(path)
     descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, mode)
     with os.fdopen(descriptor, 'wb') as stream:
+        os.fchmod(stream.fileno(), mode)
         stream.write(data)
         stream.flush()
         os.fsync(stream.fileno())
@@ -157,7 +158,7 @@ def plan(config, hint_file, cache):
             'result_sha256': digest(result), 'actions': ['remove_top_level_compaction_override', 'replace_multi_agent_hint']}
 
 
-def apply(config, receipt, cache):
+def read_plan(receipt, cache):
     if not re.fullmatch(r'[0-9a-f]{64}', receipt):
         raise Rejected('PLAN_SHA256 must be 64 lowercase hexadecimal characters')
     cache = private_cache(cache)
@@ -165,11 +166,22 @@ def apply(config, receipt, cache):
     if mode != 0o600 or digest(encoded) != receipt:
         raise Rejected('plan digest or private mode changed')
     payload = json.loads(encoded)
-    if (set(payload) != {'schema', 'original_sha256', 'result_sha256', 'remove_top_level', 'replace_hint'}
-            or payload['schema'] != 1 or payload['remove_top_level'] != 'model_auto_compact_token_limit'
+    if (not isinstance(payload, dict) or set(payload) != {'schema', 'original_sha256', 'result_sha256', 'remove_top_level', 'replace_hint'}
+            or type(payload['schema']) is not int or payload['schema'] != 1
+            or payload['remove_top_level'] != 'model_auto_compact_token_limit'
+            or not isinstance(payload['replace_hint'], str) or not payload['replace_hint'].strip()
+            or len(payload['replace_hint'].encode('utf-8')) > 65536
             or not all(isinstance(payload[key], str) and re.fullmatch(r'[0-9a-f]{64}', payload[key])
                        for key in ('original_sha256', 'result_sha256'))):
         raise Rejected('unsupported plan scope')
+    if (cache / (receipt + '.json')).stat().st_uid != os.getuid():
+        raise Rejected('plan must be owned by the current user')
+    return payload
+
+
+def apply(config, receipt, cache):
+    cache = private_cache(cache)
+    payload = read_plan(receipt, cache)
     original, original_mode = read_regular(config)
     current = digest(original)
     if current == payload['result_sha256']:
@@ -206,15 +218,55 @@ def apply(config, receipt, cache):
     return {'status': 'applied', 'plan_sha256': receipt, 'result_sha256': digest(result), 'backup_sha256': digest(original)}
 
 
+def allowlist(config, receipt, cache):
+    """Install one fixed apply-only rule after the reviewed plan was applied."""
+    payload = read_plan(receipt, cache)
+    current, _ = read_regular(config)
+    if digest(current) != payload['result_sha256']:
+        raise Rejected('config does not match the applied plan result')
+    # Production passes the native config path; function injection is for tests.
+    rules = checked_path(Path(config).parent / 'rules')
+    parent = rules.parent.stat()
+    if parent.st_uid != os.getuid() or stat.S_IMODE(parent.st_mode) & 0o022:
+        raise Rejected('config directory must be owned and not writable by others')
+    try:
+        rules.mkdir(mode=0o700)
+    except FileExistsError:
+        pass
+    info = rules.stat()
+    if (not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid()
+            or stat.S_IMODE(info.st_mode) & 0o022):
+        raise Rejected('rules directory must be owned and not writable by others')
+    wrapper = checked_path(Path(__file__).absolute().with_name('make'))
+    rule = ('prefix_rule(pattern=' + json.dumps([str(wrapper), 'codex-settings-apply'])
+            + ', decision="allow")\n').encode('utf-8')
+    target = checked_path(rules / 'agentic-engineering-settings.rules')
+    if target.exists():
+        saved, mode = read_regular(target)
+        if saved != rule or mode != 0o600 or target.stat().st_uid != os.getuid():
+            raise Rejected('existing dedicated rule differs or is not owned and private')
+        status = 'already_installed'
+    else:
+        latest, _ = read_regular(config)
+        if digest(latest) != payload['result_sha256']:
+            raise Rejected('config changed before rule installation')
+        checked_path(rules)
+        write_new(target, rule)
+        status = 'installed'
+    return {'status': status, 'plan_sha256': receipt, 'rule_sha256': digest(rule),
+            'actions': ['allow_fixed_wrapper_apply_activity']}
+
+
 def parse_activity(arguments):
     if len(arguments) != 2:
         raise Rejected('expected exactly one activity and its declared KEY=value argument')
     activity, argument = arguments
-    key = {'codex-settings-plan': 'HINT_FILE', 'codex-settings-apply': 'PLAN_SHA256'}.get(activity)
+    key = {'codex-settings-plan': 'HINT_FILE', 'codex-settings-apply': 'PLAN_SHA256',
+           'codex-settings-allowlist': 'PLAN_SHA256'}.get(activity)
     if key is None or not argument.startswith(key + '=') or not argument[len(key) + 1:]:
         raise Rejected('unsupported activity or argument')
     value = argument[len(key) + 1:]
-    if activity == 'codex-settings-apply' and not re.fullmatch(r'[0-9a-f]{64}', value):
+    if activity in ('codex-settings-apply', 'codex-settings-allowlist') and not re.fullmatch(r'[0-9a-f]{64}', value):
         raise Rejected('PLAN_SHA256 must be 64 lowercase hexadecimal characters')
     return activity, value
 
@@ -226,7 +278,12 @@ def main(arguments=None):
             raise Rejected('codex-settings activity requires Python 3.11+ (tomllib)')
         config = Path.home() / '.codex' / 'config.toml'
         cache = Path(tempfile.gettempdir()) / ('codex-settings-' + str(os.getuid()))
-        result = plan(config, value, cache) if activity == 'codex-settings-plan' else apply(config, value, cache)
+        if activity == 'codex-settings-plan':
+            result = plan(config, value, cache)
+        elif activity == 'codex-settings-apply':
+            result = apply(config, value, cache)
+        else:
+            result = allowlist(config, value, cache)
         print(json.dumps(result, sort_keys=True))
         return 0
     except (Rejected, OSError, ValueError, TypeError) as error:

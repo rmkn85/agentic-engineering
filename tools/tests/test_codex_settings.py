@@ -175,12 +175,122 @@ class SettingsTests(unittest.TestCase):
                 settings.apply(self.config, receipt, self.cache)
         self.assertTrue(self.config.read_bytes().endswith(b'# racing writer\n'))
 
+    def installed_plan(self):
+        receipt = self.plan()
+        settings.apply(self.config, receipt, self.cache)
+        return receipt
+
+    def test_allowlist_exact_prefix_private_creation_and_repeat(self):
+        receipt = self.installed_plan()
+        before = self.config.read_bytes()
+        status = settings.allowlist(self.config, receipt, self.cache)
+        target = self.root / 'rules' / 'agentic-engineering-settings.rules'
+        wrapper = str(Path(settings.__file__).absolute().with_name('make'))
+        expected = ('prefix_rule(pattern=' + json.dumps([wrapper, 'codex-settings-apply'])
+                    + ', decision="allow")\n').encode()
+        self.assertEqual(target.read_bytes(), expected)
+        self.assertNotIn(b'codex-settings-allowlist', expected)
+        self.assertNotIn(b'codex-settings-plan', expected)
+        self.assertEqual(status['status'], 'installed')
+        self.assertEqual(stat.S_IMODE(target.stat().st_mode), 0o600)
+        self.assertEqual(stat.S_IMODE(target.parent.stat().st_mode), 0o700)
+        self.assertEqual(settings.allowlist(self.config, receipt, self.cache)['status'], 'already_installed')
+        self.assertEqual(self.config.read_bytes(), before)
+
+    def test_allowlist_preserves_other_rules_and_normal_directory_mode(self):
+        receipt = self.installed_plan()
+        rules = self.root / 'rules'
+        rules.mkdir(mode=0o755)
+        other = rules / 'other.rules'
+        other.write_bytes(b'# existing rules\n')
+        settings.allowlist(self.config, receipt, self.cache)
+        self.assertEqual(other.read_bytes(), b'# existing rules\n')
+        self.assertEqual(stat.S_IMODE(rules.stat().st_mode), 0o755)
+
+    def test_allowlist_refuses_unapplied_or_drifted_config_and_plan(self):
+        receipt = self.plan()
+        with self.assertRaises(settings.Rejected):
+            settings.allowlist(self.config, receipt, self.cache)
+        settings.apply(self.config, receipt, self.cache)
+        self.config.write_bytes(self.config.read_bytes() + b'# drift\n')
+        with self.assertRaises(settings.Rejected):
+            settings.allowlist(self.config, receipt, self.cache)
+        self.assertFalse((self.root / 'rules').exists())
+        path = self.cache / (receipt + '.json')
+        path.write_bytes(path.read_bytes() + b' ')
+        with self.assertRaises(settings.Rejected):
+            settings.allowlist(self.config, receipt, self.cache)
+
+    def test_allowlist_refuses_different_or_nonprivate_or_foreign_target(self):
+        receipt = self.installed_plan()
+        settings.allowlist(self.config, receipt, self.cache)
+        target = self.root / 'rules' / 'agentic-engineering-settings.rules'
+        original = target.read_bytes()
+        target.write_bytes(b'# other content\n')
+        with self.assertRaises(settings.Rejected):
+            settings.allowlist(self.config, receipt, self.cache)
+        self.assertEqual(target.read_bytes(), b'# other content\n')
+        target.write_bytes(original)
+        target.chmod(0o644)
+        with self.assertRaises(settings.Rejected):
+            settings.allowlist(self.config, receipt, self.cache)
+        target.chmod(0o600)
+        real_stat = Path.stat
+        def foreign(path, *args, **kwargs):
+            info = real_stat(path, *args, **kwargs)
+            if path == target:
+                values = list(info)
+                values[4] = os.getuid() + 1
+                return os.stat_result(values)
+            return info
+        with patch.object(Path, 'stat', foreign):
+            with self.assertRaises(settings.Rejected):
+                settings.allowlist(self.config, receipt, self.cache)
+
+    def test_allowlist_refuses_symlinks_and_writable_directory(self):
+        receipt = self.installed_plan()
+        rules = self.root / 'rules'
+        other = self.root / 'other-rules'
+        other.mkdir(mode=0o700)
+        rules.symlink_to(other, target_is_directory=True)
+        with self.assertRaises(settings.Rejected):
+            settings.allowlist(self.config, receipt, self.cache)
+        rules.unlink()
+        rules.mkdir(mode=0o777)
+        rules.chmod(0o777)
+        with self.assertRaises(settings.Rejected):
+            settings.allowlist(self.config, receipt, self.cache)
+        rules.chmod(0o700)
+        target = rules / 'agentic-engineering-settings.rules'
+        target.symlink_to(self.root / 'missing')
+        with self.assertRaises(settings.Rejected):
+            settings.allowlist(self.config, receipt, self.cache)
+
+    def test_allowlist_final_drift_refused(self):
+        receipt = self.installed_plan()
+        reader = settings.read_regular
+        count = 0
+        def changing(path):
+            nonlocal count
+            if Path(path) == self.config:
+                count += 1
+                if count == 2:
+                    self.config.write_bytes(self.config.read_bytes() + b'# race\n')
+            return reader(path)
+        with patch.object(settings, 'read_regular', side_effect=changing):
+            with self.assertRaises(settings.Rejected):
+                settings.allowlist(self.config, receipt, self.cache)
+        self.assertFalse((self.root / 'rules' / 'agentic-engineering-settings.rules').exists())
+
 
 class ParserTests(unittest.TestCase):
     def test_only_exact_activities_and_arguments(self):
         self.assertEqual(settings.parse_activity(['codex-settings-plan', 'HINT_FILE=a b;$(never)']),
                          ('codex-settings-plan', 'a b;$(never)'))
-        for args in [[], ['--help'], ['-f', 'evil'], ['codex-settings-plan', 'HINT_FILE=a', 'check'],
+        self.assertEqual(settings.parse_activity(['codex-settings-allowlist', 'PLAN_SHA256=' + 'a' * 64]),
+                         ('codex-settings-allowlist', 'a' * 64))
+        for args in [['codex-settings-allowlist', 'PLAN_SHA256=' + 'a' * 64, 'PREFIX=evil'],
+                     ['codex-settings-allowlist', 'HINT_FILE=evil'], [], ['--help'], ['-f', 'evil'], ['codex-settings-plan', 'HINT_FILE=a', 'check'],
                      ['codex-settings-plan', 'HINT_FILE=a', 'SHELL=evil'],
                      ['codex-settings-plan', '--eval=evil'], ['check', 'HINT_FILE=a'],
                      ['codex-settings-apply', 'PLAN_SHA256=' + 'A' * 64],
