@@ -108,8 +108,8 @@ class Bridge:
                 if state["status"] == "hit":
                     self.send_tool({"jsonrpc": "2.0", "id": request_id, "result": state["response"]}, "hit", state)
                     return
-                if state["status"] == "blocked":
-                    self.send_tool(error_result(request_id, "Context7 call suppressed by shared failure gate: " + json.dumps(state)), "blocked", state)
+                if self.args.cache_only or state["status"] == "blocked":
+                    self.send_tool(error_result(request_id, "Context7 producer suppressed by cache preflight: " + json.dumps(state)), "blocked", state)
                     return
                 response_queue = queue.Queue()
                 key = json.dumps(request_id)
@@ -166,6 +166,7 @@ def main():
     parser.add_argument("--max-age", required=True, type=float)
     parser.add_argument("--valid-for", required=True, type=float)
     parser.add_argument("--timeout", type=float, default=60)
+    parser.add_argument("--cache-only", action="store_true", help="never produce docs on a miss; bounded acceptance only")
     parser.add_argument("--child", nargs=argparse.REMAINDER, help="explicit fixture or supported stdio child command")
     args = parser.parse_args()
     if (not Path(args.cache_dir).is_absolute() or not all(math.isfinite(value) for value in (args.timeout, args.max_age, args.valid_for)) or args.timeout <= 0 or args.max_age < 0 or args.valid_for <= 0):
