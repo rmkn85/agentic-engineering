@@ -187,3 +187,35 @@ maintained, mutable code at that absolute path, not an immutable code digest. Re
 Installation is separate from fresh-runtime adoption: verify the native rule
 load and approval behavior in a fresh runtime before claiming adoption. The
 installer's drift checks do not exclude simultaneous external writers.
+
+
+## Documentation-result preflight
+
+`docs_result_cache.py` is a Python-standard-library offline cache for explicit native MCP callers. There is no new network client, proxy, credential handling, mandatory service or global interception. Run it from the owner checkout; the default private directory is `.agent-cache/docs-results` (already ignored). The coordinator must pass one shared ignored private `--cache-dir` and the same nonsecret namespace to cooperating workers using the same client/auth scope, including sibling worktrees. Separate defaults cannot suppress each other's probes. Different namespaces represent actual different clients/accounts/permissions, never a workaround for a blocked gate. Concurrent records are written atomically with unique immutable response files; gate updates use a bounded exclusive lock and retain every unresolved failure boundary, so a later finite outage cannot shorten an unknown quota or a later reset. Valid exact cached hits remain available during gate updates. A pending gate lock blocks new probes; update contention waits at most five seconds and then exits with an error. After interruption, inspect the preserved raw records and establish that the lock owner has stopped before removing an owned stale lock; do not blindly retry or delete failure state. This is not a reservation/single-flight service, so coordinate concurrent producers in the existing task owner path. Only share a directory whose writers are trusted. Hashes detect accidental corruption, not hostile rewriting by those writers.
+
+Create a private request JSON file with exactly these fields (neutral example):
+
+```json
+{"provider":"context7","operation":"query-docs","arguments":{"libraryId":"/org/library/v2","query":"Configure routing"},"namespace":"public-docs-client-a","source":"https://docs.example/library/v2"}
+```
+
+`arguments` must match the actual MCP call exactly; do not add a language field that the native operation does not accept. Put any relevant language/version not present in native arguments in `source`, without claiming the provider supplied a version it did not. Use the actual operation name. A resolution request has its own operation/arguments/source identity. The namespace is a nonsecret client/auth-scope label, never a token or copied config. Change it only when scope actually changes; do not rotate it to bypass a provider failure gate. Source identity must change when known provider/source revision or freshness requirements invalidate the old result; the offline tool cannot discover upstream changes itself.
+
+```sh
+python3 tools/docs_result_cache.py lookup --request request.json --max-age 3600
+```
+
+Inspect the JSON status. A valid exact cached success remains usable while a provider gate blocks new calls. On `hit`, use `response` and retain the returned record path/hash; on `blocked`, inspect the failure evidence and obey the boundary. On `miss`, perform the authorized native MCP call, save its actual JSON response to a private file, then classify and record it:
+
+```sh
+python3 tools/docs_result_cache.py record --request request.json --response response.json --kind success --valid-for 3600
+python3 tools/docs_result_cache.py record --request request.json --response response.json --kind quota
+```
+
+Choose `quota`, `auth`, `spend` or `outage` only for provider-wide failures; `request` represents a request-specific failure such as a missing page. These are never reusable documentation. The tool rejects explicit MCP error envelopes classified as success, but the caller must inspect plain strings and error content too. Record only the observed message; do not infer an HTTP status, reset metadata or account scope absent from the response. A known future provider boundary may be recorded with `--retry-at 2026-11-01T00:00:00Z`; do not invent a reset date. Without it the gate remains until meaningful changed-condition evidence:
+
+```sh
+python3 tools/docs_result_cache.py release --request request.json --evidence 'Provider status confirms restoration after the recorded outage'
+```
+
+Release requires an existing gate and keeps its prior failure reference and the evidence in the gate; it does not create docs or prove the explanation. The caller remains responsible for evidence quality and authorized retry. Corrupt/missing failure evidence blocks probes pending inspection. Invalid/missing docs produce a miss. `--cache-dir PATH` goes before the subcommand. Malformed input exits 2; status results exit 0, so callers must inspect `status`. Preserve useful raw evidence before normal owned-cache cleanup. Do not publish private cache files. This is an opt-in command workflow: normal-stack model adoption and actual provider use need separate trials.
