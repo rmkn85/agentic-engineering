@@ -126,9 +126,11 @@ It accepts exactly one of these forms and one declared argument:
 ```bash
 ./tools/make codex-settings-plan HINT_FILE=/private/path/reviewed-hint.txt
 ./tools/make codex-settings-apply PLAN_SHA256=<printed-lowercase-sha256>
+./tools/make codex-settings-allowlist PLAN_SHA256=<printed-lowercase-sha256>
 ```
 
-This optional activity requires Python 3.11+ and standard-library `tomllib`.
+This optional activity requires Python 3.11+, standard-library `tomllib`, and
+POSIX ownership/mode APIs (`os.getuid`, `fchmod`).
 Normal `make check` still supports Python 3.9+; transformation tests skip when
 `tomllib` is unavailable. No packages are installed. There are no destination,
 profile, permission, model, command, GNU Make option or additional-goal overrides.
@@ -162,3 +164,26 @@ final check and replacement. Coordinate other config writers before apply.
 Output contains actions, digests and status; errors omit underlying parser/OS
 messages that could reveal private values. This wrapper constrains activity
 arguments; approval rules and operating-system permissions remain external.
+
+After the planned settings are applied, `codex-settings-allowlist` can install
+one persistent native approval rule. Its first invocation requires native
+approval for this fixed installation activity; it never authorizes itself.
+It revalidates the private digest-bound plan and requires the current config to
+match the exact planned result. It writes only
+`~/.codex/rules/agentic-engineering-settings.rules`, allowing exactly the
+absolute sibling `tools/make` executable followed by `codex-settings-apply`.
+The strict wrapper continues to validate that activity's one digest argument.
+There are no caller-selected rule prefixes or destination paths.
+
+The installer creates a missing owned rules directory with mode 0700 and a
+missing dedicated rule file exclusively with mode 0600. An identical owned,
+private regular file reports `already_installed`; different content, symlinks,
+foreign ownership or directories writable by group/others are refused.
+Existing rule files and directory modes are preserved. No config is changed.
+Run installation from the intended stable canonical checkout, after integration;
+do not install from a temporary worker worktree that will be retired. The
+absolute wrapper prefix identifies that execution checkout. The rule trusts
+maintained, mutable code at that absolute path, not an immutable code digest. Review later changes to that wrapper and helper accordingly.
+Installation is separate from fresh-runtime adoption: verify the native rule
+load and approval behavior in a fresh runtime before claiming adoption. The
+installer's drift checks do not exclude simultaneous external writers.
