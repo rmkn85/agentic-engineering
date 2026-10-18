@@ -16,3 +16,7 @@ context7-cache-plan:
 	@./tools/make context7-cache-plan SPEC_FILE=$(SPEC_FILE)
 context7-cache-apply:
 	@./tools/make context7-cache-apply PLAN_SHA256=$(PLAN_SHA256)
+
+.PHONY: context7-cache-probe
+context7-cache-probe:
+	@./tools/make context7-cache-probe CONFIG_SHA256=$(CONFIG_SHA256)
