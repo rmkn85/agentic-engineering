@@ -99,6 +99,23 @@ Use the simplest concrete implementation until a real change boundary or test se
 
 Prefer an acyclic dependency graph with a small number of permitted directions.
 
+Every functionality path must pass through the single authority that owns its
+behavior. Locate that authority before repairing a caller. Entry points, adapters,
+background jobs, compatibility paths and fallbacks use its public contract;
+representation translation does not grant decision or mutation authority. They
+must not reproduce policy, independently select an accepted result or reinterpret
+the owner's refusal. One authority may have multiple instances or conforming
+implementations when its contract allows them; deployment topology does not create
+independent decision policy.
+
+Make this boundary enforceable with narrow types, restricted private interfaces,
+dependency direction and the project's native architecture checks. Enumerate the
+affected entry paths and test a deliberate bypass. Independently verify input
+coverage, provenance and calculations inside the authority: a single implementation
+can be consistently wrong. Structural enforcement and domain correctness are
+separate claims. Record uncovered paths as gaps, and repair reached violations
+without turning every change into a whole-system audit.
+
 Useful properties:
 
 - modules expose a narrow public surface;
