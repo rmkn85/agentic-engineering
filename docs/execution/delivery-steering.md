@@ -10,6 +10,14 @@ The user delegates ordinary engineering choices, not authority to rewrite the us
 
 When evidence supports multiple materially different product outcomes or an action exceeds authority, identify that decision precisely and continue independent work. A role title, reviewer agreement or guessed answer from the user grants no additional permission.
 
+## Orient before choosing
+
+Recover purpose and the remaining outcome gap before comparing tasks, not after a convenient ready task has been selected. Use existing requirements, architecture, implementation and qualification evidence to establish what already works. For example, a tested export provider does not prove that the user-facing application installs it or completes the required export journey. Preserve the provider's valid proof and work on the missing consumer boundary instead of rebuilding the provider or declaring the programme complete.
+
+Research starts with the decision to resolve. If a report must support a particular user decision, establish which claims and evidence matter before choosing layout tools or trimming text. Retrieval supplies sources; synthesis determines what those sources imply. Reuse an implemented capability through its owner when it meets the contract. Investigate a genuine unknown with a bounded authorized experiment, or ask for a consequential missing preference when sources cannot settle it. These are decision rules, not a mandatory research phase or an owner review gate.
+
+The expected benefit is fewer avoidable owner corrections and less peripheral work. The cost is focused source recovery and judgment; reuse unchanged evidence and keep routine decisions short. This does not justify reopening completed qualification, suppressing new requirements or stopping independent work behind a blocked parent. The [counterfactual scenarios](../../experiments/delivery-steering.md#purpose-first-selection-scenarios) separate these cases. Until actual agent trials compare choices and outcomes, improvement remains a hypothesis; revise or revert this intervention if it adds delay or fails to reduce misselection without weakening acceptance.
+
 ## Distinguish consumption, progress and commitments
 
 Use available native information in its original units. Do not combine tokens, commits and hours into a universal age or productivity score.
