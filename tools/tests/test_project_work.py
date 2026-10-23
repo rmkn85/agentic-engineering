@@ -1,6 +1,7 @@
 """Behavioral task contract and real HTTP boundary regression tests."""
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -277,6 +278,29 @@ class ProjectWorkTests(unittest.TestCase):
         payload = self.get(base + '/api/overview?scope=all')
         self.assertTrue(payload['repositories'][0]['errors'])
         self.assertFalse(payload['tasks'][0]['ready'])
+
+    @unittest.skipUnless(os.environ.get('PROJECT_WORK_BROWSER_MODULE'), 'optional own-process browser runtime not selected')
+    def test_own_headless_ui_groups_issues_and_filter_loading(self):
+        one = task(status='in-progress', depends=['absent/repository#RUN-001'])
+        one['current']['blockers'] = ['Current obstruction']
+        self.write_task(one)
+        self.write_task(task('RUN-002', 'planned', ['absent/repository#RUN-002']))
+        self.write_task(task('RUN-003', 'done'))
+        self.write_task(task('RUN-004', 'cancelled'))
+        self.write_task(task('LATER-001'))
+        path = self.root / 'work/frontier.json'
+        frontier = json.loads(path.read_text())
+        frontier['product'] = ['RUN-001', 'RUN-002', 'RUN-003', 'RUN-004']
+        path.write_text(json.dumps(frontier))
+        two = self.repository('two', 'sample/two')
+        self.write_task(task(status='in-progress'), two)
+        two_frontier = two / 'work/frontier.json'
+        invalid = json.loads(two_frontier.read_text())
+        invalid['product'].append('MISSING-001')
+        two_frontier.write_text(json.dumps(invalid))
+        result = subprocess.run(['node', str(TOOL.parent / 'tests/project_work_ui_smoke.cjs'),
+                                 self.start_server()], capture_output=True, text=True, timeout=45)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_http_pagination_is_bounded(self):
         for number in range(2, 110):
