@@ -79,6 +79,7 @@ See [instruction/context adherence experiments](../../experiments/instruction-co
 | --- | --- |
 | Starting or changing requirements, implementation contracts or acceptance | [Specification contract](../specifications/README.md), with [technical-language rules](../specifications/technical-language.md) and [standards map](../specifications/standards.md) for the relevant decision |
 | Checkpoint direction, repeated ineffective work, or a changed remaining-work forecast | [Delivery steering skill](../../skills/steering-delivery/SKILL.md); [decision records and adoption](../execution/delivery-steering.md) only when needed |
+| Adopting or reading canonical repository task records and local work views | [Project work contract](../adoption/project-work.md) |
 | Adopting guidance in a new project, existing system or active agent session | [Standards migration](../adoption/standards-migration.md) |
 | Designing, implementing or reviewing human-facing interfaces or generated visual/document output | [Accessible interface contract](../interfaces/accessible-interfaces.md); select additional requirements from the [standards map](../interfaces/standards.md) only when applicable |
 | Narrow scope, structural preservation, uncertain or irreversible conditions | [`../principles/defaults-before-overrides.md`](../principles/defaults-before-overrides.md) |

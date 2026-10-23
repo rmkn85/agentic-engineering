@@ -252,3 +252,10 @@ After the configuration activity, `./tools/make context7-cache-probe CONFIG_SHA2
 The activity starts an owned native stdio process group, initializes MCP, lists tools, and asks one fixed Context7 CLI stdio-authentication resolution question. After a successful produced/hit response, it verifies the identical valid record offline before starting a second cold client for the same request. A failure, blocked result, missing metadata or invalid cache prevents that second trial. The activity itself adds the bridge's fixed `--cache-only` flag to the second client: expiration or invalidation after the offline check returns an error and cannot reach a documentation producer. Only matching hit metadata proves the second client reused the response. This tests native configured execution, separately from the desktop app's retained connection; it does not prove app hot reload or model usage savings.
 
 Initialization/list/first-call deadlines are 90/15/65 seconds; the second call allows 5 seconds after the same bounded startup. Cleanup terminates the complete owned process group, including descendants, with bounded forced teardown. Raw stderr and protocol artifacts stay in an owned private workspace cache directory with mode0600 files. The command prints only bounded status/phase/hash/error-class metadata and artifact paths, never provider error text, config contents or env values. Required network/npm writes outside a read-only sandbox belong to this single reviewed parameterized activity; do not replace it with an ad-hoc escalated script. An unconfigured or drifted target is refused. Offline tests cover real fixture MCP messages, cold shared hits, launch/drift rejection, redaction and suppression of the second trial when offline evidence is missing.
+
+## Canonical project work
+
+[`project_work.py`](project_work.py) validates repository-owned tasks, builds a
+deterministic `work/NOW.md`, lists/shows concise task views, and serves a read-only
+loopback aggregate without external dependencies. See the [contract, adoption
+route and router template](../docs/adoption/project-work.md).
