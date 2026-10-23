@@ -136,6 +136,44 @@ class ProjectWorkTests(unittest.TestCase):
         self.assertEqual(now.stat().st_mtime_ns, before)
         self.assertEqual((self.root / 'work/frontier.json').read_bytes(), original)
 
+    def test_build_check_missing_current_stale_without_writes(self):
+        command = [sys.executable, str(TOOL), '--root', str(self.root), 'build']
+        now = self.root / 'work/NOW.md'
+        before = sorted(path.relative_to(self.root) for path in self.root.rglob('*'))
+        missing = subprocess.run(command + ['--check'], capture_output=True, text=True)
+        self.assertNotEqual(missing.returncode, 0)
+        self.assertIn('stale or missing', missing.stderr)
+        self.assertEqual(before, sorted(path.relative_to(self.root) for path in self.root.rglob('*')))
+        self.assertFalse(now.exists())
+        self.assertEqual(subprocess.run(command, capture_output=True).returncode, 0)
+        content, modified = now.read_bytes(), now.stat().st_mtime_ns
+        self.assertEqual(subprocess.run(command + ['--check'], capture_output=True).returncode, 0)
+        self.assertEqual((now.read_bytes(), now.stat().st_mtime_ns), (content, modified))
+        changed = task()
+        changed['current']['nextAction'] = 'A newly authorized next action'
+        self.write_task(changed)
+        before = sorted(path.relative_to(self.root) for path in self.root.rglob('*'))
+        stale = subprocess.run(command + ['--check'], capture_output=True, text=True)
+        self.assertNotEqual(stale.returncode, 0)
+        self.assertEqual((now.read_bytes(), now.stat().st_mtime_ns), (content, modified))
+        self.assertEqual(before, sorted(path.relative_to(self.root) for path in self.root.rglob('*')))
+        self.assertEqual(subprocess.run(command, capture_output=True).returncode, 0)
+        self.assertEqual(subprocess.run(command + ['--check'], capture_output=True).returncode, 0)
+
+    def test_empty_frontier_now_ends_in_exactly_one_newline(self):
+        path = self.root / 'work/frontier.json'
+        data = json.loads(path.read_text())
+        data['product'] = []
+        path.write_text(json.dumps(data))
+        (self.root / 'work/tasks/RUN-001.json').unlink()
+        state = self.state()
+        content = work.now_markdown(state, state['repositories'][0])
+        self.assertTrue(content.endswith('## Parallel\n'))
+        self.assertFalse(content.endswith('\n\n'))
+        self.assertEqual(subprocess.run([sys.executable, str(TOOL), '--root', str(self.root),
+                                        'build'], capture_output=True).returncode, 0)
+        self.assertEqual((self.root / 'work/NOW.md').read_bytes(), content.encode('utf-8'))
+
     def test_payload_whitelist_and_rich_blockers(self):
         data = task()
         data['history'] = ['PRIVATE-HISTORY-MARKER' * 10000]
