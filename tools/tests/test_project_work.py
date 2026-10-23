@@ -63,13 +63,40 @@ class ProjectWorkTests(unittest.TestCase):
         self.write_task(task('RUN-002', 'in-progress'))
         self.assertFalse(work.overview(self.state(), repository='sample/one')['tasks'][0]['ready'])
 
+    def test_resolved_blocker_records_keep_evidence_without_preventing_readiness(self):
+        data = task()
+        data['current']['blockers'] = [
+            {'id': 'B1', 'disposition': 'resolved', 'observed': 'Previously unavailable',
+             'sources': [{'path': 'retained-observation.log'}], 'exit': 'Consumer succeeds'},
+            {'id': 'B2', 'disposition': 'superseded', 'nextAction': 'Use replacement record'}]
+        self.write_task(data)
+        state = self.state()
+        row = work.overview(state)['tasks'][0]
+        self.assertTrue(row['ready'])
+        self.assertEqual(row['activeBlockerCount'], 0)
+        self.assertEqual(len(row['current']['blockers']), 2)
+        self.assertEqual(work.task_detail(state, 'sample/one', 'RUN-001')['current']['blockers'],
+                         data['current']['blockers'])
+        for active in ('A current obstruction', {'observed': 'No disposition'},
+                       {'disposition': 'open'}, {'disposition': 'unknown'}):
+            with self.subTest(active=active):
+                data['current']['blockers'].append(active)
+                self.write_task(data)
+                row = work.overview(self.state())['tasks'][0]
+                self.assertFalse(row['ready'])
+                self.assertEqual(row['activeBlockerCount'], 1)
+                data['current']['blockers'].pop()
+
     def test_default_current_queue_excludes_unchanged_outside_records(self):
         self.write_task(task('OLD-001', 'in-progress'))
         self.write_task(task('LATER-001', 'planned'))
+        self.write_task(task('FINISHED-001', 'done'))
         state = self.state()
         self.assertEqual([row['id'] for row in work.overview(state)['tasks']], ['RUN-001'])
         all_rows = work.overview(state, scope='all')['tasks']
-        self.assertEqual(len(all_rows), 3)
+        self.assertEqual(len(all_rows), 4)
+        self.assertEqual(work.overview(state, status='done')['total'], 0)
+        self.assertEqual(work.overview(state, status='done', scope='all')['total'], 1)
         outside = next(row for row in all_rows if row['id'] == 'LATER-001')
         self.assertFalse(outside['queued'])
         self.assertFalse(outside['ready'])
