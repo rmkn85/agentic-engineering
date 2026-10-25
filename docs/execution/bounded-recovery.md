@@ -10,6 +10,8 @@ First remove fragile dependencies. Rebuild disposable caches; keep unique state 
 
 ## Choose diagnosis investment before deeper work
 
+These bounds contain a particular investigation or retry mechanism, not the lifetime of an autonomous epic owner. Exhausting that experiment's investment requires a useful route decision; it does not exhaust the account or end the epic. An owner continues other authorized approaches and independent delivery. Planning estimates must remain distinct from genuine user, runtime and resource limits; see [worker lifetime](../local-codex/subagents.md#worker-lifetime-and-integration).
+
 Before opening larger artifacts, adding probes or pursuing root cause, choose a finite diagnosis investment in the existing task record. Base it on the blocked outcome, reversibility and risk, recurrence, and the cheapest probe that can distinguish the current hypotheses. Declare scope, elapsed-time/attempt/resource or cost limits, the question, success observation and stop condition. These are task-specific bounds, not a universal minute cap or percentage. A hypothesis is not a verified cause.
 
 At the checkpoint compare evidence and remaining value with that investment. Stop diagnosis, continue independent work, use an authorized fallback, or repair the reusable dependency when justified. Renew only for a new decision or discriminating evidence; neither a different query, respawn nor renamed operation resets the cumulative budget. Preserve uncertainty and the original outcome when a diagnosis is unnecessary or blocked.

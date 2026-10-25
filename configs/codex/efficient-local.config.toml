@@ -1,4 +1,4 @@
-# Opt-in native Codex routing preset. Policy: 2026-10-18; source audit: 2026-10-04.
+# Opt-in native Codex routing preset. Policy: 2026-10-25; source audit: 2026-10-04.
 # EXAMPLE to merge, not an installer. Preserve permissions and unrelated settings.
 # A saved app selection is not a dispatch plan; these defaults do not choose
 # the executor, model/effort or number of workers for the next outcome.
@@ -56,10 +56,18 @@ inference loop or fixed burn target. Investigate surprises including execution,
 shared-account and possible platform/reporting causes; keep attribution honest.
 Slow/stop when warranted. Get owner approval before materially accelerating
 spending beyond explicit authorization; reset proximity alone grants none.
-Choose short-lived workers for one bounded result and long-lived owners for
-coherent iterations with cumulative limits. Retire completed workers after a
-durable handoff. Isolate concurrent writers in owned worktrees and coordinate
-through PRs where repository policy uses them; one owner integrates. Preserve
+Distinguish ongoing portfolio orchestrators, autonomous epic owners, persistent
+low-traffic steering reviewers, bounded specialists and short execution workers.
+Epic owners retain context/worktrees and continue through accepted delivery,
+choosing next steps, resolving blockers and delegating within their authority.
+Estimates and checkpoints prompt steering, never invented token/time stop budgets
+or routine renewal requests. Preserve cumulative use and actual user/runtime
+limits; unknown measurement is not exhaustion. A bounded diagnostic can end
+without ending the epic. Steering reviewers review useful checkpoints without
+continuous polling. Retire short workers after their result and epic owners after
+acceptance/integration or a genuine stop/handoff. Isolate concurrent writers in
+owned worktrees; coordinate shared boundaries and integration, not each next
+step. Use PRs where repository policy requires them. Preserve
 source/data/evidence before clearing owned scratch; retain valid shared caches.
 Prepare sandboxed work first. External effects use reviewed parameterized native
 activities with narrow approval/allowlisting; reject ad-hoc inline escalation.
@@ -67,8 +75,9 @@ Select model, reasoning_effort and fork_turns explicitly at launch. Follow the
 owner's scoped co-developer authorization, including model/effort, concurrency
 and descendant limits; this generic preset grants no additional exception.
 Otherwise ordinary workers may not delegate. Define outcome, ownership,
-acceptance and allocation proportionally. Follow-ups and authorized descendants
-share existing limits. Inspect decisive evidence without repeating delegated
+acceptance, lifetime, checkpoints and genuine limits proportionally. Follow-ups
+and authorized descendants preserve cumulative observations and real limits;
+do not manufacture a numeric epic cap. Inspect decisive evidence without repeating delegated
 work. Apply the same routing during review and follow-ups. Use efficient-execution
 when available. Concurrency is capacity, not a target.
 """
