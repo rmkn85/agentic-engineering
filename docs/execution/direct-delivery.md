@@ -131,12 +131,15 @@ steps, independent reviews or full-suite reruns to every reversible edit unless
 the existing contract or the changed risk requires them.
 
 During edits, use the maintained ownership selector and focused source checks.
-Run the complete source gate against the final coherent integration candidate;
-documentation-only updates use their applicable checks. Unknown ownership, shared
-validation changes or ambiguous impact select the complete gate. Preserve exact
-package qualification and release acceptance; a development check or smoke result
-cannot substitute for either. Measure setup separately from execution and compare
-the same operation before claiming improvement.
+For the coherent candidate, run the owning product's build, relevant unit checks
+and focused integration checks through its normal delivery path; documentation-only
+updates use their applicable checks. Resolve unknown ownership or ambiguous impact
+to select the meaningful checks, widening them when shared validation changes or
+the affected behavior requires it. Verify package and dependency integrity at build
+and consumption, and obtain QA/product approval where required. Preserve required
+release acceptance; a development check or smoke result proves only its tested
+boundary. Measure setup separately from execution and compare the same operation
+before claiming improvement.
 
 Keep short exact operations and tightly coupled judgment local. Delegate when
 context isolation, domain continuity or independent progress repays coordination,
