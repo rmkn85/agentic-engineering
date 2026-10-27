@@ -12,6 +12,8 @@ When evidence supports multiple materially different product outcomes or an acti
 
 ## Orient before choosing
 
+Apply [direct delivery's focused journey method](direct-delivery.md#focus-on-the-journey-people-commonly-use) to the next connected deliverable, context and progress report; keep the detailed method there.
+
 Recover purpose and the remaining outcome gap before comparing tasks, not after a convenient ready task has been selected. Use existing requirements, architecture, implementation and qualification evidence to establish what already works. For example, a tested export provider does not prove that the user-facing application installs it or completes the required export journey. Preserve the provider's valid proof and work on the missing consumer boundary instead of rebuilding the provider or declaring the programme complete.
 
 Research starts with the decision to resolve. If a report must support a particular user decision, establish which claims and evidence matter before choosing layout tools or trimming text. Retrieval supplies sources; synthesis determines what those sources imply. Reuse an implemented capability through its owner when it meets the contract. Investigate a genuine unknown with a bounded authorized experiment, or ask for a consequential missing preference when sources cannot settle it. These are decision rules, not a mandatory research phase or an owner review gate.

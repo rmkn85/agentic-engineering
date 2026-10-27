@@ -8,7 +8,10 @@ approval ceremony or mandatory research phase.
 ## One direction, one current record
 
 Keep the current outcome, constraints, decisive acceptance scenarios, owned lanes
-and next action in the existing task/handoff. Reuse an adequate specification.
+and next action in the existing task/handoff. Use its existing fields to describe
+the user outcome, a representative scenario, the next connected deliverable,
+the existing implementation/interfaces and the observable finish. Reuse an
+adequate specification.
 Record a material user correction there before the next dependent change, and
 reconcile any stale goal, scheduled prompt or worker brief through its supported
 controls. If those controls cannot edit it, explicitly mark the stale text
@@ -20,11 +23,49 @@ Keep receipts and detailed chronology in native task history, logs and version
 control. A current handoff needs current state and enough evidence to resume;
 it should not become an archive the next agent must reread.
 
+## Focus on the journey people commonly use
+
+Choose work by its contribution to a usable product journey. Use **80/20** as a
+qualitative guide: concentrate on common scenarios while covering less common
+scenarios where requirements or consequences make them necessary. Within that
+focus, use **70/30** to favor features and use cases over the enabling work that
+makes them possible. These nested ratios express judgment, not time allocations,
+quotas, task counts or acceptance exemptions. A consequential boundary can warrant
+immediate work; complete required scope even when its proportions differ.
+
+Keep coordination, plan upkeep and CI/merge/deployment boilerplate in the smallest
+supporting corner. Run the required delivery operations as part of finishing the
+journey. Choose enabling work because it removes a concrete obstruction to that
+journey, then resume the connected deliverable. Extend an existing owner or
+published contract when it supplies the capability. Complete the next missing
+connection, run relevant checks, publish through the authorized route and
+demonstrate the result in its consumer.
+
+Write instructions as desired actions with precise invariants: state the behavior
+to produce, the boundary to preserve and the observation that proves it. For
+example, "route every entrypoint through the existing owner and preserve its
+refusal semantics" gives an implementation direction and a checkable invariant.
+Preserve binding safety, permission, stop and approval conditions with their full
+meaning; affirmative wording is not permission to weaken them. Lead progress and
+completion reports with the usable capability and remaining journey gap, followed
+by the evidence and supporting delivery state.
+
+## Keep context close to the current decision
+
+Use three layers: a small enduring core for stable authority and invariants; a
+current record for outcome, progress and next action; and task-specific evidence
+retrieved when relevant. Keep detailed sources, diagnostics and history
+retrievable through their existing owners. Load the implementation/interface or
+evidence needed for the next decision and refresh it when relevant inputs change.
+This keeps the current journey visible while retaining access to the complete
+contract and required evidence.
+
 ## Work in this order
 
 1. **Define the observable result.** State what the user must be able to do and
    understand through the actual entrypoint. Identify the required normal case,
-   meaningful contrast and consequential failure/boundary. Preserve the complete
+   meaningful contrast and consequential failure/boundary, beginning with the
+   common journey that makes the capability useful. Preserve the complete
    scope; a representative scenario is an early checkpoint, not a smaller finish
    line. Mark assumptions and proposed targets separately from requirements.
 2. **Trace the existing path once.** Follow that action through its current
@@ -90,12 +131,15 @@ steps, independent reviews or full-suite reruns to every reversible edit unless
 the existing contract or the changed risk requires them.
 
 During edits, use the maintained ownership selector and focused source checks.
-Run the complete source gate against the final coherent integration candidate;
-documentation-only updates use their applicable checks. Unknown ownership, shared
-validation changes or ambiguous impact select the complete gate. Preserve exact
-package qualification and release acceptance; a development check or smoke result
-cannot substitute for either. Measure setup separately from execution and compare
-the same operation before claiming improvement.
+For the coherent candidate, run the owning product's build, relevant unit checks
+and focused integration checks through its normal delivery path; documentation-only
+updates use their applicable checks. Resolve unknown ownership or ambiguous impact
+to select the meaningful checks, widening them when shared validation changes or
+the affected behavior requires it. Verify package and dependency integrity at build
+and consumption, and obtain QA/product approval where required. Preserve required
+release acceptance; a development check or smoke result proves only its tested
+boundary. Measure setup separately from execution and compare the same operation
+before claiming improvement.
 
 Keep short exact operations and tightly coupled judgment local. Delegate when
 context isolation, domain continuity or independent progress repays coordination,
