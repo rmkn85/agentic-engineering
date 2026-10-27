@@ -41,8 +41,9 @@ work and keep tightly coupled judgment local. Select the executor and useful
 agent count for the next outcome, including zero new agents; a saved app model
 selection or changed default does not replace this choice. Choose capability, effort,
 context, lifetime and autonomy independently. Use Luna low for usage monitoring,
-Git operations and CI-log triage, Luna medium for bounded coding, and Sol 6.1
-medium for sustained engineering. Use Astra medium/high for extremely creative
+Git operations and CI-log triage, Luna medium for bounded coding, Terra 6.1
+low/medium for bounded visual review, synthesis, handoffs and scoped fixes, and
+Sol 6.1 medium for sustained engineering. Use Astra medium/high for extremely creative
 or complex graphics, architecture or academic reasoning. High needs a specific
 reason. Never use Ultra unless the current owner instruction explicitly says
 to exhaust allowance before reset; stop that work on observed exhaustion,

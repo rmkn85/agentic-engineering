@@ -42,7 +42,7 @@ Forecast the remaining work from the current state and relevant local experience
 
 Use the project's existing task history, including its established task/handoff file where that is the native record, or a meaningful implementation commit's message body. Select the available route once. Do not add a telemetry service, another task database, a per-checkpoint JSON file, source comments or configuration fields for managerial deliberation. Reusable policy and neutral examples belong in this methodology; project-specific decisions do not.
 
-A record is a concise decision explanation, not an internal reasoning transcript. State what was observed, what it implies for the decision, the important alternative/tradeoff, uncertainty and the action. Link the exact candidate and decisive test/trace/task evidence. Record negative and unchanged decisions too. Routine CONTINUE decisions can be one line with an evidence reference, rationale and next check; material choices use the existing task fields or a compact body such as:
+A material record is a concise decision explanation, not an internal reasoning transcript. State what was observed, what it implies for the decision, the important alternative/tradeoff, uncertainty and the action. Link the candidate and decisive evidence. Coalesce routine continuation and negative findings with meaningful task updates or commits; do not create a separate record for every checkpoint. Material choices can use existing task fields or a compact body such as:
 
 ```text
 Steering: <native task/event reference> | <event/time> | <source revision>
