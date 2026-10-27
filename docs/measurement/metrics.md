@@ -21,6 +21,8 @@ Compare matched baseline and candidate conditions where feasible; describe mater
 
 Assertions, hashes, checksums, commits and agent activity support evidence and diagnosis; they receive no product-progress credit. Collect supporting activity and resource telemetry only when it can explain a decision, risk or comparison. Do not create a dashboard, standing review or parallel tracker solely for this scorecard.
 
+Executive updates and worker returns use the existing task's facts: **Delivered** (accepted user capability, or explicitly none), **Measured improvement** (same relevant operation before and after, or unknown), **Remaining gap**, **Next action** (owner, expected effect and decisive observation), and **Evidence** (retrievable source/result links). Describe local checks, infrastructure repairs and experiments separately; do not put them under delivered user capability. A reduced or failed acceptance path delivers none of the required outcome. A valid finding can change the next action without closing delivery.
+
 ## Conditional resource and activity telemetry
 
 Where relevant and available, record input, cached input, output and reasoning tokens; model turns; commands/tool calls; retries and failures; agent counts; and changed-file/diff statistics. Keep actual metering units and acceptance results separate. For repository-heavy workflows, measure repeated file reads, write amplification, repeated tests, and raw versus model-visible log size when they explain the outcome or cost.
