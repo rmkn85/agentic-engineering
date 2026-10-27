@@ -1,5 +1,17 @@
 # Agentic Engineering continuation
 
+Published recovery guidance at `9c1d212a` adds Terra6.1 routing and lightweight
+stopping, scope-change and checkpoint rules. Routine recovery stays with the
+worker/tool; unresolved decisions reach the existing integration owner. Normal
+delivery uses relevant unit/integration tests, with QA/product approval separate.
+No additional manager, ledger or exhaustive qualification stage was introduced.
+
+The current native regression suite passed199 tests with one skip. A bounded
+browser-verification worker used the Terra route during actual delivery; this
+establishes a useful application, not comparative model-cost or speed evidence.
+Shared publication does not authorize editing unrelated consumer workspaces.
+The earlier continuation below retains its original evidence and counts.
+
 Integrated product work now has a concise direct-delivery method in
 `docs/execution/direct-delivery.md`, reached from the operating corpus and
 `skills/efficient-execution/SKILL.md`. It connects current user intent to decisive
