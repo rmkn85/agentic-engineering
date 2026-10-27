@@ -43,7 +43,10 @@ it should not become an archive the next agent must reread.
    may proceed once their shared contract and integration case are clear.
 5. **Extend and finish.** Exercise required contrasts, failure/recovery cases
    and supported scope, preserving accepted behavior. Run the normal integration
-   checks once the coherent candidate is ready. Publish a recoverable checkpoint
+   checks once the coherent candidate is ready. Efficient unit and integration
+   tests are part of delivery; use QA/product review for approval where required.
+   Do not invent exhaustive qualification gates at delivery or release.
+   Publish a recoverable checkpoint
    and continue remaining authorized work; report completion only for proven scope.
 
 Progress means a required scenario works, a concrete obstruction was removed, or

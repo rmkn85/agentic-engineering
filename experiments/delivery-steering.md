@@ -32,6 +32,9 @@ Select the smallest relevant cases; do not run a full Cartesian product.
 | Missing telemetry or unavailable task writes | Mark unknown use/effect explicitly; use an authorized task/commit fallback and report failed persistence rather than invent totals or saved logs |
 | Adjacent commit/handoff/record-save events | Reuse one unchanged decision; avoid empty commits, recursive reviews and repeated evidence reads |
 | Concurrent worker with stale brief | Route the material correction to the owner, serialize affected shared-contract changes and verify adoption before trusting the worker's old acceptance claim |
+| Scope or checkpoint requested during implementation | Stop starting implementation, reconcile in-flight work and update affected briefs before resuming within clarified scope |
+| Routine failure or unchanged permission denial | Owner performs bounded recovery; stop unchanged structural/permission retries and escalate only an unresolved decision |
+| Expanding prerequisites with finite budget | Select the smallest action that advances the outcome or resolves the blocking decision; do not invent exhaustive qualification gates |
 | Genuine completion or planning-only request | Finish at the correct boundary; no optional polishing and no implementation of a planning-only task |
 
 ## Purpose-first selection scenarios
