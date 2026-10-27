@@ -1,4 +1,4 @@
-# Opt-in native Codex routing preset. Policy: 2026-10-25; source audit: 2026-10-04.
+# Opt-in native Codex routing preset. Policy: 2026-10-27; source audit: 2026-10-04.
 # EXAMPLE to merge, not an installer. Preserve permissions and unrelated settings.
 # A saved app selection is not a dispatch plan; these defaults do not choose
 # the executor, model/effort or number of workers for the next outcome.
@@ -42,7 +42,11 @@ agent count for the next outcome, including zero new agents; a saved app model
 selection or changed default does not replace this choice. Choose capability, effort,
 context, lifetime and autonomy independently. Use Luna low for usage monitoring,
 Git operations and CI-log triage, Luna medium for bounded coding, and Sol 6.1
-medium for sustained engineering. Use Astra medium/high for extremely creative
+medium for sustained engineering. Use Terra 6.1 medium for visual interpretation,
+evidence presentation and clear writing, or low for straightforward rewriting.
+Check its claims against the actual artifact; stills do not prove motion or human
+acceptance. This does not authorize desktop control or change all agent defaults.
+Use Astra medium/high for extremely creative
 or complex graphics, architecture or academic reasoning. High needs a specific
 reason. Never use Ultra unless the current owner instruction explicitly says
 to exhaust allowance before reset; stop that work on observed exhaustion,
