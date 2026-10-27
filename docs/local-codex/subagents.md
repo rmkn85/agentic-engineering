@@ -193,7 +193,7 @@ For concurrent writers, use [separate worktrees and an integration owner](../col
 
 ### Handoff and retained context
 
-Use the return contract in [`efficient-execution`](../../skills/efficient-execution/SKILL.md). A launch handoff should make these fields explicit when they matter, in addition to the mandatory dispatch receipt:
+Use the return contract in [`efficient-execution`](../../skills/efficient-execution/SKILL.md) and distinguish accepted product progress from supporting evidence under the [outcome scorecard](../measurement/metrics.md#outcome-and-complete-operation-scorecard). A launch handoff should make these fields explicit when they matter, in addition to the mandatory dispatch receipt:
 
 ```text
 Outcome and concrete artifact:
@@ -203,7 +203,7 @@ Authoritative inputs and precedence:
 Acceptance: deterministic, runtime, visual, and human boundaries
 Required capability within the worker ceiling:
 Escalate or stop when:
-Return: result, revision/scope, changed artifacts, checks, evidence, limits, open decisions
+Return: outcome and consumer acceptance or remaining gap; result, revision/scope, changed artifacts, checks, evidence, limits, open decisions
 ```
 
 For 3D, level, or presentation work, include any frozen simulation/interaction behavior, approved references, target scenes or viewpoints, resource/performance bounds, and perceptual judgment that remains human-owned. Put detailed evidence in a retrievable artifact and keep the return about that artifact. For example:

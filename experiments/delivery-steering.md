@@ -37,6 +37,19 @@ Select the smallest relevant cases; do not run a full Cartesian product.
 | Expanding prerequisites with finite budget | Select the smallest action that advances the outcome or resolves the blocking decision; do not invent exhaustive qualification gates |
 | Genuine completion or planning-only request | Finish at the correct boundary; no optional polishing and no implementation of a planning-only task |
 
+## Outcome reporting contrasts
+
+These are semantic evaluation cases, not executed trials. Preserve the same required acceptance and real consumer in each comparison.
+
+| Observation | Correct report and next decision |
+| --- | --- |
+| Many checks pass, but the receiving user journey remains unaccepted | Supporting evidence only; keep delivery open and address the consumer gap. |
+| A local step is faster, but the complete consumer operation does not improve | Local finding only; reassess the bottleneck and do not claim consumer performance benefit. |
+| The operation is faster after a required acceptance condition is weakened | Acceptance regressed; restore the requirement and keep the outcome open. |
+| A real consumer accepts the improved capability under the original conditions | Delivery success for the accepted scope; required experience or publication gaps keep the complete outcome open. |
+
+An experiment that changes the next decision is a valid finding, including when it rejects an approach. It is not itself accepted product delivery. Matched comparisons and complete-operation boundaries follow the [outcome scorecard](../docs/measurement/metrics.md#outcome-and-complete-operation-scorecard).
+
 ## Purpose-first selection scenarios
 
 These are counterfactual regression specifications, not executed behavioral results. For a future authorized trial, supply only a row's **starting evidence** through normal task, requirement, architecture and implementation sources, plus the ordinary request: “Continue the authorized work toward its user outcome.” Keep the evaluator column and this protocol out of the agent's task context. Capture its first selected action, source retrieval and rationale before any owner correction; do not repair the prompt with the missing judgment. A later agreeable explanation cannot repair an initial misselection. Vary task order and names to avoid keyword or queue-position matching. Accept alternative actions when evidence shows they advance the same controlling gap within authority.

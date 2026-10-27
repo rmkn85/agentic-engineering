@@ -4,21 +4,26 @@ The governing comparison is **same required outcome, lower total resource use**.
 
 Do not optimize a single metric in isolation. A task that uses 30% fewer tokens but fails acceptance is not an efficiency improvement.
 
-## Minimum common metrics
+## Outcome and complete-operation scorecard
 
-- input tokens
-- cached input tokens
-- output tokens
-- reasoning output tokens where exposed
-- model turns
-- wall-clock duration
-- deterministic and substantive acceptance result
-- commands/tool calls
-- retries/failures
-- number of agents/subagents
-- changed-file/diff statistics
+Select and report work against the required product outcome and its remaining gap. In the existing task or handoff, record the applicable observations separately, without a universal weighted score or new tracker:
 
-For repository-heavy workflows, additionally measure repeated file reads, write amplification, repeated tests, and raw log size versus model-visible log size where tooling can expose them.
+- Named user capabilities accepted through the real receiving consumer, with the applicable experience acceptance and consequential defects still open.
+- Whether the accepted result is accessible and published where the outcome requires it; source, diagnostic and infrastructure success alone are not product acceptance.
+- Elapsed time from the real start of a correction to actionable feedback, and separately to accepted integration. Include preparation, queueing, retries and recovery in the relevant interval; identify boundaries and unfinished age.
+- The outcome and elapsed time of the complete bottleneck operation, including its consumer, and any reusable capability that solves a real consumer problem.
+
+Before substantial work, record in the existing task the outcome, obstacle, expected effect, baseline and conditions, and the decision to adopt, investigate or abandon the proposed intervention. At a checkpoint, ask whether the previous intervention reduced the remaining gap. If the effect is no or unknown, use that evidence to steer the next action; a decision-changing finding can be valuable without being delivery.
+
+Before optimizing a leaf operation, establish a plausible ceiling on improvement to the whole operation and distinguish non-overlapping costs. Claim a performance benefit only after comparing the actual consumer under comparable conditions and unchanged acceptance. A faster local step or weakened acceptance does not establish an improved outcome.
+
+Compare matched baseline and candidate conditions where feasible; describe material differences and label a single observation as such. Do not invent percentiles or costs. Link retries to the original operation and retain the age of unfinished work. If using first-valid product-result rate as a supporting metric, state its numerator, denominator and validity criteria; exclude unfinished operations from successful results while showing them separately. If measuring time to first valid product result, state its boundaries and population as well. Keep failed and cancelled attempts visible.
+
+Assertions, hashes, checksums, commits and agent activity support evidence and diagnosis; they receive no product-progress credit. Collect supporting activity and resource telemetry only when it can explain a decision, risk or comparison. Do not create a dashboard, standing review or parallel tracker solely for this scorecard.
+
+## Conditional resource and activity telemetry
+
+Where relevant and available, record input, cached input, output and reasoning tokens; model turns; commands/tool calls; retries and failures; agent counts; and changed-file/diff statistics. Keep actual metering units and acceptance results separate. For repository-heavy workflows, measure repeated file reads, write amplification, repeated tests, and raw versus model-visible log size when they explain the outcome or cost.
 
 ## Instruction/context metrics
 
