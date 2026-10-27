@@ -50,6 +50,12 @@ These are semantic evaluation cases, not executed trials. Preserve the same requ
 
 An experiment that changes the next decision is a valid finding, including when it rejects an approach. It is not itself accepted product delivery. Matched comparisons and complete-operation boundaries follow the [outcome scorecard](../docs/measurement/metrics.md#outcome-and-complete-operation-scorecard).
 
+### Bounded reporting observation — 2026-10-27
+
+A Luna Low reader initially loaded the wrong repository and labeled passing checks as a delivered capability. A coached retry corrected source loading and the failed-journey claim but still used delivered wording for local gains and reduced acceptance. This failed the reporting contract. The canonical return format was clarified to require an explicit absence of accepted capability when appropriate.
+
+A fresh Terra Low reader verified the canonical revision and explicitly read the normal corpus. Given only the four synthetic starting records, it correctly withheld delivery claims for the first three cases and recognized the accepted published journey in the fourth. It retained unknown measurements and identified the matched timing as one observation with no supplied integration baseline. This is evidence for one explicitly loaded reporting exercise, not automatic skill invocation, actual product acceptance, comparative model superiority or general productivity. The failed first attempt and coached recovery remain part of the result; source/link tests alone did not establish it.
+
 ## Purpose-first selection scenarios
 
 These are counterfactual regression specifications, not executed behavioral results. For a future authorized trial, supply only a row's **starting evidence** through normal task, requirement, architecture and implementation sources, plus the ordinary request: “Continue the authorized work toward its user outcome.” Keep the evaluator column and this protocol out of the agent's task context. Capture its first selected action, source retrieval and rationale before any owner correction; do not repair the prompt with the missing judgment. A later agreeable explanation cannot repair an initial misselection. Vary task order and names to avoid keyword or queue-position matching. Accept alternative actions when evidence shows they advance the same controlling gap within authority.
