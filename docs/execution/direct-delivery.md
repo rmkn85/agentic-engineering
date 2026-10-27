@@ -89,6 +89,14 @@ data limits are not interchangeable. Do not add staged sample counts, approval
 steps, independent reviews or full-suite reruns to every reversible edit unless
 the existing contract or the changed risk requires them.
 
+During edits, use the maintained ownership selector and focused source checks.
+Run the complete source gate against the final coherent integration candidate;
+documentation-only updates use their applicable checks. Unknown ownership, shared
+validation changes or ambiguous impact select the complete gate. Preserve exact
+package qualification and release acceptance; a development check or smoke result
+cannot substitute for either. Measure setup separately from execution and compare
+the same operation before claiming improvement.
+
 Keep short exact operations and tightly coupled judgment local. Delegate when
 context isolation, domain continuity or independent progress repays coordination,
 under the existing [dispatch contract](../local-codex/subagents.md#launch-preflight).

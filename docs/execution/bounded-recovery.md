@@ -10,6 +10,8 @@ First remove fragile dependencies. Rebuild disposable caches; keep unique state 
 
 ## Choose diagnosis investment before deeper work
 
+These bounds contain a particular investigation or retry mechanism, not the lifetime of an autonomous epic owner. Exhausting that experiment's investment requires a useful route decision; it does not exhaust the account or end the epic. An owner continues other authorized approaches and independent delivery. Planning estimates must remain distinct from genuine user, runtime and resource limits; see [worker lifetime](../local-codex/subagents.md#worker-lifetime-and-integration).
+
 Before opening larger artifacts, adding probes or pursuing root cause, choose a finite diagnosis investment in the existing task record. Base it on the blocked outcome, reversibility and risk, recurrence, and the cheapest probe that can distinguish the current hypotheses. Declare scope, elapsed-time/attempt/resource or cost limits, the question, success observation and stop condition. These are task-specific bounds, not a universal minute cap or percentage. A hypothesis is not a verified cause.
 
 At the checkpoint compare evidence and remaining value with that investment. Stop diagnosis, continue independent work, use an authorized fallback, or repair the reusable dependency when justified. Renew only for a new decision or discriminating evidence; neither a different query, respawn nor renamed operation resets the cumulative budget. Preserve uncertainty and the original outcome when a diagnosis is unnecessary or blocked.
@@ -72,7 +74,7 @@ Use three controls: a meaning-preserving transformation should preserve the rele
 
 Default to one builder plus appropriate independent checks. Invoke a bounded independent reviewer for consequential ambiguity, conflicting evidence or required assurance, not for every routine edit. Give the reviewer the relevant authoritative sources and artifact, without anchoring it on the builder's explanation. For novice visual checks, provide only the intended user's background. Keep evaluator and human-usability evidence separate.
 
-Resolve disagreement with a discriminating check or the authorized decision owner. A valid counterexample blocks the affected claim even against a majority. Do not assume repeated calls, different model names or role labels create independent errors. Reviewers cannot change acceptance, approve their own exceptions or exceed the [worker policy](../local-codex/subagents.md#launch-preflight). Route established checks/CI triage to tools or Luna, cross-boundary correctness to Sol 6.1, and demanding perceptual/architectural/research judgment to Astra. A review label never grants Ultra. Budget review depth; escalate only the unresolved decision and return routine work to the cheaper adequate path.
+Resolve disagreement with a discriminating check or the authorized decision owner. A valid counterexample blocks the affected claim even against a majority. Do not assume repeated calls, different model names or role labels create independent errors. Reviewers cannot change acceptance, approve their own exceptions or exceed the [worker policy](../local-codex/subagents.md#launch-preflight). Use the canonical worker policy for established checks, visual interpretation, cross-boundary correctness and demanding specialist decisions. A review label never grants Ultra. Budget review depth; escalate only the unresolved decision and return routine work to the cheaper adequate path.
 
 ## Safety and ownership
 
