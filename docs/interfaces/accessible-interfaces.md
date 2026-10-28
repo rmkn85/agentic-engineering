@@ -36,7 +36,7 @@ Provide equivalent alternatives for meaningful non-text content and applicable c
 
 ### Authorized machine access
 
-Preserve structured semantics independently of styling through semantic DOM/native accessibility structures and documented API/tool schemas when programmatic access is part of the product. Keep underlying state, permissions and action meaning consistent. Do not invent a parallel backend or JSON sidecar for every screen when existing structures suffice.
+Preserve structured semantics independently of styling through semantic DOM/native accessibility structures and documented API/tool schemas when programmatic access is part of the product. Use the [machine-contract practice](machine-contracts.md) for shared machine boundaries. Keep underlying state, permissions and action meaning consistent. Do not invent a parallel backend or JSON sidecar for every screen when existing structures suffice.
 
 Machine completeness must not become visible text everywhere. A DOM snapshot, accessibility tree or MCP/API response cannot establish human visual usability. Crawlers, assistive technology and programmatic clients are distinct consumers. Support intended clients without weakening authentication, authorization, privacy, consent or destructive-action safeguards.
 

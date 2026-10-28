@@ -65,6 +65,7 @@ Every maintained repository gets source safety, bounded context, interruption re
 | Process property | Additional requirement |
 | --- | --- |
 | Human-facing interfaces or generated visual/document output | [Accessible interface contract](../interfaces/accessible-interfaces.md), applicable standards, native accessibility checks, rendered comprehension and honest human/assistive-technology evidence |
+| Shared machine-facing boundaries | [Machine-contract practice](../interfaces/machine-contracts.md), semantic ownership, compatible revisions and independent consumer/provider evidence |
 | Multiple writers | Explicit write boundaries, independent preparation and one integration owner; classify collisions |
 | Multiple repositories | Exact source vector, scoped environments and installed-provider/consumer tests |
 | Large/private data or devices | Small deterministic fixtures/replay; explicit real-resource gates; no silent synthetic fallback |

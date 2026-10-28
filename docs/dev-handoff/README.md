@@ -14,6 +14,13 @@ evidence retrieved on demand. Reports lead with usable capability. Existing
 ownership, routing, bounded recovery and completion boundaries remain binding.
 No new task schema, ledger, quota checker or qualification stage was introduced.
 
+Shared machine boundaries now have an on-demand practice in
+`docs/interfaces/machine-contracts.md`, linked from specification, interface and
+newcomer routes and summarized in the portable contributor core. Adopt it
+incrementally through the existing semantic owner and local release/acceptance
+routes. Independent consumer and provider work can use contract examples and
+mocks; provider integration and product acceptance remain separate evidence.
+
 Validation: `make check` ran 199 native tool tests successfully with one skip;
 the changed guidance received wording, privacy and whitespace review. These
 checks establish tool/navigation compatibility, not agent adherence or delivery
