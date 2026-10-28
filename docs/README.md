@@ -33,6 +33,7 @@ Do **not** treat the documentation tree as a startup checklist. In particular, [
 ## Interface quality
 
 - [Accessible interfaces by default](interfaces/accessible-interfaces.md) — implementation and acceptance requirements for human comprehension, assistive access and consistent machine semantics.
+- [Machine contracts](interfaces/machine-contracts.md) — shared semantic ownership, independent delivery and compatibility across revisions.
 - [Applicable interface standards](interfaces/standards.md) — web baseline and scoped native, game, document, language, API and security extensions; source/claim limits.
 
 ## General principles

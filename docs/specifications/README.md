@@ -32,7 +32,7 @@ Use the [agent-legible code rules](../code/agent-legible-code.md). In particular
 - Make consequential effects explicit. Identify what can change, what must remain unchanged and what recovery is possible. Use transactional or staged publication where the contract needs it. A dry run or backup claim requires evidence appropriate to the action, not a reassuring label.
 - Make exceptional paths legible: propagated errors, cancellation, cleanup, capacity limits and exhaustion behavior. Bound external work where feasible; long-lived services still need resource policies and shutdown/recovery contracts, not an arbitrary requirement that every loop terminates.
 
-The design record should explain non-obvious mechanisms and tradeoffs, not duplicate code. Keep API/schema and compatibility obligations with their actual owners. For human-facing output, the [accessible interface contract](../interfaces/accessible-interfaces.md) remains independently required.
+The design record should explain non-obvious mechanisms and tradeoffs, not duplicate code. Keep API/schema and compatibility obligations with their actual owners; use the [machine-contract practice](../interfaces/machine-contracts.md) for shared machine boundaries. For human-facing output, the [accessible interface contract](../interfaces/accessible-interfaces.md) remains independently required.
 
 ## Verify the requirement, not the implementation's story
 
