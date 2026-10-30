@@ -145,8 +145,13 @@ Keep short exact operations and tightly coupled judgment local. Delegate when
 context isolation, domain continuity or independent progress repays coordination,
 under the existing [dispatch contract](../local-codex/subagents.md#launch-preflight).
 Sustained domain owners and co-developers retain relevant context through feedback
-and validation; they do not duplicate the coordinator's investigation. Serialize shared-contract
-changes and final integration. Keep one current acceptance contract across lanes.
+and validation; they do not duplicate the coordinator's investigation. Each owner
+advances implementation, checks and routine recovery locally against declared
+interfaces and artifacts. Coordinate decisions that cross ownership boundaries,
+serialize shared-contract changes and final integration, and keep one current
+acceptance contract across lanes. When composing from source rather than consuming
+a published artifact, declare that mode, the exact source identities and the
+consumer boundary; verify the resulting composition at that boundary.
 
 This method is a response to a failure pattern, not a guarantee of first-attempt
 correctness or measured savings. Small isolated fixes need only their existing
