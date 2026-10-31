@@ -39,6 +39,8 @@ LEVEL 3  retained raw artifact
 
 An agent should not start at Level 3 merely because Level 3 exists.
 
+The owning agent reads the compact receipt first, opens only the evidence that can decide the next action, makes the smallest authorized repair, runs the relevant verification, and resumes the original delivery. A receipt should distinguish execution from queue/admission wait, identify the operation and source, report unavailable measurement capabilities explicitly, and link retained detail. Missing telemetry is unknown, not zero cost or successful recovery. Escalate only the unresolved decision or permission boundary; routine diagnosis stays with its owner under [bounded recovery](../execution/bounded-recovery.md).
+
 ## A diagnostic capsule
 
 Use a stable machine-readable schema appropriate to the project. Not every field belongs in every system, but the capsule should usually answer most of these questions without parsing a prose log:

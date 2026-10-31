@@ -20,6 +20,8 @@ For example, an optional documentation lookup returning quota exhaustion may jus
 
 ## Recovery loop
 
+Start with the [compact diagnostic receipt](../runtime/diagnostic-feedback.md), retrieve decisive evidence, repair the scoped boundary, verify the affected behavior, then resume the original task autonomously. Keep full logs out of the coordination channel. An unavailable measurement or failed receipt write must remain explicit and must not trigger a repeated side effect just to recreate evidence.
+
 ```text
 execute -> check outcome -> continue
 failure -> classify -> known authorized recovery within budget -> verify
