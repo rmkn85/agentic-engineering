@@ -18,6 +18,15 @@ controls. If those controls cannot edit it, explicitly mark the stale text
 superseded in the continuation. A generated continuation never overrides the
 latest user instruction. Do not silently reset consumed budgets.
 
+Execute the accepted plan with ordinary implementation judgment. Reopen a settled
+decision when new evidence establishes infeasibility, a requirement conflict,
+material risk or an acceptance failure. Record that evidence and make the smallest
+necessary revision within authority; an optional alternative alone is not a reason
+to redesign. A checkpoint can confirm the current approach. Preserve necessary
+diagnosis, independent checks and the complete acceptance contract. Follow the
+[routing rules](../local-codex/subagents.md#choose-effort-for-the-unresolved-decision)
+when a reopened decision needs different capability or effort.
+
 Replace superseded next actions rather than appending a new competing plan.
 Keep receipts and detailed chronology in native task history, logs and version
 control. A current handoff needs current state and enough evidence to resume;

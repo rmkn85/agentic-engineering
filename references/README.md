@@ -17,6 +17,8 @@ The operational docs should therefore contain the **current decision rule**. Thi
 
 ## Contents
 
+- [`reasoning-effort-2026-11.md`](reasoning-effort-2026-11.md) — effort economics, prompt-induced alternative exploration, evidence limits, and the rationale for uncertainty-based routing with proportional sampling.
+
 - [`context-and-instruction-engineering-2026-09.md`](context-and-instruction-engineering-2026-09.md) — research behind the current instruction/context design, including OpenAI, Anthropic/Claude Code, Cursor, GitHub Copilot, LangChain, Promptfoo, DSPy, ACE, long-context research, BMAD, and Superpowers.
 - [`agent-legible-code-history-2026-09.md`](agent-legible-code-history-2026-09.md) — historical and modern research behind code designed for cheap future agent localization, reasoning, refactoring, verification, and debugging: punch cards/batch systems, structured programming, Parnas, Cleanroom, JPL/NASA, MISRA, Ravenscar, cFS, Linux, Google testing/review, repository-level LLM research, and agent-first production experience.
 - [`agent-semantic-understanding-2026-09.md`](agent-semantic-understanding-2026-09.md) — current evidence on LLM code-semantic reasoning (SemBench, LongCodeU, CodeGlance, CodeSense) and why bounded weak-reader mental-model construction is a better objective than any single complexity metric.

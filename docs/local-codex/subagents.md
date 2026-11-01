@@ -8,13 +8,13 @@ The broader decision order—deterministic operation → cheapest capable worker
 
 ## Named model and effort policy
 
-Routing policy reviewed **2026-10-27**; the earlier evidence/prices below retain their original review date, **2026-10-04**. This table is the canonical model/effort policy; entry instructions link here instead of maintaining another table. These are repository operating defaults, not a universal optimum, a native Codex allowlist, or measured savings. No additional policy file or custom-agent installation is needed. Owner constraints apply, subject to higher-priority runtime rules. Validate support in the live client/account once per run; do not silently substitute a new model when a named choice is unavailable.
+Routing policy reviewed **2026-11-01**; the earlier evidence/prices below retain their original review date, **2026-10-04**. This table is the canonical model/effort policy; entry instructions link here instead of maintaining another table. These are repository operating defaults, not a universal optimum, a native Codex allowlist, or measured savings. No additional policy file or custom-agent installation is needed. Owner constraints apply, subject to higher-priority runtime rules. Validate support in the live client/account once per run; do not silently substitute a new model when a named choice is unavailable.
 
 | Assignment | Deliberate selection | Boundary |
 | --- | --- | --- |
 | Exact inventory, formatting, known tests, structured filtering | Deterministic tool | Keep short commands local; a bounded worker may supervise long/noisy runs for context isolation |
 | Usage monitoring, Git staging/committing/publishing, CI-log triage, routine extraction, small explicit edit or established-rubric check | `gpt-6-luna` / `low` when model supervision is needed | Use deterministic commands first; route a discovered substantive defect separately |
-| Focused implementation, tests against a clear contract, localized diagnosis or review needing judgment | `gpt-6-luna` / `medium` | Normal coding-worker starting point |
+| Focused implementation, tests against a clear contract, localized diagnosis or review needing judgment | `gpt-6-luna` / `medium` | Normal coding-worker starting point, including implementation against an accepted plan |
 | Same bounded problem requiring deeper edge-case reasoning or hypothesis checking | `gpt-6-luna` / `high` | State the particular reasoning need; do not raise effort for a large batch merely because it is large |
 | Bounded visual/browser review, synthesis, handoff writing or scoped fixes | `gpt-6.1-terra` / `low` or `medium` according to judgment needed | Ground claims in the actual artifact and authoritative facts; image interpretation does not prove motion, interaction or human acceptance; escalate coupled or unresolved decisions |
 | Sustained engineering, cross-boundary implementation, reasoning with substantial execution, or synthesis beyond a bounded Luna assignment | `gpt-6.1-sol` / `medium` | Normal main coding/orchestration and substantial engineering-worker choice |
@@ -25,7 +25,55 @@ Routing policy reviewed **2026-10-27**; the earlier evidence/prices below retain
 
 Terra's [official model guidance](https://learn.chatgpt.com/docs/models) and [model page](https://developers.openai.com/api/docs/models/gpt-6.1-terra), reviewed 2026-10-27, identify visual understanding, computer use and clear writing as intended strengths. This supports a scoped trial, not a claim that Terra is better at runtime engineering or cheaper per accepted task. Keep engineering ownership with Sol and routine extraction/monitoring with tools or Luna. Computer-use capability grants no additional permission; preserve each project's desktop and data boundaries. The API page lists image input, not native video input: sampled frames cannot establish continuous motion acceptance.
 
-For first adoption, use a retained representative artifact and an evidence-grounded writing task with an existing rubric. Check factual accuracy, important omissions, uncertainty and unauthorized acceptance claims; retain elapsed time and available usage, with missing attribution marked unknown. Keep the trial bounded, review the result against its sources, and change routing if repair cost removes the benefit. Do not run a benchmark before every assignment or replace every saved default. Refresh affected active workers explicitly; a repository edit alone does not change their instructions or runtime settings.
+When first-adoption uncertainty warrants a sample under the rule below, use a retained representative artifact and an evidence-grounded writing task with an existing rubric. Check factual accuracy, important omissions, uncertainty and unauthorized acceptance claims; retain elapsed time and available usage, with missing attribution marked unknown. Keep the trial bounded, review the result against its sources, and change routing if repair cost removes the benefit. Do not run a benchmark before every assignment or replace every saved default. Refresh affected active workers explicitly; a repository edit alone does not change their instructions or runtime settings.
+
+### Choose effort for the unresolved decision
+
+Use the table above for the next outcome. Choose model capability, reasoning effort,
+context, autonomy and lifetime separately: more effort grants neither broader scope
+nor permission to redesign an accepted plan. Project size, duration, parallelism and
+a reviewer title do not establish a need for High. Long repetitive implementation
+can stay on the ordinary execution route; a small coupled correctness question can
+justify High directly. Preserve Sol 6.1/Medium as the orchestration baseline and
+Luna/Medium as the fallback child setting; explicit dispatch still selects the pair.
+
+Execute settled decisions. Reopen one when new evidence establishes infeasibility,
+a requirement conflict, material risk or an acceptance failure. State the evidence
+in the existing task record and make the smallest necessary revision within authority.
+Use alternatives to resolve a real open decision or when comparison is requested;
+an adequate accepted approach does not need speculative competitors. Preserve
+ordinary implementation judgment, necessary diagnosis and independent acceptance.
+See [direct delivery](../execution/direct-delivery.md#one-direction-one-current-record).
+
+Diagnose a failed check before changing effort. Increase effort or capability when
+a specific unresolved reasoning bottleneck can plausibly benefit; a substantive
+failure alone does not establish that need. Repair missing inputs, permissions,
+network/tool failures and broken harnesses through their corresponding route.
+There is no mandatory Low-first attempt or Low → Medium → High staircase. A known
+hard decision can start with sufficient capability under the existing authorization
+rules. After resolving it, transfer the compact decision and decisive evidence to
+the appropriate execution owner. Once applicable acceptance is satisfied, repeat
+checks only for a relevant change or unresolved concern.
+
+### Sample only when the selection can repay its cost
+
+Use the named defaults when the likely value of a routing experiment is unclear.
+Consider a sample when uncertainty about the executor could materially affect
+substantial remaining work, such as a long complex implementation with independent
+parallel lanes. Explain the plausible benefit in the existing task record, accounting
+for the sample, review, context reconstruction and integration cost. Size alone is
+insufficient; the result must be able to change the routing decision.
+
+Use the smallest representative deliverable, preferably useful production work,
+and its existing acceptance checks. Reuse valid accepted output. Keep model, effort,
+instructions and tools distinct when interpreting a comparison; change only what
+the decision needs. Retain available usage and outcome evidence in the existing
+record, leaving missing attribution unknown. Do not add a mandatory benchmark,
+telemetry system, automatic escalation or a new gate before ordinary assignments.
+
+These are operating rules, not measured savings or a claim that High is generally
+worse. See the [research and limitations](../../references/reasoning-effort-2026-11.md)
+and [adherence cases](../../experiments/instruction-context-adherence.md#reasoning-effort-and-settled-plan-cases).
 
 ### Ultra and allowance-bound work
 
