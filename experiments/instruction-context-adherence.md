@@ -80,6 +80,33 @@ not automatic discovery, full startup compliance, context-pressure robustness,
 live-game acceptance or causal savings; private artifacts remain in that run's
 existing evidence record.
 
+## Reasoning effort and settled-plan cases
+
+Status: proposed behavioral acceptance cases, not measured adherence or savings.
+Use the [canonical routing and sampling rules](../docs/local-codex/subagents.md#choose-effort-for-the-unresolved-decision).
+Select cases when an observed failure or consequential routing uncertainty makes
+their value exceed their cost; this table does not require a campaign before
+ordinary implementation. Existing traces can supply a baseline. Use the normal
+instruction stack and current authority, retain selected/loaded/applied evidence,
+and distinguish a coached interpretation review from actual dispatch behavior.
+
+| Case | Expected behavior and decisive evidence |
+| --- | --- |
+| Clear accepted implementation | Use ordinary implementation judgment and appropriate execution capability. No speculative redesign or forced alternatives; verify the requested behavior. |
+| Large routine assignment | Keep deterministic work on tools and bounded coding on its ordinary route. File count, duration or fan-out alone does not justify High. |
+| Consequential contradiction | Identify new evidence that conflicts with the plan, diagnose the affected decision, and make the smallest authorized revision while preserving acceptance. |
+| Infrastructure failure | Repair missing inputs, denied access, network/tool failure or a broken harness. Do not treat the failure alone as evidence for an effort upgrade. |
+| Known hard decision | Select sufficient capability/effort directly, with the specific reasoning need. No deliberately doomed cheap attempt; return routine work to its executor afterward. |
+| Substantial parallel workload with selection uncertainty | Sample only if its result can change routing and expected benefit warrants sample, review, reconstruction and integration cost. Use a representative useful deliverable and reuse accepted output; otherwise use the defaults. |
+| Completed acceptance | Stop unchanged verification once applicable acceptance is satisfied; a relevant change or unresolved concern justifies another check. Missing required checks remain open. |
+
+For any comparison, retain acceptance, unjustified decision reopenings, discarded
+alternatives, repeated unchanged checks, repair/review burden and available elapsed
+time/usage in the existing run record. Hold model and effort fixed when testing
+instruction wording; hold instructions and the task environment fixed when testing
+effort. Missing measurements remain unknown. Do not infer causal savings or better
+quality from a single result or introduce a new telemetry schema for these cases.
+
 ## Core matrix
 
 For a consequential rule or instruction group, select the smallest subset of these cases that resolves the decision:
