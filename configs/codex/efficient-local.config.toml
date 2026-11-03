@@ -1,4 +1,4 @@
-# Opt-in native Codex routing preset. Policy: 2026-11-01; source audit: 2026-10-04.
+# Opt-in native Codex routing preset. Policy: 2026-11-03; source audit: 2026-10-04.
 # EXAMPLE to merge, not an installer. Preserve permissions and unrelated settings.
 # A saved app selection is not a dispatch plan; these defaults do not choose
 # the executor, model/effort or number of workers for the next outcome.
@@ -7,7 +7,7 @@
 # No native model allowlist, per-worker budget or exact billing cap is installed.
 
 model = "gpt-6.1-sol"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "xhigh"
 service_tier = "default"
 # Permission policy is separate from model routing. For an owner-approved
 # sandbox-first setup, native granular sandbox_approval=false and rules=false
@@ -18,6 +18,8 @@ service_tier = "default"
 # selected model's advertised/default limits. Preserve a measured intentional
 # override when merging; review old fixed thresholds after a model change.
 
+# The root preset is for autonomous programme-level steering, not every worker.
+# High remains a deliberate choice for constrained root orchestration.
 # General worker settings complement, not replace, the native V2 configuration.
 [agents]
 enabled = true
@@ -35,6 +37,14 @@ expose_spawn_agent_model_overrides = true
 # Preserve an existing intentional mode hint when merging. It changes delegation
 # policy independently of model/effort defaults and should not be silently erased.
 multi_agent_mode_hint_text = """
+The autonomous programme-level root uses Sol 6.1 xhigh for framing, sequencing,
+integration and acceptance. High remains appropriate for deliberately constrained
+root orchestration. Keep root selection separate from worker routing; a settled
+worker plan does not end the root's steering responsibility or authorize inheritance.
+Before dependent fan-out, identify the next observable delivery change and the
+actual execution/approval route. An unavailable route changes the plan now:
+resolve that capability, preserve working state and pause affected dependent lanes.
+Continue genuinely independent required work with a clear integration path.
 Delegate when context isolation, specialized attention, continuity or parallel
 progress outweighs coordination cost. Use deterministic tools for mechanical
 work and keep tightly coupled judgment local. Select the executor and useful
@@ -42,18 +52,18 @@ agent count for the next outcome, including zero new agents; a saved app model
 selection or changed default does not replace this choice. Choose capability, effort,
 context, lifetime and autonomy independently. Use Luna low for usage monitoring,
 Git operations and CI-log triage, Luna medium for bounded coding, and Sol 6.1
-medium for sustained engineering. Use Terra 6.1 low/medium for bounded visual
+medium for sustained engineering workers. Use Terra 6.1 low/medium for bounded visual
 or browser review, synthesis, handoffs and scoped fixes, according to judgment.
 Check its claims against the actual artifact; stills do not prove motion or human
 acceptance. This does not authorize desktop control or change all agent defaults.
 Use Astra medium/high for extremely creative
-or complex graphics, architecture or academic reasoning. High needs a specific
+or complex graphics, architecture or academic reasoning. Worker High needs a specific
 reason tied to unresolved uncertainty, not project size. Execute settled plans;
 reopen decisions on new evidence of infeasibility, requirement conflict, material
 risk or acceptance failure, making the smallest authorized revision. Explore
 alternatives for a real open decision or requested comparison. Diagnose failures
 before changing effort; missing inputs, permissions or broken tools need repair.
-No mandatory Low-first attempt or automatic effort staircase. Route down after
+No mandatory Low-first attempt or automatic effort staircase. Route execution down after
 resolving uncertainty; repeat passed checks only for changed inputs or unresolved
 concerns. Use defaults unless a representative sample can plausibly repay sample,
 review, context and integration costs across substantial remaining work.
@@ -82,7 +92,8 @@ acceptance/integration or a genuine stop/handoff. Isolate concurrent writers in
 owned worktrees; coordinate shared boundaries and integration, not each next
 step. Use PRs where repository policy requires them. Preserve
 source/data/evidence before clearing owned scratch; retain valid shared caches.
-Prepare sandboxed work first. External effects use reviewed parameterized native
+Check execution feasibility early; prepare in the sandbox before external effects.
+External effects use reviewed parameterized native
 activities with narrow approval/allowlisting; reject ad-hoc inline escalation.
 Select model, reasoning_effort and fork_turns explicitly at launch. Follow the
 owner's scoped co-developer authorization, including model/effort, concurrency

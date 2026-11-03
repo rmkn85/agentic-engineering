@@ -8,7 +8,7 @@ The broader decision order—deterministic operation → cheapest capable worker
 
 ## Named model and effort policy
 
-Routing policy reviewed **2026-11-01**; the earlier evidence/prices below retain their original review date, **2026-10-04**. This table is the canonical model/effort policy; entry instructions link here instead of maintaining another table. These are repository operating defaults, not a universal optimum, a native Codex allowlist, or measured savings. No additional policy file or custom-agent installation is needed. Owner constraints apply, subject to higher-priority runtime rules. Validate support in the live client/account once per run; do not silently substitute a new model when a named choice is unavailable.
+Routing policy reviewed **2026-11-03**; the earlier evidence/prices below retain their original review date, **2026-10-04**. This table is the canonical model/effort policy; entry instructions link here instead of maintaining another table. These are repository operating defaults, not a universal optimum, a native Codex allowlist, or measured savings. No additional policy file or custom-agent installation is needed. Owner constraints apply, subject to higher-priority runtime rules. Validate support in the live client/account once per run; do not silently substitute a new model when a named choice is unavailable.
 
 | Assignment | Deliberate selection | Boundary |
 | --- | --- | --- |
@@ -17,15 +17,36 @@ Routing policy reviewed **2026-11-01**; the earlier evidence/prices below retain
 | Focused implementation, tests against a clear contract, localized diagnosis or review needing judgment | `gpt-6-luna` / `medium` | Normal coding-worker starting point, including implementation against an accepted plan |
 | Same bounded problem requiring deeper edge-case reasoning or hypothesis checking | `gpt-6-luna` / `high` | State the particular reasoning need; do not raise effort for a large batch merely because it is large |
 | Bounded visual/browser review, synthesis, handoff writing or scoped fixes | `gpt-6.1-terra` / `low` or `medium` according to judgment needed | Ground claims in the actual artifact and authoritative facts; image interpretation does not prove motion, interaction or human acceptance; escalate coupled or unresolved decisions |
-| Sustained engineering, cross-boundary implementation, reasoning with substantial execution, or synthesis beyond a bounded Luna assignment | `gpt-6.1-sol` / `medium` | Normal main coding/orchestration and substantial engineering-worker choice |
+| Autonomous programme-level root owning problem framing, priorities, approach selection, integration and acceptance | `gpt-6.1-sol` / `xhigh` | Root operating default for this responsibility; not inherited by workers and not automatic permission to redesign or widen scope |
+| Constrained root orchestration with established approach boundaries and acceptance | `gpt-6.1-sol` / `high` | Deliberate alternative when the root's judgment is sufficiently bounded; not a mandatory cheaper first attempt |
+| Sustained engineering, cross-boundary implementation, reasoning with substantial execution, or synthesis beyond a bounded Luna assignment | `gpt-6.1-sol` / `medium` | Substantial engineering-worker choice; do not equate this assignment with programme-level root ownership |
 | Difficult coupled debugging, consequential correctness review or deeper analysis | `gpt-6.1-sol` / `high` | A specific unresolved decision, not a blanket reviewer setting |
 | Extremely creative or complex decisions: demanding graphics, advanced architecture, or comprehension of difficult academic work | `gpt-6-astra` / `medium`, or `high` for the specific coupled reasoning need | A bounded specialist outcome; hand implementation, tests, publication and monitoring back to the appropriate executor |
 
-**Baseline pairs:** Luna at `low|medium|high`, Terra 6.1 at `low|medium`, Sol 6.1 at `medium|high`, Astra at `medium|high` for the demanding decisions above. These choices do not require a new approval prompt. Do not default an entire graphics, research or engineering project to its strongest specialist. `xhigh|max` requires explicit scoped owner authorization. **Ultra is forbidden except under the current explicit instruction to exhaust allowance before reset**, as defined below. A model's availability, default effort or a worker's old configuration grants no exception.
+**Worker baseline pairs:** Luna at `low|medium|high`, Terra 6.1 at `low|medium`, Sol 6.1 at `medium|high`, Astra at `medium|high` for the demanding decisions above. These choices do not require a new approval prompt. Do not default all workers in a graphics, research or engineering project to its strongest specialist. Adopting the programme-level root preset selects Sol 6.1/xHigh for that root only; it grants no worker or descendant exception. Other `xhigh|max` assignments require explicit scoped owner authorization. Explicit lower ceilings still apply; do not silently reconfigure an active session. **Ultra is forbidden except under the current explicit instruction to exhaust allowance before reset**, as defined below. A model's availability, default effort or a worker's old configuration grants no exception.
 
 Terra's [official model guidance](https://learn.chatgpt.com/docs/models) and [model page](https://developers.openai.com/api/docs/models/gpt-6.1-terra), reviewed 2026-10-27, identify visual understanding, computer use and clear writing as intended strengths. This supports a scoped trial, not a claim that Terra is better at runtime engineering or cheaper per accepted task. Keep engineering ownership with Sol and routine extraction/monitoring with tools or Luna. Computer-use capability grants no additional permission; preserve each project's desktop and data boundaries. The API page lists image input, not native video input: sampled frames cannot establish continuous motion acceptance.
 
 When first-adoption uncertainty warrants a sample under the rule below, use a retained representative artifact and an evidence-grounded writing task with an existing rubric. Check factual accuracy, important omissions, uncertainty and unauthorized acceptance claims; retain elapsed time and available usage, with missing attribution marked unknown. Keep the trial bounded, review the result against its sources, and change routing if repair cost removes the benefit. Do not run a benchmark before every assignment or replace every saved default. Refresh affected active workers explicitly; a repository edit alone does not change their instructions or runtime settings.
+
+### Root orchestration is a separate decision
+
+Select the root for the judgment it retains across the whole assignment, not the
+simplicity of the next worker task. A plan and passing component tests do not prove
+that the route still delivers the requested result. Do not automatically downgrade
+the root when implementation starts or rely on it noticing its own steering failure
+before adequate reasoning is available. Offload bounded execution without offloading
+responsibility for direction and acceptance. High remains valid for constrained
+orchestration; backlog length, file count and agent count alone do not select xHigh.
+
+The xHigh root default is a scoped operating choice, not a measured universal
+advantage or a cure for unavailable tools or authority. Operational failures are
+relevant evidence even without numerical success rates; generic defaults do not
+outweigh observed failure on the assigned role. Keep effort, instructions, context
+and execution capability distinct when attributing outcomes. Judge subsequent work
+by unprompted steering and accepted delivery, not longer reasoning or status text.
+The [Sol model page](https://developers.openai.com/api/docs/models/gpt-6.1-sol)
+confirms supported effort values (reviewed 2026-11-03), not this policy's reliability.
 
 ### Choose effort for the unresolved decision
 
@@ -34,8 +55,9 @@ context, autonomy and lifetime separately: more effort grants neither broader sc
 nor permission to redesign an accepted plan. Project size, duration, parallelism and
 a reviewer title do not establish a need for High. Long repetitive implementation
 can stay on the ordinary execution route; a small coupled correctness question can
-justify High directly. Preserve Sol 6.1/Medium as the orchestration baseline and
-Luna/Medium as the fallback child setting; explicit dispatch still selects the pair.
+justify High directly. Use the root-role distinction above for orchestration and
+retain Luna/Medium as the fallback child setting; explicit dispatch still selects
+each worker pair independently.
 
 Execute settled decisions. Reopen one when new evidence establishes infeasibility,
 a requirement conflict, material risk or an acceptance failure. State the evidence
@@ -211,7 +233,7 @@ The hosted beta shares the request's model and tools among agents. It therefore 
 
 A 3D asset, level, or presentation assignment can warrant deeper reasoning when it couples spatial composition, navigation or camera behavior, lighting/materials, approved visual references, runtime constraints, and perceptual review. The artifact category alone is not a reason to escalate. Choose an allowed adequate pair, or keep the coupled decision with the coordinator without weakening acceptance.
 
-Route down after the specialist or coordinator converts ambiguity into an accepted decision artifact: approved references, scene boundaries, constraints, fixtures, measurable budgets, or repeatable acceptance scenarios. Exact edits, builds, captures, and tests can then return to deterministic tools or cheaper capable workers. Re-escalate only when new evidence reopens the coupled decision; an ordinary failing check follows routine diagnosis first.
+Route execution down after the specialist or coordinator converts ambiguity into an accepted decision artifact: approved references, scene boundaries, constraints, fixtures, measurable budgets, or repeatable acceptance scenarios. Exact edits, builds, captures, and tests can then return to deterministic tools or cheaper capable workers. Re-escalate only when new evidence reopens the coupled decision; an ordinary failing check follows routine diagnosis first. This worker/execution rule does not automatically lower a root that still owns programme-level steering.
 
 Give workers relevant context and disjoint write scopes. Workers keep logs on disk and return only results, evidence paths, validation, limitations, and unresolved decisions. The coordinator reviews decision-bearing source without replaying commands or importing logs already consumed by workers. When evidence is insufficient, request targeted investigation within the worker's authority and genuine limits; read only excerpts needed for a coordinator decision.
 
@@ -223,7 +245,7 @@ Choose role, lifetime, model and autonomy separately. These roles describe respo
 
 | Role | Ownership and continuation | Routing default |
 | --- | --- | --- |
-| Portfolio/integration orchestrator | Retains overall goals and integration state; keeps authorized outcomes moving, delegates independent epics and resolves shared dependencies. Continues until the requested programme is accepted or a genuine boundary prevents progress. | Sol 6.1 / Medium; prefer its larger supported economical context for coupled state, verified in the current client. Offload noisy routine work. |
+| Portfolio/integration orchestrator | Retains overall goals and integration state; keeps authorized outcomes moving, delegates independent epics and resolves shared dependencies. Continues until the requested programme is accepted or a genuine boundary prevents progress. | Sol 6.1 / xHigh for programme-level root ownership; High for deliberately constrained root orchestration. Verify supported context/settings in the current client and offload noisy routine work. Worker ceilings remain separate. |
 | Autonomous epic owner | Owns a domain from requirements through implementation, qualification, receiving-consumer use and acceptance. Retains its worktree and context, chooses next steps, resolves routine blockers, pivots and delegates authorized scoped work. A checkpoint or subordinate result does not end the epic. | Sol 6.1 / Medium for sustained engineering; request a specialist for a specific demanding decision while retaining ownership. |
 | Persistent steering reviewer | Retains goals, acceptance, prior corrections and their effects. Reviews meaningful delivery checkpoints or an explicitly requested schedule, challenges drift and ineffective loops, and follows corrections through. It is low traffic and does not gate every owner action or duplicate implementation. | Tools/Luna collect observations; Sol for ordinary cross-boundary review, Astra / Medium or justified High for demanding strategic, creative or complex judgment. A designated stronger reviewer still obeys scoped model/effort authorization. |
 | Bounded specialist/reviewer | Resolves one consequential uncertainty or independently checks an artifact; returns the decision, evidence and limitations to its owner. | Choose Sol or Astra by the actual reasoning need, not the reviewer title. Return routine execution to the appropriate worker. |
