@@ -1,5 +1,15 @@
 # Agentic Engineering continuation
 
+The portable contributor core now defines five engineering personas and selects
+them by the responsibility exercised in the current request. The operating corpus
+links that definition. Ordinary service restoration is an Operator concern handled
+by engineering; role labels confer no permissions or new approval gates. Adopt
+through existing local snapshots while preserving project rules. Wording and
+instruction-route checks establish the published definition; sustained agent
+adherence remains observable during ordinary work. `make check` passed all 199
+native tool tests with one skip; whitespace and role-attribution examples were
+reviewed against the agreed responsibilities.
+
 Integrated product work follows `docs/execution/direct-delivery.md`. The current
 refinement prioritizes common user journeys and the next connected deliverable,
 ties enabling work to concrete outcome gaps, and keeps process support compact.

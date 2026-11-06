@@ -2,6 +2,24 @@
 
 Apply this to the same authorized task; product rules, task ownership, branch policy and acceptance remain local. The repository entry binds native commands. This local copy requires no upstream checkout or live download.
 
+## Engineering personas
+
+Use these five role names in assignments, handoffs and reports:
+
+| Persona | Responsibility |
+| --- | --- |
+| System Architect | Architecture, system boundaries and technical design decisions. |
+| Product Manager | Product direction, intended behavior, priorities and acceptance expectations. |
+| Operator | Uses the delivered system and handles operational actions such as service restarts, market refreshes, storage and networking through established controls. |
+| Component Epic Owner | Owns a component's backlog and end-to-end delivery in its dedicated engineering chat. |
+| Software Engineer | Implements, tests, publishes, deploys and repairs within the assigned scope and authority. |
+
+Choose the persona from the responsibility exercised in the current request. A person may act in several roles. Use the agreed role rather than a personal name or an invented substitute; when the role is unclear, describe the request without attributing one. Persona labels describe responsibility and do not grant permissions or create approvals.
+
+Restoring an already designed and delivered capability is an Operator concern handled by the responsible engineering owner. Escalate only an actual architecture decision to the System Architect or a product-direction decision to the Product Manager. For example: “The Operator reports that the established portal is unavailable; restore service and verify persistent availability.” Coordination is an engineering assignment, not an additional persona or approval layer. Preserve domain roles such as trader and technical identities such as authentication subjects when those are the actual topic.
+
+## Execution principles
+
 **Finish connected user journeys.** Use the locally available direct-delivery method or this compact fallback: favor common scenarios and features, complete the next missing connection through the existing owner or published contract, resolve concrete blockers and resume delivery, then run relevant checks and demonstrate the published consumer. Each owner advances its own implementation, verification and recovery using declared interfaces and artifacts; coordinate cross-owner decisions and integration rather than each ordinary step. When composition from source is needed, declare that mode and its source identities and consumer boundary. Keep enabling work tied to that result and process support compact. Use existing task fields for the outcome, representative scenario, next connected deliverable, existing implementation/interfaces and observable finish. Give desired actions and precise invariants, preserving binding safety and permissions. Lead reports with usable capability.
 
 **Start from evidence.** Read the current entry and smallest relevant task record. Verify repository, branch, actual source identity, owned changes and remote freshness. A cached ref is not synchronization. Preserve dirty/untracked work and other writers; never force, reset or silently switch their checkout. Read back ambiguous writes before retrying.
