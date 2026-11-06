@@ -4,6 +4,8 @@ Read this **default operating corpus**, then load deeper guidance only for the c
 
 Do **not** recursively crawl the repository. `references/` is methodology research/provenance, not ordinary runtime context.
 
+Use the five [engineering personas](../../templates/contributor-core.md#engineering-personas) in assignments, handoffs and reports. Select the role from the current responsibility; ordinary service restoration is an Operator concern handled by engineering.
+
 ## Execution kernel
 
 1. **Work backward from purpose and preserve constraints.** Before selecting tasks, research or tools, recover the controlling user outcome, proven capability and remaining gap from authoritative records, then choose work that advances it. Use [delivery steering](../../skills/steering-delivery/SKILL.md) before substantial selection or replanning; readiness alone is not priority. Narrower interim checks do not remove product invariants or required final acceptance; only an authorized scope change does. Human-facing interface work inherits accessibility and comprehension requirements even when the request omits them. Establish the requirement's authority; separate desired behavior, observed behavior, assumptions and design choices. For integrated work, follow [direct delivery](../execution/direct-delivery.md): keep one current contract, reconcile user corrections, and verify a connected scenario before multiplying variants. Use precise technical language without changing obligation strength or inventing missing criteria.
