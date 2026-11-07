@@ -8,7 +8,7 @@ The broader decision order—deterministic operation → cheapest capable worker
 
 ## Named model and effort policy
 
-Routing policy reviewed **2026-11-01**; the earlier evidence/prices below retain their original review date, **2026-10-04**. This table is the canonical model/effort policy; entry instructions link here instead of maintaining another table. These are repository operating defaults, not a universal optimum, a native Codex allowlist, or measured savings. No additional policy file or custom-agent installation is needed. Owner constraints apply, subject to higher-priority runtime rules. Validate support in the live client/account once per run; do not silently substitute a new model when a named choice is unavailable.
+Routing policy reviewed **2026-11-07**; the earlier evidence/prices below retain their original review date, **2026-10-04**. This table is the canonical model/effort policy; entry instructions link here instead of maintaining another table. These are repository operating defaults, not a universal optimum, a native Codex allowlist, or measured savings. No additional policy file or custom-agent installation is needed. Owner constraints apply, subject to higher-priority runtime rules. Validate support in the live client/account once per run; do not silently substitute a new model when a named choice is unavailable.
 
 | Assignment | Deliberate selection | Boundary |
 | --- | --- | --- |
@@ -26,6 +26,18 @@ Routing policy reviewed **2026-11-01**; the earlier evidence/prices below retain
 Terra's [official model guidance](https://learn.chatgpt.com/docs/models) and [model page](https://developers.openai.com/api/docs/models/gpt-6.1-terra), reviewed 2026-10-27, identify visual understanding, computer use and clear writing as intended strengths. This supports a scoped trial, not a claim that Terra is better at runtime engineering or cheaper per accepted task. Keep engineering ownership with Sol and routine extraction/monitoring with tools or Luna. Computer-use capability grants no additional permission; preserve each project's desktop and data boundaries. The API page lists image input, not native video input: sampled frames cannot establish continuous motion acceptance.
 
 When first-adoption uncertainty warrants a sample under the rule below, use a retained representative artifact and an evidence-grounded writing task with an existing rubric. Check factual accuracy, important omissions, uncertainty and unauthorized acceptance claims; retain elapsed time and available usage, with missing attribution marked unknown. Keep the trial bounded, review the result against its sources, and change routing if repair cost removes the benefit. Do not run a benchmark before every assignment or replace every saved default. Refresh affected active workers explicitly; a repository edit alone does not change their instructions or runtime settings.
+
+### Root responsibility and worker execution
+
+The root retains framing, priorities, integration and acceptance while workers
+execute bounded assignments. A settled worker plan does not remove the root's
+responsibility to reassess whether the route still delivers the outcome. Choose
+root effort for that remaining judgment and current owner limits, independently
+of the next worker's simpler task. Keep execution offloaded when useful; neither
+a programme label nor agent count grants an automatic effort escalation. Preserve
+the ordinary routing baseline and explicit authorization for above-baseline
+settings. A proposed stronger preset is a policy hypothesis until its benefit is
+observed under comparable acceptance and total resource use.
 
 ### Choose effort for the unresolved decision
 
