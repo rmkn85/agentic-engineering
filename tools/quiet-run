@@ -52,6 +52,8 @@ if [[ $code -eq 0 ]]; then
   "schema": "quiet-run-diagnostic-v2",
   "bundle_id": "$bundle_id",
   "status": "$status",
+  "status_scope": "process-exit",
+  "substantive_verdict": "unassessed",
   "command": "$base",
   "exit_code": $code,
   "elapsed_ms": $elapsed_ms,
@@ -80,6 +82,8 @@ else
   "schema": "quiet-run-diagnostic-v2",
   "bundle_id": "$bundle_id",
   "status": "$status",
+  "status_scope": "process-exit",
+  "substantive_verdict": "unassessed",
   "command": "$base",
   "exit_code": $code,
   "elapsed_ms": $elapsed_ms,
@@ -110,10 +114,10 @@ EOF
 fi
 
 if [[ $code -eq 0 ]]; then
-  printf 'PASS code=0 elapsed_ms=%s log_bytes=%s log_lines=%s obs=sha256:%s manifest=%s log=%s\n' \
+  printf 'PASS code=0 elapsed_ms=%s log_bytes=%s log_lines=%s scope=process-exit substantive_verdict=unassessed obs=sha256:%s manifest=%s log=%s\n' \
     "$elapsed_ms" "$bytes" "$lines" "$digest" "$manifest" "$log"
 else
-  printf 'FAIL code=%s elapsed_ms=%s log_bytes=%s log_lines=%s obs=sha256:%s manifest=%s excerpt=%s log=%s\n' \
+  printf 'FAIL code=%s elapsed_ms=%s log_bytes=%s log_lines=%s scope=process-exit substantive_verdict=unassessed obs=sha256:%s manifest=%s excerpt=%s log=%s\n' \
     "$code" "$elapsed_ms" "$bytes" "$lines" "$digest" "$manifest" "$excerpt" "$log"
   if [[ "$INLINE_FAILURE" == "1" ]]; then
     echo "--- requested failure excerpt: last ${TAIL_LINES} lines ---"
