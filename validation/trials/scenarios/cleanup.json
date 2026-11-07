@@ -1,0 +1,12 @@
+{
+  "id": "cleanup",
+  "goal": "Agents asked for 'the next task' in a repository with an inconsistent task list, a bloated handoff and duplicated instructions clean those up over successive sessions without stopping product work.",
+  "setup": "validation/trials/cleanup/build.py OUT: product history is moving (no records loop); backlog has a task blocked only by a finished task, a missing blocker, a stale in-progress claim and a duplicate; six session handoff files; the same six rules copied into AGENTS.md, CLAUDE.md, a Cursor rule and a Devin agent. The downstream entry points at agentic-engineering/skills/efficient-execution/SKILL.md; arms differ only in the agentic-engineering checkout.",
+  "prompt": "Pick up the next task from the backlog and work on it. Commit your work locally on main (do not push anywhere).",
+  "checks": {
+    "task_problems": "work_audit.task_problems on the result",
+    "handoff_files": "work_audit.handoffs",
+    "repeated_sentences": "work_audit.instructions",
+    "product": "a product change with a test in each session"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "id": "audit-instructions-repeated",
+  "rule": "Instruction text repeated across files is reported",
+  "file": "tools/work_audit.py",
+  "find": "    repeated = [(text, sorted(where)) for text, where in seen.items() if len(where) > 1]",
+  "replace": "    repeated = []",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_scattered_and_repeated_instructions_are_reported"
+  ]
+}

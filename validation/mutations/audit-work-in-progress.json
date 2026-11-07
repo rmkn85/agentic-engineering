@@ -1,0 +1,10 @@
+{
+  "id": "audit-work-in-progress",
+  "rule": "Too many unmerged branches is reported",
+  "file": "tools/work_audit.py",
+  "find": "    if unmerged > WIP_BRANCHES or worktrees > WIP_BRANCHES:",
+  "replace": "    if False:",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_too_much_work_in_progress_is_reported"
+  ]
+}

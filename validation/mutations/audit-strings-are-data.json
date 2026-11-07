@@ -1,0 +1,10 @@
+{
+  "id": "audit-strings-are-data",
+  "rule": "Marker words inside strings are not unfinished code",
+  "file": "tools/work_audit.py",
+  "find": "            code = re.sub(r\"\\\"(?:\\\\.|[^\\\"\\\\])*\\\"|'(?:\\\\.|[^'\\\\])*'\", \"\", line)  # text inside quotes is data",
+  "replace": "            code = line",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_unfinished_code_is_found_in_product_not_in_docs"
+  ]
+}

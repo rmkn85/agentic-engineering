@@ -28,7 +28,7 @@ class WorkAuditTests(unittest.TestCase):
         subprocess.run(GIT + ["add", "-A"], cwd=self.root, check=True)
         subprocess.run(GIT + ["commit", "-qm", subject], cwd=self.root, check=True)
 
-    def report(self, *args):
+    def report(self, *args):  # noqa: D401
         result = subprocess.run([sys.executable, str(TOOL), "--root", str(self.root), "--json", *args],
                                 capture_output=True, text=True, check=False)
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -36,6 +36,10 @@ class WorkAuditTests(unittest.TestCase):
 
     def kinds(self, report):
         return [f["kind"] for f in report["findings"]]
+
+    def finding(self, report, kind):
+        self.assertIn(kind, self.kinds(report))
+        return next(f for f in report["findings"] if f["kind"] == kind)
 
     def test_records_only_history_is_a_loop_and_focus_asks_for_product_change(self):
         for n in range(6):
@@ -97,7 +101,10 @@ class WorkAuditTests(unittest.TestCase):
         self.commit("tests/test_env.py", "import unittest, shutil\n"
                     "@unittest.skipUnless(shutil.which('git'), 'needs git')\ndef test_env():\n    pass\n", "test: env")
         self.commit("docs/plan.md", "TODO: write the plan\n", "docs: plan")
-        finding = next(f for f in self.report()["findings"] if f["kind"] == "unfinished")
+        self.commit("src/lint.py", '"""Find markers.\n\nTODO and FIXME lines are reported.\n"""\n'
+                    "PATTERN = 'TODO|FIXME'\nSAMPLE = \"raise NotImplementedError\"\n", "feat: lint")
+        self.commit("src/lint.js", "const PATTERN = \"TODO|FIXME\";\n", "feat: lint js")
+        finding = self.finding(self.report(), "unfinished")
         self.assertIn("2 unfinished markers", finding["problem"])
         self.assertIn("src/pay.py", finding["problem"] + finding["action"])
 
@@ -108,6 +115,120 @@ class WorkAuditTests(unittest.TestCase):
         focus = self.report()["focus"]
         self.assertIn("src/pay.py:2", focus)
         self.assertIn("does not end the session", focus)
+
+    def test_inconsistent_task_list_is_reported_and_comes_before_handoff(self):
+        self.commit("backlog.json", json.dumps({"tasks": [
+            {"id": "T1", "status": "done", "title": "Record checkpoint"},
+            {"id": "T2", "status": "blocked", "blocked_by": ["T1"], "title": "Monthly export"},
+            {"id": "T3", "status": "open", "blocked_by": ["T9"], "title": "Export CSV"},
+            {"id": "T4", "status": "in_progress", "updated_at": "2020-01-01T00:00:00Z", "title": "Fix rounding"},
+            {"id": "T5", "status": "open", "title": "Fix  rounding!"},
+        ]}), "chore: backlog")
+        self.commit("docs/dev-handoff/README.md", "current\n", "docs: handoff")
+        self.commit("docs/dev-handoff/old.md", "older\n", "docs: handoff history")
+        report = self.report()
+        finding = self.finding(report, "tasks")
+        for expected in ("T2 is blocked only by finished T1", "T3 depends on missing T9",
+                         "T4 claimed in progress", "duplicate open tasks T4, T5"):
+            self.assertIn(expected, finding["problem"])
+        self.assertLess(self.kinds(report).index("tasks"), self.kinds(report).index("handoff"))
+        self.assertIn("fix: remove T9 from its blockers", finding["action"])
+        self.assertIn("not owner decisions", finding["action"])
+        handoff = self.finding(report, "handoff")["action"]
+        self.assertIn("Rewrite docs/dev-handoff/README.md", handoff)
+        self.assertIn("delete docs/dev-handoff/old.md", handoff)
+
+    def test_beads_issues_are_read(self):
+        rows = [{"id": "bd-1", "title": "a", "status": "closed"},
+                {"id": "bd-2", "title": "b", "status": "blocked",
+                 "dependencies": [{"depends_on_id": "bd-1", "type": "blocks"}]}]
+        self.commit(".beads/issues.jsonl", "".join(json.dumps(r) + "\n" for r in rows), "chore: beads")
+        finding = self.finding(self.report(), "tasks")
+        self.assertIn("bd-2 is blocked only by finished bd-1", finding["problem"])
+
+    def test_tasks_can_come_from_a_configured_tracker_command(self):
+        rows = [{"id": "bd-7", "title": "x", "status": "done"},
+                {"id": "bd-8", "title": "y", "status": "blocked", "blocked_by": ["bd-7"]}]
+        self.write("tracker.py", "import json\nfor r in %r:\n    print(json.dumps(r))\n" % rows)
+        self.write(".agent/audit.json", json.dumps({"tasks_command": [sys.executable, "tracker.py"]}))
+        self.assertIn("bd-8 is blocked only by finished bd-7", self.finding(self.report(), "tasks")["problem"])
+
+    def test_scattered_and_repeated_instructions_are_reported(self):
+        rule = "Always run the full verification suite before you publish any change to the shared branch."
+        for rel in ("AGENTS.md", "CLAUDE.md", ".cursor/rules/a.mdc", ".devin/agents/b.md", ".github/copilot-instructions.md"):
+            self.commit(rel, "\n\n".join(f"{rule} Rule {n} applies to every task in this repository today."
+                                          for n in range(5)) + "\n", f"chore: {rel}")
+        finding = self.finding(self.report(), "instructions")
+        self.assertIn("5 agent instruction files", finding["problem"])
+        self.assertIn("Delete the repeated text from .cursor/rules/a.mdc", finding["action"])
+        self.assertIn("Make CLAUDE.md a pointer: @AGENTS.md", finding["action"])
+        self.assertIn("needs no owner decision", finding["action"])
+
+    def test_one_short_instruction_file_is_not_a_finding(self):
+        self.commit("AGENTS.md", "Run make check before you commit any change to this repository.\n", "chore: entry")
+        self.assertNotIn("instructions", self.kinds(self.report()))
+
+    def test_oversized_code_is_reported_but_never_the_focus(self):
+        self.commit("configs/allowed-activities.json", "{}\n", "chore: allowlist")
+        body = "".join(f"    x{n} = {n}\n" for n in range(130))
+        self.commit("src/big.py", "def huge():\n" + body + "    return 1\n", "feat: big")
+        report = self.report()
+        finding = self.finding(report, "size")
+        self.assertIn("function huge", finding["problem"])
+        self.assertEqual(self.kinds(report), ["size"])
+        self.assertNotIn("split", report["focus"])
+
+    def test_tests_that_assert_nothing_are_reported(self):
+        self.commit("tests/test_a.py", "def check(x):\n    assert x\n\ndef test_ok():\n    check(1)\n\n"
+                    "def test_empty():\n    run = 1\n", "test: a")
+        problem = self.finding(self.report(), "vacuous-tests")["problem"]
+        self.assertIn("test_empty", problem)
+        self.assertNotIn("test_ok", problem)
+
+    def test_checks_that_cannot_fail_are_reported_but_tolerated_setup_is_not(self):
+        self.commit(".github/workflows/ci.yml", "steps:\n  - run: git fetch origin main || true\n", "ci: fetch")
+        self.assertNotIn("cannot-fail", self.kinds(self.report()))
+        self.commit(".github/workflows/ci.yml", "steps:\n  - run: pytest -q || true\n", "ci: tests")
+        self.assertIn("pytest -q || true", self.finding(self.report(), "cannot-fail")["problem"])
+        self.commit("Makefile", "lint:\n\truff check . --exit-zero\n", "build: lint")
+        self.assertIn("Makefile:2", self.finding(self.report(), "cannot-fail")["problem"])
+
+    def test_links_to_missing_files_in_instructions_are_reported(self):
+        self.commit("docs/guide.md", "guide\n", "docs: guide")
+        self.commit("AGENTS.md", "See [guide](docs/guide.md) and [old](docs/removed.md).\n", "chore: entry")
+        problem = self.finding(self.report(), "stale-references")["problem"]
+        self.assertIn("docs/removed.md", problem)
+        self.assertNotIn("docs/guide.md", problem)
+
+    def test_instruction_growth_within_the_window_is_reported(self):
+        self.commit("AGENTS.md", "Run make check.\n", "chore: entry")
+        for n in range(4):
+            self.commit("AGENTS.md", "Run make check.\n" + "Also remember this rule. " * (120 * (n + 1)),
+                        f"docs: add rule {n}")
+        self.assertIn("instruction-growth", self.kinds(self.report("--commits", "4")))
+
+    def test_too_much_work_in_progress_is_reported(self):
+        for n in range(12):
+            subprocess.run(GIT + ["switch", "-q", "-c", f"wip-{n}", "main"], cwd=self.root, check=True)
+            self.commit(f"src/wip{n}.py", "x = 1\n", f"feat: wip {n}")
+        subprocess.run(GIT + ["switch", "-q", "main"], cwd=self.root, check=True)
+        self.assertIn("12 unmerged branches", self.finding(self.report(), "wip")["problem"])
+
+    def test_large_tracked_files_and_missing_allowlist_are_reported(self):
+        self.commit("assets/blob.bin", "x" * 5_100_000, "chore: blob")
+        report = self.report()
+        self.assertIn("assets/blob.bin", self.finding(report, "large-files")["problem"])
+        self.assertIn("allowlist", self.kinds(report))
+        self.commit("configs/allowed-activities.json", "{}\n", "chore: allowlist")
+        self.assertNotIn("allowlist", self.kinds(self.report()))
+
+    def test_every_finding_names_its_area(self):
+        for n in range(6):
+            self.commit(f"docs/n{n}.md", "x\n", f"docs: note {n}")
+        report = self.report()
+        self.assertTrue(report["findings"])
+        self.assertTrue(all(f["area"] in ("direction", "evidence", "knowledge", "instructions", "flow", "harness",
+                                          "code") for f in report["findings"]))
 
     def test_handoff_that_grew_into_a_history_is_reported(self):
         self.commit("docs/dev-handoff/README.md", "current\n", "docs: handoff")

@@ -1,0 +1,10 @@
+{
+  "id": "audit-python-docstrings-are-data",
+  "rule": "Marker words in Python docstrings are not unfinished code",
+  "file": "tools/work_audit.py",
+  "find": "        lines, without_strings = text.splitlines(), python_code_lines(text) if rel.endswith(\".py\") else None",
+  "replace": "        lines, without_strings = text.splitlines(), None",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_unfinished_code_is_found_in_product_not_in_docs"
+  ]
+}

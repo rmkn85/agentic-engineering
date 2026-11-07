@@ -37,4 +37,4 @@ Write runtime text as short, STE-informed imperatives under the [technical-langu
 
 ## Validation and adoption
 
-`make check` runs the contributor regression suite with Python 3.9+ and Git, no external packages; CI runs it too. It proves tool behaviour, not model adherence, product delivery, semantic correctness or public-corpus privacy; those need review or a trial. To adopt these practices elsewhere, use the [newcomer contract](docs/adoption/newcomer-contract.md) and [native command bindings](docs/adoption/native-command-bindings.md): apply protections by process need, preserve local authority, and prefer executable routes over more always-loaded prose.
+`make check` runs the contributor regression suite with Python 3.9+ and Git, no external packages; CI runs it too. It proves tool behaviour, not model adherence, product delivery, semantic correctness or public-corpus privacy; those need review or a trial. To adopt these practices elsewhere, copy the [entry template](templates/AGENTS.md); the [newcomer contract](docs/adoption/newcomer-contract.md) covers protections by process need, local authority and executable routes.

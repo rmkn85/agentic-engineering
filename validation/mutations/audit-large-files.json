@@ -1,0 +1,10 @@
+{
+  "id": "audit-large-files",
+  "rule": "Large tracked files are reported",
+  "file": "tools/work_audit.py",
+  "find": "        if size_bytes > LARGE_FILE:",
+  "replace": "        if False:",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_large_tracked_files_and_missing_allowlist_are_reported"
+  ]
+}

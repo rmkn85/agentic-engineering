@@ -46,7 +46,9 @@ goal, choose the next action, and check its effect next time.
 ## Handoff
 
 Keep one current handoff under 800 words: goal, last proven state, next action.
-Replace it; history is in Git and the task tracker.
+Replace it; history is in Git and the task tracker. When your work writes to an
+area the audit flags (task list, handoff, instructions), leave that area within
+its limits in the same commit.
 
 ## Engineering personas
 
