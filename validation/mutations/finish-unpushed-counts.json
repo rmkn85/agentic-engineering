@@ -1,0 +1,10 @@
+{
+  "id": "finish-unpushed-counts",
+  "rule": "Committed but unpushed work counts as a change that needs a goal record",
+  "file": "tools/finish_check.py",
+  "find": "            return ahead.stdout.strip() not in (\"\", \"0\")",
+  "replace": "            return False",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_unpushed_commits_count_as_changes_without_a_goal"
+  ]
+}

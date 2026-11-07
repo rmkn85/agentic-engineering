@@ -1,0 +1,10 @@
+{
+  "id": "budget-no-narrowing",
+  "rule": "The budget config cannot narrow what is measured",
+  "file": "tools/check_guidance_budget.py",
+  "find": "            if narrowed:\n",
+  "replace": "            if False:\n",
+  "tests": [
+    "tools.tests.test_guidance_budget.GuidanceBudgetProportionTests.test_narrowing_what_is_measured_fails"
+  ]
+}

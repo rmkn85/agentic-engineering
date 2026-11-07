@@ -1,58 +1,38 @@
 # AGENTS.md
 
-This repository is a public knowledge base about executing the **same authorized engineering work** with less model usage, wall time, repeated computation, retries, and human effort while preserving the requested result and quality.
+This public repository teaches coding agents to reach the **requested outcome** with less model usage, wall time, repeated work, retries and human effort. Your own work here follows the same method.
 
-## Normal reading boundary
+Read this file and [`docs/agent-corpus/README.md`](docs/agent-corpus/README.md); load deeper docs only for the decision at hand. Do not crawl `references/`: it holds research and rationale for methodology audits.
 
-For ordinary work, use this file plus [`docs/agent-corpus/README.md`](docs/agent-corpus/README.md) as the default operating corpus. Load deeper operational docs only when the current decision needs them.
+## Work backward from the goal
 
-**Do not recursively crawl `references/`.** It preserves external research, provenance, competing ideas, and historical rationale for maintainers improving this methodology. Read it only for methodology research/audit work.
+1. **State the goal and its evidence first.** For any multi-step task, write the user outcome and the checks that prove it in `.agent/goal.json` (format: `python3 tools/finish_check.py --help`). Under the [specification contract](docs/specifications/README.md), preserve requirement authority and meaning, connect construction to independent evidence, and never invent requirements or weaken acceptance. Optimise execution, not scope: keep success criteria, source coverage, permissions and the quality bar. Human-facing work follows the [interface contract](docs/interfaces/accessible-interfaces.md): accessible operation, rendered comprehension and machine semantics are separate obligations; a new barrier is a defect, not polish.
+2. **Choose the shortest path that closes the remaining gap.** Readiness, convenience or interesting side work is not priority. At checkpoints use [delivery steering](skills/steering-delivery/SKILL.md). Check feasibility before dependent preparation. Keep preparation sandboxed and external effects last; bind them to [reviewed native activities](docs/adoption/native-command-bindings.md#sandbox-first-external-activities), allowlist each bounded activity once, and never seek equivalent access through an ad-hoc command or another surface.
+3. **Execute with tools before inference.** Use deterministic tools for mechanical work. Keep logs on disk: workers return status, decisions and evidence paths, and the coordinator reads only decision-critical excerpts. Treat context as a working set: prefer path-scoped rules, on-demand skills and isolated worker context to always-loaded text. Reuse valid results until an input changes. Select role, lifetime, model, effort and context explicitly under the [routing policy](docs/local-codex/subagents.md#named-model-and-effort-policy) and [dispatch contract](docs/local-codex/subagents.md#launch-preflight); reuse never preserves an unsuitable selection or an expired exception. Epic owners continue through accepted delivery (estimates prompt steering, never invented stop budgets); short workers return a bounded result. Fan out only for a concrete benefit; no forced model ratios. Platform defaults are the baseline for unconstrained choices and never override explicit selection or owner ceilings; benchmark only consequential deviations. Record decision rationale and observed effect in tasks or commit messages, never in source or configuration.
+4. **Verify against the goal, not the steps.** Exit codes, green links, worker reports and passing unrelated tests do not prove the outcome. Validate narrowly while iterating and broadly at integration. Build for supported conditions with [controlled stress checks and bounded recovery](docs/execution/bounded-recovery.md), preserving protected behaviour and minimum useful service. Report unrun checks and limitations instead of claiming conformance.
+5. **Finish only through the gate.** Run `make finish-check` (Claude runs it as a Stop hook). If it fails, keep working. If a real external blocker remains, mark the item `blocked` with the blocker and fill the gap record it writes. Never present executable required work as "next steps" ([completion boundary](docs/agent-corpus/README.md#completion-boundary)).
 
-## Execution invariants
+## Changing guidance in this repository
 
-- Preserve the task, success criteria, source coverage, permissions, and quality bar; optimize execution, not scope. A milestone is not completion: apply the corpus's [completion boundary](docs/agent-corpus/README.md#completion-boundary) before any final response. For substantial iterative work, use [delivery steering](skills/steering-delivery/SKILL.md) at checkpoints: revise and execute the justified in-scope next action, and retain decision rationale and observed effect in tasks or commit messages, never source/configuration.
-- Apply the [specification contract](docs/specifications/README.md): preserve requirement authority and meaning, connect construction to independent evidence, and never invent requirements or weaken acceptance. Use [incremental migration](docs/adoption/standards-migration.md) for existing or active work; preserve local rules and unfinished work.
-- Apply the [interface contract](docs/interfaces/accessible-interfaces.md) by default: accessible operation, rendered human comprehension and machine semantics are independent obligations. New barriers are not polish; expose limitations and unrun checks rather than claiming conformance.
-- Use deterministic tools for mechanical work. Keep logs on disk; workers return status, decisions, and evidence paths. The coordinator reads only decision-critical excerpts: consumed logs keep taxing later context.
-- Check execution feasibility before dependent preparation; keep preparation sandboxed and external effects last. Bind necessary external effects to [reviewed parameterized native activities](docs/adoption/native-command-bindings.md#sandbox-first-external-activities), approve/allowlist each bounded activity once, and reject ad-hoc inline command escalation rather than seeking equivalent access through another surface.
-- Apply the canonical [named routing policy](docs/local-codex/subagents.md#named-model-and-effort-policy) to each phase and review. Explicitly select role/lifetime, model/effort, context and genuine limits under the [dispatch contract](docs/local-codex/subagents.md#launch-preflight); reuse does not preserve an unsuitable selection or expired exception. Ongoing epic owners continue autonomously through accepted delivery: estimates and checkpoints prompt steering, never invented token/time stop budgets. Short execution workers return a bounded result. Do not force model ratios or create fan-out without a concrete benefit.
-- Treat context as a working set. Keep always-loaded guidance small; prefer path-scoped rules, on-demand skills, isolated worker context, and retrievable references when they are sufficient.
-- Reuse valid semantic and deterministic work until an input that can affect it changes; reusing a worker still requires compliant configuration, authority and any genuine remaining limits.
-- Build for supported conditions; use [controlled stress checks and bounded recovery](docs/execution/bounded-recovery.md). Preserve protected behavior and minimum useful service, not just uptime. Validate narrowly while iterating and broadly at integration; structural checks, worker votes and green links do not prove the requested outcome.
-- Treat platform defaults as the baseline for unconstrained choices, never as an override of explicit worker selection or owner ceilings. Benchmark consequential or workload-dependent deviations; do not turn benchmarking into ceremony.
+A rule nothing checks is a suggestion. Add persistent guidance only for a failure that matters to nearly every task; establish a baseline where practical and make the smallest intervention. A change that adds runtime guidance must also:
 
-## Instruction discipline
+- add or change a test that fails on the observed failure without the change and passes with it; or
+- attach a behavioural trial result ([adherence protocol](experiments/instruction-context-adherence.md)); or
+- delete at least as much runtime text as it adds.
 
-A persistent instruction is recurring context. Before adding one, ask what observed failure it addresses, whether it matters to nearly every task, and whether code/config/test/path scoping/on-demand loading can solve it more cheaply.
+`make guidance-delta` enforces this in CI, and `make check` holds the default reading under `configs/guidance-budget.json`. Budgets only go down. Prefer automated checks over sentences; repeated non-adherence calls for scoping or enforcement, never more prose and never a worker above its ceiling. Forbid only new manual ceremony (forms, approvals, extra agents) without a measured failure.
 
-For important behavior changes, establish the baseline when practical, add the smallest intervention, then test the behavior inside the normal instruction stack. Repeated non-adherence should trigger better scoping, deterministic enforcement, or a more capable authorized coordinator before unlimited prompt growth; it does not itself authorize a worker above its ceiling. See [`experiments/instruction-context-adherence.md`](experiments/instruction-context-adherence.md).
+A practice states the failure it addresses, its mechanism, what it saves and costs, when not to use it, how the same outcome is verified, the evidence that supports it, and the evidence that would revise it. Label claims as documented behaviour, measured result or engineering hypothesis. Prefer mechanisms and decision rules over vendor prompt folklore.
 
-Use the [technical-language rules](docs/specifications/technical-language.md), including STE-informed writing and declared requirement strength. Preserve authority, conditions, exceptions and checks during rewrites; capitalization does not erase plain-language obligations.
+Write runtime text as short, STE-informed imperatives under the [technical-language rules](docs/specifications/technical-language.md): declare requirement strength, and preserve authority, conditions, exceptions and checks in every rewrite; capitalisation does not erase an obligation. Move rationale and research out of runtime text into `references/`; do not delete it. Adopt changes in active work through [standards migration](docs/adoption/standards-migration.md), preserving local rules and unfinished work.
 
 ## Contribution rules
 
-- Keep guidance domain-neutral unless explicitly a case study.
-- Never copy private repository content, proprietary code, credentials, internal URLs, or confidential project details here.
-- Do not publish personal environment identifiers or configuration: personal usernames or account URLs unrelated to public project/source identity, host/runner names, private addresses, workstation paths, hardware inventory, operating-system installation details, driver inventory, or copied personal config. Preserve only the minimum capability, dependency version, and evidence limitation needed to support a claim, using neutral placeholders where concrete values are unnecessary.
-- Distinguish **documented behavior**, **measured result**, and **engineering hypothesis**.
-- Prefer mechanisms and decision rules over vendor-specific prompt folklore.
-- For vendor/model behavior that may change, include a review date and authoritative source where practical.
-- Do not turn a local workaround or anecdote into a universal rule without scope, counterexamples, and appropriate evidence.
-- Keep runtime guidance concise; preserve deeper research and rationale under `references/` instead of deleting it.
+- Keep guidance domain-neutral unless it is explicitly a case study. Project-specific formats and lessons stay with their project.
+- Never copy private repository content, proprietary code, credentials, internal URLs, confidential project details or personal environment identifiers (usernames, account URLs, hosts, addresses, workstation paths, hardware or OS inventory, personal config). Use neutral placeholders; keep only the capability, version and evidence limitation a claim needs.
+- Give vendor behaviour that may change a review date and an authoritative source.
+- Do not generalise a local workaround without scope, a counterexample and evidence.
 
-## Quality bar for a practice
+## Validation and adoption
 
-A useful practice should make clear:
-
-1. what inefficiency/failure it addresses;
-2. the mechanism and proposed change;
-3. what it may save and what it may cost;
-4. when not to use it;
-5. how the same outcome/quality is verified;
-6. what evidence supports it and what would revise it.
-
-## Native validation and adoption
-
-From this repository root, `make check` runs the contributor-tool regression suite with Python 3.9+ and Git, without external packages or an installed project ecosystem. CI uses that same command. Tool tests do not replace semantic review, public-corpus privacy review, or a real host/model/delivery trial.
-
-When adopting these practices in another repository, use the [newcomer contract](docs/adoption/newcomer-contract.md) and [native command bindings](docs/adoption/native-command-bindings.md). Apply protections by process needs, preserve local authority, and prefer executable native routes over additional always-loaded prose.
+`make check` runs the contributor regression suite with Python 3.9+ and Git, no external packages; CI runs it too. It proves tool behaviour, not model adherence, product delivery, semantic correctness or public-corpus privacy; those need review or a trial. To adopt these practices elsewhere, use the [newcomer contract](docs/adoption/newcomer-contract.md) and [native command bindings](docs/adoption/native-command-bindings.md): apply protections by process need, preserve local authority, and prefer executable routes over more always-loaded prose.

@@ -1,0 +1,10 @@
+{
+  "id": "guard-piped-shell",
+  "rule": "Text piped into a shell is checked or refused",
+  "file": "tools/guard_command.py",
+  "find": "                return \"hidden command: piping generated text into a shell cannot be checked; run it directly\"\n",
+  "replace": "                pass\n",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_refused_commands"
+  ]
+}

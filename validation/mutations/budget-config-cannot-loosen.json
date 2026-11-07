@@ -1,0 +1,10 @@
+{
+  "id": "budget-config-cannot-loosen",
+  "rule": "Editing the budget config cannot hide growth: lists merge strictly with the base",
+  "file": "tools/check_guidance_budget.py",
+  "find": "    if not base:\n        return current\n",
+  "replace": "    if True:\n        return current\n",
+  "tests": [
+    "tools.tests.test_guidance_budget.GuidanceBudgetTamperingTests.test_loosening_the_config_does_not_hide_growth"
+  ]
+}

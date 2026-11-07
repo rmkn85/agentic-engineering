@@ -1,0 +1,10 @@
+{
+  "id": "guard-shell-keywords",
+  "rule": "Commands inside braces, conditionals, loops and negation are inspected",
+  "file": "tools/guard_command.py",
+  "find": "        if head in KEYWORDS:\n            words = words[1:]\n            continue\n",
+  "replace": "",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_refused_commands"
+  ]
+}

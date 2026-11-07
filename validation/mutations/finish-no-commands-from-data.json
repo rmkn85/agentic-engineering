@@ -1,0 +1,10 @@
+{
+  "id": "finish-no-commands-from-data",
+  "rule": "The goal record cannot inject commands",
+  "file": "tools/finish_check.py",
+  "find": "TARGET = re.compile(r\"^[A-Za-z0-9][A-Za-z0-9_.-]*$\")",
+  "replace": "TARGET = re.compile(r\".+\")",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_commands_cannot_come_from_the_record"
+  ]
+}

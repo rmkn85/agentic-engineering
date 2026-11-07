@@ -1,0 +1,32 @@
+{
+  "default_reading": {
+    "files": [
+      "AGENTS.md",
+      "CLAUDE.md",
+      "GEMINI.md",
+      ".github/copilot-instructions.md",
+      "docs/agent-corpus/README.md"
+    ],
+    "max_words": 2597
+  },
+  "runtime": [
+    "AGENTS.md",
+    "*/AGENTS.md",
+    "CLAUDE.md",
+    "*/CLAUDE.md",
+    "GEMINI.md",
+    ".github/copilot-instructions.md",
+    ".github/instructions/*",
+    ".cursor/rules/*",
+    ".claude/*.md",
+    "docs/*.md",
+    "skills/*.md",
+    "templates/*.md"
+  ],
+  "evidence": [
+    "tools/tests/*",
+    "experiments/*.json",
+    "experiments/fixtures/*",
+    "experiments/results/*"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "finish-kills-process-tree",
+  "rule": "A timed-out check leaves no orphaned processes",
+  "file": "tools/finish_check.py",
+  "find": "        os.killpg(proc.pid, signal.SIGKILL)  # the whole tree, so nothing is orphaned",
+  "replace": "        proc.kill()",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_timeout_kills_the_whole_process_tree"
+  ]
+}

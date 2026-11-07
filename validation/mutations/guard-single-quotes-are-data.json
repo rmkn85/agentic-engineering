@@ -1,0 +1,10 @@
+{
+  "id": "guard-single-quotes-are-data",
+  "rule": "Text in single quotes and quoted heredocs is never run as a command substitution",
+  "file": "tools/guard_command.py",
+  "find": "        if quote == \"'\":\n            quote = None if char == \"'\" else quote\n        elif char == \"'\" and quote is None:\n            quote = \"'\"\n",
+  "replace": "        if False:\n            pass\n",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_allowed_commands"
+  ]
+}

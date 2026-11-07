@@ -1,0 +1,10 @@
+{
+  "id": "guard-xvfb-display-override",
+  "rule": "An isolated display stops counting as isolated when DISPLAY is pointed elsewhere",
+  "file": "tools/guard_command.py",
+  "find": "            if head.startswith(\"DISPLAY=\"):\n                ctx[\"isolated\"] = False\n",
+  "replace": "            if head.startswith(\"DISPLAY=\"):\n                pass\n",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_refused_commands"
+  ]
+}

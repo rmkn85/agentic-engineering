@@ -35,7 +35,7 @@ class ProbeTests(unittest.TestCase):
             def __init__(inner, command, env, artifacts, label):
                 super().__init__(command + ["--child", sys.executable, str(fixture), str(count)], env, artifacts, label)
         result = probe.exercise(command, {"CONTEXT7_API_KEY": self.key}, self.spec, self.request, self.artifacts, FixtureClient)
-        self.assertEqual(result["status"], "passed")
+        self.assertEqual(result["status"], "passed", json.dumps(result)[:800])
         self.assertEqual(result["first"], "produced")
         self.assertEqual(result["second"], "hit")
         self.assertEqual(len(count.read_text().splitlines()), 1)

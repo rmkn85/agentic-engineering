@@ -1,0 +1,10 @@
+{
+  "id": "finish-asks-for-goal",
+  "rule": "Changing files without a goal record is noticed",
+  "file": "tools/finish_check.py",
+  "find": "        if changed(root) and bump(root, session, \"no-goal\") == 1:",
+  "replace": "        if False:",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_hook_asks_once_for_a_goal_record_when_files_changed"
+  ]
+}

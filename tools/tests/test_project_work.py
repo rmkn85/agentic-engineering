@@ -50,6 +50,22 @@ class ProjectWorkTests(unittest.TestCase):
     def state(self):
         return work.snapshot(work.discover(self.workspace))
 
+    def test_earlier_project_named_schemas_stay_valid(self):
+        legacy = dict(task(), schema='axioms-task/v1')
+        self.assertEqual(work.task_errors(legacy), [])
+        frontier = json.loads((self.root / 'work/frontier.json').read_text())
+        frontier['schema'] = 'axioms-frontier/v1'
+        (self.root / 'work/frontier.json').write_text(json.dumps(frontier))
+        self.assertEqual(work.load_repository(self.root)['errors'], [])
+        self.assertIn('schema must be task-record/v1', work.task_errors(dict(task(), schema='other/v1')))
+
+    def test_outcome_control_accepts_exactly_the_same_task_schemas(self):
+        path = TOOL.parent / 'outcome_control.py'
+        control_spec = importlib.util.spec_from_file_location('outcome_control', path)
+        control = importlib.util.module_from_spec(control_spec)
+        control_spec.loader.exec_module(control)
+        self.assertEqual(control.TASK_SCHEMAS, work.TASK_SCHEMAS)
+
     def test_dependency_resolution_and_queue_are_distinct_from_readiness(self):
         self.write_task(task(depends=['RUN-002', 'sample/two#RUN-001']))
         self.write_task(task('RUN-002', 'done'))

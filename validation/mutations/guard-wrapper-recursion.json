@@ -1,0 +1,10 @@
+{
+  "id": "guard-wrapper-recursion",
+  "rule": "Commands hidden in sh -c, eval, xargs or find -exec are inspected",
+  "file": "tools/guard_command.py",
+  "find": "            if cluster(arg, \"c\") and index + 1 < len(args):",
+  "replace": "            if False:",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_refused_commands"
+  ]
+}

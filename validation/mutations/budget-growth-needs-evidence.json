@@ -1,0 +1,11 @@
+{
+  "id": "budget-growth-needs-evidence",
+  "rule": "Runtime prose growth needs a changed test or trial",
+  "file": "tools/check_guidance_budget.py",
+  "find": "        allowance = units * config.get(\"words_per_evidence\", WORDS_PER_EVIDENCE)",
+  "replace": "        allowance = 10 ** 9",
+  "tests": [
+    "tools.tests.test_guidance_budget.GuidanceBudgetTests.test_prose_growth_without_evidence_fails",
+    "tools.tests.test_guidance_budget.GuidanceBudgetTests.test_a_tool_or_config_change_is_not_evidence"
+  ]
+}

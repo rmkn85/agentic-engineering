@@ -1,0 +1,10 @@
+{
+  "id": "hygiene-fast-forward-merges",
+  "rule": "Fast-forward merged branches with their own commits are reported",
+  "file": "tools/check_hygiene.py",
+  "find": "            if tip == base_tip and len(git(root, \"reflog\", \"show\", \"--format=%H\", f\"refs/heads/{branch}\")) <= 1:",
+  "replace": "            if tip == base_tip:",
+  "tests": [
+    "tools.tests.test_check_hygiene.HygieneTests.test_fast_forward_merged_branch_is_reported"
+  ]
+}

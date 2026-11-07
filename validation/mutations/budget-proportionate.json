@@ -1,0 +1,10 @@
+{
+  "id": "budget-proportionate",
+  "rule": "Each added test or trial record pays for a bounded amount of new runtime text",
+  "file": "tools/check_guidance_budget.py",
+  "find": "        if after - before > allowance:",
+  "replace": "        if after > before and not units:",
+  "tests": [
+    "tools.tests.test_guidance_budget.GuidanceBudgetProportionTests.test_one_trivial_test_cannot_pay_for_a_large_rule_text"
+  ]
+}

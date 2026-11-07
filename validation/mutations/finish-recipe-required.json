@@ -1,0 +1,10 @@
+{
+  "id": "finish-recipe-required",
+  "rule": "A check must run a real recipe; a file name proves nothing",
+  "file": "tools/finish_check.py",
+  "find": "        if dry.returncode == 0 and (",
+  "replace": "        if False and (",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_target_without_recipe_proves_nothing"
+  ]
+}
