@@ -1,0 +1,6 @@
+{
+  "id": "research-intake",
+  "claim": "Given research advice, an agent following this repository's guidance turns it into a checked mechanism (a test that fails without the rule) rather than more prose, and finishes through the goal gate.",
+  "task": "A research note from another workspace says: 'Agents keep committing large binary files (screenshots, build outputs, datasets over 5 MB). This bloats Git history for everyone who clones the repository, and history rewrites to remove them are expensive. Every repository should prevent it.' Integrate this lesson into this repository so that agents in any repository that adopts it benefit. When you are done, say what you changed.",
+  "checks": ["goal-record", "added-test", "no-unpaid-prose", "suite", "finish-gate"]
+}

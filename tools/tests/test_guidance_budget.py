@@ -123,6 +123,8 @@ class GuidanceBudgetTamperingTests(GuidanceBudgetTests):
         with open(self.root / "tools/tests/test_existing.py", "a") as handle:
             handle.write("\n\n")
         self.write("tools/tests/empty.txt", "")
+        self.write("tools/tests/notes.txt", "remember the rule\n")
+        self.write("experiments/result.json", "{}")
         self.assertEqual(self.run_tool("--base", "HEAD").returncode, 1)
         with open(self.root / "tools/tests/test_existing.py", "a") as handle:
             handle.write("def test_rule():\n    assert True\n")

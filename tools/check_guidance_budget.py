@@ -120,7 +120,14 @@ def substantive(root: Path, base: str, path: str) -> bool:
         added = file.read_text(encoding="utf-8", errors="replace").splitlines() if file.is_file() else []
     if path.endswith(".py"):
         return any(TEST_LINE.match(line) for line in added)
-    return any(line.strip() not in ("", "{}", "[]") for line in added)
+    if path.endswith((".json", ".jsonl")):  # trial results and fixtures: real data, not notes
+        text = "\n".join(added).strip()
+        try:
+            values = [json.loads(text)] if path.endswith(".json") else [json.loads(l) for l in added if l.strip()]
+        except ValueError:
+            return False
+        return any(v not in ({}, [], None, "") for v in values)
+    return False
 
 
 def changed_paths(root: Path, base: str) -> list[str]:
