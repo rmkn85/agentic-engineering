@@ -74,3 +74,40 @@ measured token/lead-time improvement, no uncoached baseline arm and no automatic
 host-loading proof. It does not establish sustained adherence, real deployment,
 visual quality or the remaining decision cases. Workspace product trials and
 normal instruction delivery remain separate adoption evidence.
+
+## Executable control integration and worker observation — 2026-11-07
+
+`make check` now runs 289 regression tests (one optional browser skip) and the
+28-check `make control-trial`. The trial invokes the maintained command entry,
+not only imported functions. It exercises a native task completion, stale
+authority and removed-policy rejection, incomplete native verdict rejection,
+actual filesystem receipt production and separate gate consumption, denied
+capability, stale and successful task CAS, task checkpoint/resume, quiet unchanged
+observations, cumulative drift, new/persistent critical signals, executable scratch
+preserve/remove/restore and owner-policy evaluation. Retain its exact fixtures and
+logs with `python3 tools/check-outcome-controls.py --evidence-dir NEW_DIRECTORY`.
+
+Independent review reproduced four defects: Python boolean/number equality could
+accept stale conditions or suppress meaningful telemetry; non-actionable missing
+telemetry could wake anyway; an unknown metric could mask a known failed adoption
+criterion. Corrections have focused regressions. Follow-up review passed the
+targeted suite and all native integration checks without a concrete blocker.
+These are mechanism results within the documented cooperative-owner boundary.
+
+A second fresh Luna Medium worker received an ordinary local task with a recorded
+completion and altered consumer bytes. Its fixture `AGENTS.md` routed it to native
+activities and the on-demand adoption guide; the brief supplied no diagnosis or
+repair. Its first native inspection rejected stale source. It reconciled a truthful
+open task, passed the recovery pre-write gate, repaired the exact authorized bytes,
+ran the independent consumer and published completion through CAS. The integration
+owner independently checked actual bytes, task validation, action order and the
+unchanged instruction/producer hashes. The [observation receipt](fixtures/outcome-control-worker-2026-11-07.json)
+retains the loaded route, control source identities, activity outcomes and limits.
+
+This candidate-only synthetic observation establishes one successful use of an
+explicitly installed fixture route. It does not establish automatic host loading,
+adversarial isolation, sustained adherence, measured savings, remote availability,
+human acceptance or power-loss durability. The portable native integration trial
+is reproducible; the worker receipt records a bounded observation, not a paired
+productivity benchmark. Real adopting owners still need their ordinary delivery
+and control-cost evidence.

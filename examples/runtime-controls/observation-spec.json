@@ -1,0 +1,5 @@
+{
+  "fields": ["status", "remaining", "candidate"],
+  "jitter": {"remaining": 0.5},
+  "missingActionable": true
+}

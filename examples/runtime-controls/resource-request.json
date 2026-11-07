@@ -1,0 +1,11 @@
+{
+  "resource": "/tmp/owned-scratch",
+  "owner": "example-task",
+  "resourceId": "REPLACE_WITH_INIT_RECEIPT_ID",
+  "checkpoint": "/tmp/durable-checkpoints/example-task",
+  "shared": false,
+  "dependents": [],
+  "lease": {"state": "released", "revision": "owner-lease-2"},
+  "retire": true,
+  "protected": ["/tmp/retained-evidence"]
+}

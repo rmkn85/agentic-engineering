@@ -1,5 +1,9 @@
 # Preserve work, retire disposable resources
 
+The [runtime helper](runtime-controls.md#preserve-and-retire-one-exact-resource)
+implements this procedure for exact owned scratch resources, with verified
+outside checkpoints and guarded restore. Git resources retain their native route.
+
 Use this procedure when creating or retiring a worktree, worker, temporary
 artifact, preview, process or other disposable execution resource. It addresses
 resources retained indefinitely because their task remains open, and cleanup

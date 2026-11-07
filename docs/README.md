@@ -1,5 +1,8 @@
 # Documentation
 
+- [Executable outcome controls](adoption/outcome-controls.md) — native bindings,
+  failure-class coverage, adoption and retirement criteria for long-running work.
+
 The repository is organized around execution efficiency rather than project methodology.
 
 ## Default agent reading path

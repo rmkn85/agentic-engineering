@@ -83,6 +83,7 @@ See [instruction/context adherence experiments](../../experiments/instruction-co
 | Checkpoint direction, repeated ineffective work, or a changed remaining-work forecast | [Delivery steering skill](../../skills/steering-delivery/SKILL.md); [decision records and adoption](../execution/delivery-steering.md) only when needed |
 | Adopting or reading canonical repository task records and local work views | [Project work contract](../adoption/project-work.md) |
 | Adopting guidance in a new project, existing system or active agent session | [Standards migration](../adoption/standards-migration.md) |
+| Binding task authority, evidence, feedback and resource rules to native gates | [Executable outcome-control adoption](../adoption/outcome-controls.md) |
 | Designing, implementing or reviewing human-facing interfaces or generated visual/document output | [Accessible interface contract](../interfaces/accessible-interfaces.md); select additional requirements from the [standards map](../interfaces/standards.md) only when applicable |
 | Narrow scope, structural preservation, uncertain or irreversible conditions | [`../principles/defaults-before-overrides.md`](../principles/defaults-before-overrides.md) |
 | Writing/refactoring source for cheap future agent maintenance | [`../code/agent-legible-code.md`](../code/agent-legible-code.md) |

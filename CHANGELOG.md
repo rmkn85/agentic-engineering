@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+- Added optional authority-bound task controls, independent claim/scenario
+  evidence contracts, native transition gates, scoped capability receipts,
+  compare-and-swap reconciliation, feedback closure and semantic WIP admission.
+  Required controlled tasks fail closed through the existing project-work route.
+- Added selected-state observation, consistent task checkpoints, owned scratch
+  preserve/retire/restore and matched control evaluation under owner criteria.
+  Native CLI integration runs in `make check`; explicit negative cases cover
+  stale authority/evidence, denied capability and unsafe or stale state.
+- Indexed all nine research failure families against mechanisms, judgment and
+  primary-source provenance. Kept deeper rationale on demand and distinguished
+  experimental findings from hypotheses; no productivity gain is claimed.
+- Consolidated delivery-feasibility and preserved contribution histories. Kept
+  deliberate effort selection and the portable Medium baseline while adding
+  early route discovery and next-change responsibility.
+
 - Added scoped delivery claims, necessity checks, observation completeness and
   invalidation, operational-entry proof, bounded recovery and resource-lifecycle
   guidance through existing owners. The recurring root instructions are unchanged.

@@ -18,6 +18,7 @@ The operational docs should therefore contain the **current decision rule**. Thi
 ## Contents
 
 - [`outcome-evidence-control-2026-11.md`](outcome-evidence-control-2026-11.md) — human engineering management and coding-agent evidence behind scoped delivery claims, complete observations, bounded recovery and preservation before retirement; hypotheses and revision criteria.
+- [`outcome-control-source-map.md`](outcome-control-source-map.md) — verified primary-source findings, study limits, provenance corrections and unresolved citations for the outcome-control design.
 
 - [`reasoning-effort-2026-11.md`](reasoning-effort-2026-11.md) — effort economics, prompt-induced alternative exploration, evidence limits, and the rationale for uncertainty-based routing with proportional sampling.
 

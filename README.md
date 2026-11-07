@@ -38,6 +38,15 @@ Decision explanations and subsequent effect belong in existing task history or c
 
 ## Efficiency control plane
 
+For long-running work with consequential handoffs, the
+[outcome-control adoption guide](docs/adoption/outcome-controls.md) binds current
+authority, exact evidence, task transitions, feedback decisions and recoverable
+resources to native commands. It includes a research-to-control map and executable
+negative cases. The [primary-source index](references/outcome-control-source-map.md)
+keeps software management and coding-agent research retrievable without enlarging
+the ordinary instruction stack. Run `make control-trial` to exercise the local
+reference installation; real host adoption and product acceptance remain explicit.
+
 The September 2026 frontier synthesis is captured in [`docs/principles/efficiency-control-plane.md`](docs/principles/efficiency-control-plane.md). It turns recent work on observation handles, prompt-prefix stability, bounded recovery, thin model routing, action fusion, and context management into portable decision rules that require no new framework or model.
 
 Two concrete companion guides are [observation economy](docs/execution/observation-economy.md) and [bounded recovery](docs/execution/bounded-recovery.md). For prompt-cache hygiene, see [prompt-prefix stability](docs/local-codex/prefix-stability.md). The deeper research provenance stays outside the normal runtime path in [`references/agentic-efficiency-frontier-2026-09.md`](references/agentic-efficiency-frontier-2026-09.md).

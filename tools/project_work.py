@@ -2,6 +2,7 @@
 """Portable, dependency-free canonical task views. Python 3.9+."""
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -129,6 +130,19 @@ def load_repository(root):
             task, raw = read_json(path)
             result['sources'].append(('work/tasks/' + path.name, raw))
             errors = task_errors(task)
+            if isinstance(task, dict) and 'control' in task:
+                # A copied standalone reader must not silently ignore adopted gates.
+                helper = Path(__file__).with_name('outcome_control.py')
+                if not helper.is_file() or helper.is_symlink():
+                    errors.append('controlled task requires outcome_control.py companion')
+                else:
+                    try:
+                        spec = importlib.util.spec_from_file_location('outcome_control', helper)
+                        validator = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(validator)
+                        errors.extend(validator.validate_control(task, root))
+                    except (ImportError, SyntaxError, AttributeError) as exc:
+                        errors.append('controlled task validator unavailable: ' + str(exc))
             for message in errors:
                 error(path.name + ': ' + message)
             if errors:
@@ -142,6 +156,23 @@ def load_repository(root):
                 path.stat().st_mtime).astimezone().isoformat()}
         except (OSError, ValueError) as exc:
             error(path.name + ': ' + str(exc))
+    # The trusted native policy remembers adoption even if a task drops its extension.
+    if 'controlPolicy' in result['frontier']:
+        policy = result['frontier']['controlPolicy']
+        if (not isinstance(policy, dict) or set(policy) != {'schema', 'requiredTasks'} or
+                policy.get('schema') != 'outcome-policy/v1' or not isinstance(policy.get('requiredTasks'), list) or
+                not all(isinstance(value, str) and ID.fullmatch(value) for value in policy.get('requiredTasks', [])) or
+                len(policy['requiredTasks']) != len(set(policy['requiredTasks']))):
+            error('frontier controlPolicy must declare outcome-policy/v1 and unique local requiredTasks')
+        else:
+            helper = Path(__file__).with_name('outcome_control.py')
+            if policy['requiredTasks'] and (not helper.is_file() or helper.is_symlink()):
+                error('controlPolicy requires outcome_control.py companion')
+            for task_id in policy['requiredTasks']:
+                if task_id not in result['tasks']:
+                    error('controlPolicy required task unavailable: ' + task_id)
+                elif 'control' not in result['tasks'][task_id]['record']:
+                    error('controlPolicy required task lacks control: ' + task_id)
     for task_id, entry in result['tasks'].items():
         for ref in entry['record']['depends']:
             if '#' not in ref and ref not in result['tasks']:

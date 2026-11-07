@@ -2,6 +2,46 @@
 
 These helpers exist to move exact work out of the model and make optimization measurable.
 
+## Outcome control activities
+
+Use the [native adoption contract](../docs/adoption/outcome-controls.md) to bind
+these optional controls to the existing task and trusted evidence producer.
+`tools/make` accepts a single listed activity and explicit `NAME=value` arguments;
+it passes values as literal process arguments and rejects extra parameters.
+It does not run shell commands supplied by JSON. Use this entry directly for
+parameterized activities; GNU Make's variable interpolation is not an input
+validation boundary.
+
+```sh
+tools/make control-validate ROOT=. TASK=work/tasks/RESULT-1.json
+tools/make control-gate ROOT=. TASK=work/tasks/RESULT-1.json EVENT=pre-write REQUEST=gate-request.json
+tools/make control-reconcile ROOT=. TASK=work/tasks/RESULT-1.json EXPECTED_SHA256=REPLACE_WITH_CURRENT_TASK_SHA256 PROPOSAL=proposal.json
+tools/make control-checkpoint ROOT=. TASK=work/tasks/RESULT-1.json DESTINATION=/durable/new-checkpoint
+tools/make control-resume ROOT=. TASK=work/tasks/RESULT-1.json CHECKPOINT=/durable/new-checkpoint DESTINATION=/owned/new-restore
+tools/make control-capability REQUEST=capability-request.json OUTPUT=new-receipt.json
+tools/make control-observe SPEC=spec.json OBSERVATION=observation.json STATE=state.json EXPECT=absent
+tools/make control-evaluate INPUT=examples/control-evaluation/pilot.json
+```
+
+`EVENT` is one of `start`, `resume`, `pre-write`, `pre-integration` or
+`pre-completion`. Observation updates use the prior `stateDigest` as `EXPECT`.
+For scratch lifecycle, `control-resource-init` and `control-resource-plan`
+require `REQUEST`; `control-resource-preserve`, `control-resource-apply` and
+`control-resource-restore` require `REQUEST` and `PLAN`;
+`control-resource-verify` requires `PLAN`. Runtime activities accept optional
+`OUTPUT` for a new receipt file. Requests and plans are reviewed data, not grants.
+
+See [claim/task contracts](../docs/execution/outcome-control.md),
+[runtime/resource contracts](../docs/execution/runtime-controls.md) and
+[owner-defined evaluation](../docs/measurement/control-evaluation.md).
+`make control-trial` runs their disposable CLI integration, including actual
+capability receipt consumption, denial, native completion rejection, atomic task
+reconciliation, observation suppression and preserve/remove/restore. `make check`
+runs that trial with the regression suite; `make contributor-trial` repeats the
+normal check from cold and stale clones of committed HEAD. To retain native trial
+logs, use `python3 tools/check-outcome-controls.py --evidence-dir NEW_DIRECTORY`.
+These fixtures do not establish host installation or productivity improvements.
+
 ## `quiet-run`
 
 Capture full command output locally while exposing only a compact result and links to progressively deeper evidence.

@@ -1,5 +1,9 @@
 # Bind shared guidance to executable native paths
 
+For authority, claim evidence, feedback and cleanup boundaries, use the
+[executable outcome-control binding](outcome-controls.md). Its maintained
+activities expose the guarded operations and their trust limits.
+
 Reviewed 2026-09-20. Evidence class: generalized practitioner lessons with discriminating local regression tests; not a completed cross-host or low-cost-model benchmark. Keep private source identities, incidents and host details with their original owners.
 
 The [repository-only contributor contract](newcomer-contract.md) is an outcome: a capable newcomer can make the requested change through an existing accepted delivery path. Copying a handbook, validating its hash, or printing commands is not that outcome. Shared authorship should remove repeated infrastructure reasoning, not relocate it into another manual.

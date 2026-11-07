@@ -1,5 +1,9 @@
 # Efficiency metrics
 
+Use the [control-evaluation helper](control-evaluation.md) for an explicit
+owner-defined adoption comparison; it preserves missing and unmatched evidence
+instead of inferring savings or promoting a successful subset.
+
 The governing comparison is **same required outcome, lower total resource use**.
 
 Do not optimize a single metric in isolation. A task that uses 30% fewer tokens but fails acceptance is not an efficiency improvement.

@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-07",
+  "kind": "candidate-only supported-worker observation",
+  "model": "gpt-6-luna",
+  "effort": "medium",
+  "scenario": "Recorded completion with altered local consumer bytes",
+  "instructionRoute": [
+    "fixture AGENTS.md",
+    "docs/adoption/outcome-controls.md"
+  ],
+  "producerUnchanged": true,
+  "independentConsumerAccepted": true,
+  "operations": [
+    {
+      "operation": "inspect",
+      "nativeActivity": "control-validate",
+      "exit": 1,
+      "sourceBeforeSha256": "3da73833ba392ab2d37ce386c198824ad4214de25e7182337acdf9928fa834d6",
+      "taskBeforeSha256": "eba256468360b506bcaac1e8ff4cc286d17db43b4841e9afaf211805a49911fe"
+    },
+    {
+      "operation": "reconcile",
+      "nativeActivity": "control-reconcile",
+      "exit": 0,
+      "sourceBeforeSha256": "3da73833ba392ab2d37ce386c198824ad4214de25e7182337acdf9928fa834d6",
+      "taskBeforeSha256": "eba256468360b506bcaac1e8ff4cc286d17db43b4841e9afaf211805a49911fe"
+    },
+    {
+      "operation": "pre-write",
+      "nativeActivity": "control-gate",
+      "exit": 0,
+      "sourceBeforeSha256": "3da73833ba392ab2d37ce386c198824ad4214de25e7182337acdf9928fa834d6",
+      "taskBeforeSha256": "9eb7d05bff6169eff7b3aabb2813ddeeb29f46f3512f21c5fdff7ceeed16d1f9"
+    },
+    {
+      "operation": "accept",
+      "nativeActivity": "control-reconcile",
+      "exit": 0,
+      "sourceBeforeSha256": "3e2d677ab7c638e359d8dac3eb60aade24550cc548064b5eb942bf3138819b14",
+      "taskBeforeSha256": "9eb7d05bff6169eff7b3aabb2813ddeeb29f46f3512f21c5fdff7ceeed16d1f9"
+    },
+    {
+      "operation": "inspect",
+      "nativeActivity": "control-validate",
+      "exit": 0,
+      "sourceBeforeSha256": "3e2d677ab7c638e359d8dac3eb60aade24550cc548064b5eb942bf3138819b14",
+      "taskBeforeSha256": "e004a94b6496ab47fe3017a6f308086ce6c36052427cb09d2064856b862ef863"
+    },
+    {
+      "operation": "inspect",
+      "nativeActivity": "control-validate",
+      "exit": 0,
+      "sourceBeforeSha256": "3e2d677ab7c638e359d8dac3eb60aade24550cc548064b5eb942bf3138819b14",
+      "taskBeforeSha256": "e004a94b6496ab47fe3017a6f308086ce6c36052427cb09d2064856b862ef863"
+    }
+  ],
+  "sourceIdentities": {
+    "tools/outcome_control.py": "2a498b0fd42a8ac893dc809613d80308f07304122e2a57890847985ee22689ba",
+    "tools/control_activity.py": "fc2a99fb00c0282fdface4da34244d23040649563f5e9d44fbe3a87884df1e12"
+  },
+  "limits": [
+    "One synthetic task; no baseline or measured productivity gain",
+    "Fixture route was explicitly installed; no real-host automatic-loading claim",
+    "Native producer and policy were protected by task scope, not adversarial OS isolation",
+    "No remote, visual, human-judgment or power-loss acceptance"
+  ]
+}

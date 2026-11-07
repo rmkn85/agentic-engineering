@@ -12,7 +12,8 @@
     "lifecycle": {"enum": ["active", "retired"], "default": "active"},
     "product": {"$ref": "#/$defs/queue"},
     "maintenance": {"$ref": "#/$defs/queue"},
-    "parallel": {"$ref": "#/$defs/queue"}
+    "parallel": {"$ref": "#/$defs/queue"},
+    "controlPolicy": {"$ref": "outcome-policy-v1.schema.json"}
   },
   "$defs": {
     "queue": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+#)?[A-Za-z0-9][A-Za-z0-9._-]*$"}}
