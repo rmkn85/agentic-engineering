@@ -39,7 +39,8 @@ The change claims these checks prove the goal:
 
 Run the project's own checks, then try hard to break each claim with real experiments: bypasses, malformed input,
 false positives on everyday use, concurrency, anything the checks do not cover. Run them; do not speculate.
-Do not fix or push anything.
+Do not fix or push anything. Pass dangerous commands you test only as data (for example from a Python
+list) to the tool under test, never through a shell that could execute them.
 
 Report, most severe first, under 800 words. End with one line per claim: met / partly met / not met, and why.
 Then list every finding as JSON lines between these exact markers:

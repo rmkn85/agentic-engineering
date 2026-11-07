@@ -35,7 +35,7 @@ class BlindReviewTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         for expected in ("GOAL: Exports are correct", "export tests pass (make check)",
                          "owner accepts layout (manual)", "do NOT read the pull request description",
-                         "BEGIN FINDINGS", "END FINDINGS"):
+                         "BEGIN FINDINGS", "END FINDINGS", "only as data"):
             self.assertIn(expected, result.stdout)
 
     def test_ingest_appends_open_findings_with_new_ids(self):
