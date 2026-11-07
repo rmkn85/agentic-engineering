@@ -203,6 +203,24 @@ Useful grouping fields include:
 
 Report first/last seen, frequency, affected release/environment and representative event. Preserve individual events for drill-down.
 
+## Wake on decision-bearing change
+
+Use process-owned phase, progress, completion and substantive error fields where
+available. Compare their meaning deterministically before waking model reasoning.
+Notify on meaningful progress affecting the next decision, failure, completion or
+required action; coalesce unchanged incident fingerprints with counts. Timestamps,
+log ordering and repeated healthy polls alone are not new outcomes. Keep a bounded
+heartbeat only when needed to detect a stalled producer; report missing telemetry
+as unknown rather than inferring continued health.
+
+Define noise handling at the native producer: decision-bearing fields, comparison
+reference, tolerance/debounce where justified, and the events that bypass it.
+Compare reset/deadline jitter against a fixed observed reference so a moving
+window cannot hide cumulative drift. Preserve genuine exhaustion, reset, deadline
+crossing and worsening impact. Test harmless jitter and a real change; avoid both
+repeated wakeups for noise and suppression of actionable events. This is scoped
+telemetry policy, not permission to change user limits or add a monitoring service.
+
 ## Environment is part of the failure state
 
 Code that passed yesterday can fail today with no source change. Capture enough environmental identity to compare the failure against a known-good execution without dumping the entire host into context.
