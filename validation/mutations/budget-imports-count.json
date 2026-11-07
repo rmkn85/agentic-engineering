@@ -1,0 +1,10 @@
+{
+  "id": "budget-imports-count",
+  "rule": "Files pulled in by @imports count as default reading",
+  "file": "tools/check_guidance_budget.py",
+  "find": "IMPORT = re.compile(r\"(?:^|\\s)@([A-Za-z0-9_./-]+)\")",
+  "replace": "IMPORT = re.compile(r\"(?!x)x\")",
+  "tests": [
+    "tools.tests.test_guidance_budget.GuidanceBudgetTamperingTests.test_imported_files_count_as_default_reading"
+  ]
+}

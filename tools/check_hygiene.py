@@ -24,12 +24,16 @@ SCRATCH = re.compile(r"(^|/)(\.tmp|tmp|\.cache|\.agent-cache|node_modules|__pyca
 KEEP_FILES = {".keep", ".gitkeep"}
 
 
+DOCUMENT = re.compile(r"\.(md|markdown|txt|rst|adoc|org)$", re.I)
+
+
 def process_record(path: str) -> bool:
-    """A dated file in a plans/reviews/handoffs/status directory, or named after one."""
+    """A dated document in a plans/reviews/handoffs/status directory, or named as one."""
     *dirs, name = path.split("/")
-    in_process_dir = any(re.fullmatch(PROCESS_WORD, d, re.I) for d in dirs)
-    named = re.match(PROCESS_WORD + r"[-_.]", name, re.I)
-    return bool(DATED.search(path) and (in_process_dir or named))
+    if not (DATED.search(path) and DOCUMENT.search(name)):
+        return False
+    stem_words = re.split(r"[-_.\s]+", name.rsplit(".", 1)[0])
+    return any(re.fullmatch(PROCESS_WORD, part, re.I) for part in dirs + stem_words)
 
 
 def scratch(path: str) -> bool:
@@ -72,8 +76,10 @@ def findings(root: Path, base: str | None) -> list[str]:
         base_tip = git(root, "rev-parse", base)[0]
         for line in git(root, "branch", "--format=%(refname:short) %(objectname)", "--merged", base):
             branch, tip = line.rsplit(" ", 1)
-            if branch in (base, current) or base.endswith("/" + branch) or tip == base_tip:
-                continue  # trunk itself, or a branch not yet started
+            if branch in (base, current) or base.endswith("/" + branch):
+                continue  # the trunk itself
+            if tip == base_tip and len(git(root, "reflog", "show", "--format=%H", f"refs/heads/{branch}")) <= 1:
+                continue  # created but never committed to: not a leftover
             found.append(f"merged branch not deleted: {branch} (git branch -d {branch})")
     worktrees = [line.split(" ", 1)[1] for line in git(root, "worktree", "list", "--porcelain")
                  if line.startswith("worktree ")]

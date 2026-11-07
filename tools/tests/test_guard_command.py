@@ -25,7 +25,12 @@ REFUSED = [
     "bash -c \"git push -f\"", "sh -ec \"git reset --hard\"", "bash -lc 'git clean -fd'",
     "echo x | xargs git reset --hard", "find . -name x -exec git reset --hard \\;", "eval git push --force",
     "sudo -u root xdotool key a", "timeout -s KILL 5 xdotool key a", "env -i git push -f",
-    "echo $(git reset --hard)",
+    "echo $(git reset --hard)", "echo \"$(git reset --hard)\"",
+    "echo 'git push --force' | sh", "curl -s x | bash", "git -c alias.fp='push --force' fp",
+    "xvfb-run sh -c 'export DISPLAY=:0; xdotool key a'", "git update-ref -d refs/heads/feature",
+    "git switch -C main origin/main", "git checkout -B main origin/main",
+    "gh api -X DELETE repos/o/r/git/refs/heads/main",
+    "bash <<'EOF'\ngit reset --hard\nEOF",
     # desktop
     "xdotool key ctrl+c", "ydotool type hi", "scrot shot.png", "gnome-screenshot",
     "import -window root shot.png", "ffmpeg -f x11grab -i :0 out.mp4",
@@ -45,6 +50,10 @@ ALLOWED = [
     "gh pr create --body \"Guard refuses; git branch -D x\"", "echo git push --force",
     "git commit -m \"first line\nsecond line; git clean -fd\"",
     "cat > notes.md <<'EOF'\ngit push --force is refused\nxdotool key a\nEOF",
+    "git commit -m 'docs: explain why `git push --force` is refused'",
+    "gh pr create --body 'never `git clean -fd`'", "echo 'run $(scrot) never'",
+    "git commit -m \"$(cat <<'EOF'\nnever `git reset --hard`\nEOF\n)\"",
+    "git switch -c topic", "git checkout -b topic", "ls | grep x", "git log | head",
     # isolated display and ordinary work
     "xvfb-run -a xdotool key a", "xvfb-run -a ffmpeg -f x11grab -i :99 out.mp4",
     "xvfb-run -s '-screen 0 1280x720x24' python3 -c 'import pyautogui'",
@@ -77,6 +86,10 @@ class GuardCommandTests(unittest.TestCase):
         self.assertEqual(self.run_tool("--command", "git clean -fdx", "--cwd", temp).returncode, 0)
         self.assertEqual(self.run_tool("--command", f"git -C {temp} reset --hard").returncode, 0)
         self.assertEqual(self.run_tool("--command", "git push --force", "--cwd", temp).returncode, 2)
+        # leaving the temporary directory, or an unknown target, removes the exception
+        for command in ("cd ~/repo && git reset --hard", 'cd "$OLDPWD" && git reset --hard',
+                        "cd - && git clean -fd"):
+            self.assertEqual(self.run_tool("--command", command, "--cwd", temp).returncode, 2, command)
 
     def test_hook_blocks_bash_ignores_other_tools_and_bad_events(self):
         bash = {"tool_name": "Bash", "tool_input": {"command": "git push --force"}, "cwd": WORK}

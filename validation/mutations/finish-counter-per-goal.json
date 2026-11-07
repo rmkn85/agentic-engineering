@@ -1,0 +1,10 @@
+{
+  "id": "finish-counter-per-goal",
+  "rule": "Each new goal is enforced again within the same session",
+  "file": "tools/finish_check.py",
+  "find": "    key = \"unmet:\" + hashlib.sha256(goal[\"goal\"].encode()).hexdigest()[:12]",
+  "replace": "    key = \"unmet\"",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_a_new_goal_in_the_same_session_is_enforced_again"
+  ]
+}

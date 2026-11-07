@@ -20,6 +20,8 @@ jobs:
           fetch-depth: 2
       - name: Exercise native checks from cold and stale committed source
         run: make contributor-trial
+      - name: Prove each guarded rule's tests fail when the rule is disabled
+        run: make prove
       - name: Refuse runtime prose growth that no test or trial checks
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}

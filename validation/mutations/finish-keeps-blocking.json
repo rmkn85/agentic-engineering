@@ -1,0 +1,10 @@
+{
+  "id": "finish-keeps-blocking",
+  "rule": "The finish gate keeps blocking an unmet goal instead of yielding after one retry",
+  "file": "tools/finish_check.py",
+  "find": "    if count <= MAX_BLOCKS:\n",
+  "replace": "    if count <= 1:\n",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_hook_keeps_blocking_unmet_goal_then_ends_loudly"
+  ]
+}

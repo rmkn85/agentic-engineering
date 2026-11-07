@@ -57,22 +57,56 @@ TEMP_ROOTS = tuple({os.path.realpath(p) for p in (tempfile.gettempdir(), "/tmp",
                                                    os.environ.get("TMPDIR", "/tmp")) if p})
 
 
-def strip_heredocs(command: str) -> str:
-    lines, out, delimiter = command.split("\n"), [], None
-    for line in lines:
+def split_heredocs(command: str) -> tuple[str, list[str]]:
+    """Drop heredoc bodies (data), except bodies fed to a shell, which are returned to be checked."""
+    out, executed, delimiter, body, to_shell = [], [], None, [], False
+    for line in command.split("\n"):
         if delimiter is not None:
-            if line.strip() == delimiter:
-                delimiter = None
+            if line.strip() in (delimiter, delimiter + ")"):
+                if to_shell:
+                    executed.append("\n".join(body))
+                delimiter, body = None, []
+                if line.strip().endswith(")"):
+                    out.append(")")
+            else:
+                body.append(line)
             continue
         out.append(line)
         match = re.search(r"<<-?\s*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\1", line)
         if match:
             delimiter = match.group(2)
-    return "\n".join(out)
+            head = re.split(r"[;&|(]", line[:match.start()])[-1].split()
+            to_shell = bool(head) and PurePosixPath(head[0]).name in SHELLS and "-c" not in head
+    return "\n".join(out), executed
 
 
 def substitutions(command: str) -> list[str]:
-    found = re.findall(r"\$\(([^()]*)\)", command) + re.findall(r"`([^`]*)`", command)
+    """Command substitutions that the shell would run: outside single quotes only."""
+    found, quote, index = [], None, 0
+    while index < len(command):
+        char = command[index]
+        if char == "\\" and quote != "'":
+            index += 2
+            continue
+        if quote == "'":
+            quote = None if char == "'" else quote
+        elif char == "'" and quote is None:
+            quote = "'"
+        elif char == '"':
+            quote = None if quote == '"' else '"'
+        elif char == "`":
+            close = command.find("`", index + 1)
+            if close > index:
+                found.append(command[index + 1:close])
+                index = close
+        elif command.startswith("$(", index):
+            depth, cursor = 1, index + 2
+            while cursor < len(command) and depth:
+                depth += {"(": 1, ")": -1}.get(command[cursor], 0)
+                cursor += 1
+            found.append(command[index + 2:cursor - 1])
+            index = cursor - 1
+        index += 1
     return [inner for inner in found if inner.strip()]
 
 
@@ -94,7 +128,7 @@ def unquoted_newlines_to_separators(command: str) -> str:
 
 
 def tokens(command: str) -> list[str]:
-    command = unquoted_newlines_to_separators(strip_heredocs(command))
+    command = unquoted_newlines_to_separators(split_heredocs(command)[0])
     lexer = shlex.shlex(command, posix=True, punctuation_chars=";&|()")
     lexer.whitespace_split = True
     lexer.commenters = "#"
@@ -104,17 +138,18 @@ def tokens(command: str) -> list[str]:
         return re.split(r"\s+", command)
 
 
-def simple_commands(words: list[str]) -> list[list[str]]:
-    result, current = [], []
+def simple_commands(words: list[str]) -> list[tuple[list[str], str]]:
+    """Commands with the operator that precedes each one ("|" means it reads a pipe)."""
+    result, current, before = [], [], ""
     for word in words:
         if word in OPERATORS or re.fullmatch(r"[;&|()]+", word):
             if current:
-                result.append(current)
-            current = []
+                result.append((current, before))
+            current, before = [], word
         else:
             current.append(word)
     if current:
-        result.append(current)
+        result.append((current, before))
     return result
 
 
@@ -162,6 +197,8 @@ def git_violation(args: list[str], ctx: dict) -> tuple[str, bool] | None:
     """Return (reason, discards_local_work) or None."""
     workdir = ctx.get("cwd")
     while args and args[0].startswith("-"):
+        if args[0] == "-c" and len(args) > 1 and args[1].lower().startswith("alias."):
+            return "hidden command: a git -c alias can run anything; run the command directly", False
         option = args[0].split("=", 1)[0]
         if option == "-C" and len(args) > 1:
             workdir = os.path.join(workdir or ".", args[1])
@@ -185,6 +222,10 @@ def git_violation(args: list[str], ctx: dict) -> tuple[str, bool] | None:
                                 or ("--" in rest and any(broad_path(a) for a in rest[rest.index("--") + 1:]))
                                 or (rest and broad_path(rest[-1]))):
         return "discard: forced or whole-directory checkout drops uncommitted work; stash it first", True
+    elif sub in ("switch", "checkout") and any(a in ("-C", "-B", "--force-create") for a in rest):
+        return "discard: resetting an existing branch can drop its unmerged commits; create a new branch", True
+    elif sub == "update-ref" and any(a in ("-d", "--delete") for a in rest):
+        return "discard: deleting a ref can drop unmerged commits; use git branch -d", True
     elif sub == "switch" and any(a in ("-f", "--force", "--discard-changes") or cluster(a, "f") for a in rest):
         return "discard: switch --discard-changes drops uncommitted work; stash it first", True
     elif sub == "restore":
@@ -216,8 +257,19 @@ def check(words: list[str], ctx: dict, depth: int = 0) -> str | None:
     name = PurePosixPath(words[0]).name
     args = words[1:]
     if name == "cd":
-        ctx["cwd"] = os.path.join(ctx.get("cwd") or os.getcwd(), args[0]) if args else os.path.expanduser("~")
+        target = args[0] if args else "~"
+        if "$" in target or target == "-" or ctx.get("cwd") is None and not target.startswith(("/", "~")):
+            ctx["cwd"] = None  # unknown directory: never treated as disposable
+        else:
+            ctx["cwd"] = os.path.join(ctx.get("cwd") or "/", os.path.expanduser(target))
         return None
+    if name in ("export", "declare", "typeset", "local", "readonly") and any(
+            a.startswith("DISPLAY=") for a in args):
+        ctx["isolated"] = False
+        return None
+    if name == "gh" and args[:1] == ["api"] and re.search(r"(-X|--method)\s*=?\s*DELETE", " ".join(args), re.I) \
+            and "git/refs" in " ".join(args):
+        return "remote deletion: deleting a published branch or tag needs the owner"
     if name == "xvfb-run":
         inner = list(args)
         while inner and inner[0].startswith("-"):
@@ -272,14 +324,27 @@ def check(words: list[str], ctx: dict, depth: int = 0) -> str | None:
 def violation(command: str, ctx: dict | None = None, depth: int = 0) -> str | None:
     ctx = dict(ctx or {})
     ctx.setdefault("isolated", False)
-    for inner in substitutions(command):
+    if depth > 8:
+        return None
+    text, executed = split_heredocs(command)
+    for inner in substitutions(text) + executed:
         found = violation(inner, ctx, depth + 1)
         if found:
             return found
-    for words in simple_commands(tokens(command)):
+    previous: list[str] = []
+    for words, before in simple_commands(tokens(command)):
+        head = PurePosixPath(unwrap(list(words), dict(ctx))[0]).name if unwrap(list(words), dict(ctx)) else ""
+        if before == "|" and head in SHELLS and not any(cluster(a, "c") for a in words[1:]):
+            if previous[:1] and PurePosixPath(previous[0]).name in ("echo", "printf"):
+                found = violation(" ".join(previous[1:]), ctx, depth + 1)
+                if found:
+                    return found
+            else:
+                return "hidden command: piping generated text into a shell cannot be checked; run it directly"
         found = check(words, ctx, depth)
         if found:
             return found
+        previous = words
     return None
 
 

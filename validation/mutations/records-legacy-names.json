@@ -1,0 +1,10 @@
+{
+  "id": "records-legacy-names",
+  "rule": "Records using the earlier project-named schema stay valid",
+  "file": "tools/project_work.py",
+  "find": "TASK_SCHEMAS = (TASK_SCHEMA, 'axioms-task/v1')",
+  "replace": "TASK_SCHEMAS = (TASK_SCHEMA,)",
+  "tests": [
+    "tools.tests.test_project_work.ProjectWorkTests.test_earlier_project_named_schemas_stay_valid"
+  ]
+}

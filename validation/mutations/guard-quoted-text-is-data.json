@@ -1,0 +1,10 @@
+{
+  "id": "guard-quoted-text-is-data",
+  "rule": "Quoted text, commit messages and heredocs are not treated as commands",
+  "file": "tools/guard_command.py",
+  "find": "    try:\n        return list(lexer)\n",
+  "replace": "    try:\n        return re.findall(r\"[;&|()]+|[^\\s;&|()]+\", command)\n",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_allowed_commands"
+  ]
+}

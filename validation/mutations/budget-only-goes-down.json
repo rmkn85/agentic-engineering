@@ -1,0 +1,10 @@
+{
+  "id": "budget-only-goes-down",
+  "rule": "The word budget cannot be raised to fit new prose",
+  "file": "tools/check_guidance_budget.py",
+  "find": "        if previous is not None and limit > previous:",
+  "replace": "        if False:",
+  "tests": [
+    "tools.tests.test_guidance_budget.GuidanceBudgetTests.test_raising_the_budget_fails_against_base"
+  ]
+}

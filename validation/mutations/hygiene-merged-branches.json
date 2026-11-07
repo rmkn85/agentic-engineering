@@ -1,0 +1,10 @@
+{
+  "id": "hygiene-merged-branches",
+  "rule": "Merged branches that were never deleted are reported",
+  "file": "tools/check_hygiene.py",
+  "find": "\"--merged\", base):",
+  "replace": "\"--no-merged\", base):",
+  "tests": [
+    "tools.tests.test_check_hygiene.HygieneTests.test_merged_branch_and_extra_worktree"
+  ]
+}

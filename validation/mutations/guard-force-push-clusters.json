@@ -1,0 +1,10 @@
+{
+  "id": "guard-force-push-clusters",
+  "rule": "Force-push is refused in every flag spelling",
+  "file": "tools/guard_command.py",
+  "find": "               or cluster(a, \"f\") or a.startswith(\"+\") for a in rest):",
+  "replace": "               or a.startswith(\"+\") for a in rest):",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_refused_commands"
+  ]
+}

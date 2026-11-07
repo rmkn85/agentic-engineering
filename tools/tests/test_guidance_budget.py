@@ -93,5 +93,41 @@ class GuidanceBudgetTests(unittest.TestCase):
                 (self.root / rel).unlink()
 
 
+class GuidanceBudgetTamperingTests(GuidanceBudgetTests):
+    def test_loosening_the_config_does_not_hide_growth(self):
+        loose = {"default_reading": {"files": [], "max_words": 5}, "runtime": [], "evidence": ["docs/*"]}
+        self.config(loose)
+        self.write("AGENTS.md", "one two three " + "more " * 300)
+        result = self.run_tool("--base", "HEAD")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("budget 5", result.stderr)
+
+    def test_imported_files_count_as_default_reading(self):
+        self.write("CLAUDE.md", "@rules/extra.txt")
+        self.write("rules/extra.txt", "w " * 50)
+        result = self.run_tool("--base", "HEAD")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("default reading", result.stderr)
+
+    def test_code_span_mentions_are_not_imports(self):
+        self.write("CLAUDE.md", "see `@rules/extra.txt`")
+        self.write("rules/extra.txt", "w " * 50)
+        self.assertNotIn("default reading is", self.run_tool().stderr)
+
+    def test_vacuous_evidence_does_not_count(self):
+        self.write("docs/guide.md", "alpha beta " + "rule " * 50)
+        self.write("tools/tests/test_existing.py", "def test_old(): pass\n")
+        self.git("add", ".")
+        self.git("-c", "user.email=t@example.invalid", "-c", "user.name=t", "commit", "-qm", "test")
+        self.write("docs/guide.md", "alpha beta " + "rule " * 80)
+        with open(self.root / "tools/tests/test_existing.py", "a") as handle:
+            handle.write("\n\n")
+        self.write("tools/tests/empty.txt", "")
+        self.assertEqual(self.run_tool("--base", "HEAD").returncode, 1)
+        with open(self.root / "tools/tests/test_existing.py", "a") as handle:
+            handle.write("def test_rule():\n    assert True\n")
+        self.assertEqual(self.run_tool("--base", "HEAD").returncode, 0)
+
+
 if __name__ == "__main__":
     unittest.main()

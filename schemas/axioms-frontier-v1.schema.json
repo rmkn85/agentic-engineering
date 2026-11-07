@@ -1,5 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axioms-frontier/v1",
   "$comment": "Earlier path kept so existing links resolve; the schema lives in work-frontier-v1.schema.json.",
   "$ref": "work-frontier-v1.schema.json"
 }

@@ -1,0 +1,10 @@
+{
+  "id": "budget-evidence-substantive",
+  "rule": "Only a test function, an assertion or real trial data counts as evidence",
+  "file": "tools/check_guidance_budget.py",
+  "find": "    \"\"\"True when the change adds a test function or assertion, or non-empty trial data.\"\"\"\n",
+  "replace": "    \"\"\"True when the change adds a test function or assertion, or non-empty trial data.\"\"\"\n    return True\n",
+  "tests": [
+    "tools.tests.test_guidance_budget.GuidanceBudgetTamperingTests.test_vacuous_evidence_does_not_count"
+  ]
+}

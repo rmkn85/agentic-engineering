@@ -15,10 +15,13 @@ Goal record (default .agent/goal.json, untracked working state):
 
 Rules:
 - "run" names a Makefile target with a recipe; the item passes only when
-  `make <target>` exits 0. Commands are never read from the record.
+  `make <target>` exits 0. Commands are never read from the record. Targets
+  that prove nothing (help, finish-check, ...) or that call this gate are refused.
 - An item without "run" passes only with "status": "pass" plus non-empty
   "evidence". "status": "blocked" needs a "blocker" naming what is missing.
 - Anything else is unmet.
+- Ending with blocked items needs a "reflection" object in the record with
+  first_divergence, guidance_followed and guidance_missing_or_misleading.
 
 Exit codes: 0 goal met (or no record, outside hook mode); 2 unmet, with a gap
 record written under .agent/gaps/; 1 invalid record.
@@ -32,8 +35,11 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import json
+import os
 import re
+import signal
 import subprocess
 import sys
 from pathlib import Path
@@ -43,6 +49,7 @@ STATUSES = {"pass", "blocked", "pending", "fail"}
 GAP_FIELDS = ("first_divergence", "guidance_followed", "guidance_missing_or_misleading")
 MAX_BLOCKS = 3
 NO_RECIPE = re.compile(r"Nothing to be done for|is up to date")
+PROVES_NOTHING = {"help", "finish-check", "default", "all"}
 
 
 class GoalError(ValueError):
@@ -86,19 +93,29 @@ def load_goal(path: Path) -> dict:
 
 
 def run_target(root: Path, target: str, timeout: int) -> tuple[str, str | None]:
+    if target in PROVES_NOTHING:
+        return "unmet", f"make {target} proves nothing about the goal"
     make = ["make", "--no-print-directory"]
     try:
         dry = subprocess.run(make + ["-n", target], cwd=root, capture_output=True, text=True,
                              timeout=60, check=False)
         if dry.returncode == 0 and (NO_RECIPE.search(dry.stdout + dry.stderr) or not dry.stdout.strip()):
             return "unmet", f"make {target} has no recipe, so it proves nothing"
-        proc = subprocess.run(make + [target], cwd=root, stdout=subprocess.DEVNULL,
-                              stderr=subprocess.DEVNULL, timeout=timeout, check=False)
+        if "finish_check" in dry.stdout:
+            return "unmet", f"make {target} calls the finish gate itself"
+        proc = subprocess.Popen(make + [target], cwd=root, stdout=subprocess.DEVNULL,
+                                stderr=subprocess.DEVNULL, start_new_session=True)
     except FileNotFoundError:
         return "unmet", "make is not installed"
     except subprocess.TimeoutExpired:
+        return "unmet", f"make -n {target} timed out"
+    try:
+        code = proc.wait(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        os.killpg(proc.pid, signal.SIGKILL)  # the whole tree, so nothing is orphaned
+        proc.wait()
         return "unmet", f"make {target} timed out after {timeout}s"
-    return ("met", None) if proc.returncode == 0 else ("unmet", f"make {target} exited {proc.returncode}")
+    return ("met", None) if code == 0 else ("unmet", f"make {target} exited {code}")
 
 
 def evaluate(goal: dict, root: Path, timeout: int) -> list[dict]:
@@ -134,8 +151,9 @@ def write_gap(root: Path, goal: dict, results: list[dict], ended: bool = False) 
         "session_ended_unmet": ended,
         "unmet": unmet,
     }
-    # Filled by the agent; unknown stays null rather than invented.
-    record.update({field: None for field in GAP_FIELDS})
+    # Copied from the goal record's reflection; unknown stays null rather than invented.
+    reflection = goal.get("reflection") if isinstance(goal.get("reflection"), dict) else {}
+    record.update({field: reflection.get(field) if text(reflection.get(field)) else None for field in GAP_FIELDS})
     path = gaps / f"gap-{stamp}.json"
     path.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     return path
@@ -161,14 +179,28 @@ def bump(root: Path, session: str, key: str) -> int:
     return state[entry]
 
 
-def dirty(root: Path) -> bool:
-    try:
-        out = subprocess.run(["git", "status", "--porcelain", "--untracked-files=normal"], cwd=root,
-                             capture_output=True, text=True, timeout=30, check=False)
-    except (OSError, subprocess.TimeoutExpired):
+def changed(root: Path) -> bool:
+    """Uncommitted changes, or commits not yet on the upstream or the default branch."""
+    def run(*args):
+        try:
+            return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True, timeout=30, check=False)
+        except (OSError, subprocess.TimeoutExpired):
+            return None
+    status = run("status", "--porcelain", "--untracked-files=normal")
+    if status is None or status.returncode != 0:
         return False
-    lines = [line for line in out.stdout.splitlines() if not line[3:].startswith(".agent/")]
-    return out.returncode == 0 and bool(lines)
+    if any(not line[3:].startswith(".agent/") for line in status.stdout.splitlines()):
+        return True
+    for upstream in ("@{u}", "origin/HEAD", "origin/main", "origin/master"):
+        ahead = run("rev-list", "--count", f"{upstream}..HEAD")
+        if ahead is not None and ahead.returncode == 0:
+            return ahead.stdout.strip() not in ("", "0")
+    return False
+
+
+def reflected(goal: dict) -> bool:
+    reflection = goal.get("reflection")
+    return isinstance(reflection, dict) and all(text(reflection.get(field)) for field in GAP_FIELDS)
 
 
 def block(reason: str) -> int:
@@ -179,7 +211,7 @@ def block(reason: str) -> int:
 def hook(root: Path, goal_path: Path, event: dict, timeout: int) -> int:
     session = str(event.get("session_id") or "unknown")
     if not goal_path.exists():
-        if dirty(root) and bump(root, session, "no-goal") == 1:
+        if changed(root) and bump(root, session, "no-goal") == 1:
             return block("You changed files without a goal record. Write .agent/goal.json with the goal and "
                          "the checks that prove it (see python3 tools/finish_check.py --help), then finish. "
                          "For a trivial change, one manual item with status pass and evidence is enough.")
@@ -194,10 +226,14 @@ def hook(root: Path, goal_path: Path, event: dict, timeout: int) -> int:
     results = evaluate(goal, root, timeout)
     if all(r["state"] == "met" for r in results):
         return 0
-    if all(r["state"] in ("met", "blocked") for r in results):
+    key = "unmet:" + hashlib.sha256(goal["goal"].encode()).hexdigest()[:12]
+    if all(r["state"] in ("met", "blocked") for r in results) and reflected(goal):
         write_gap(root, goal, results)
-        return 0  # every remaining item names a real blocker: finishing is honest
-    count = bump(root, session, "unmet")
+        return 0  # every remaining item names a real blocker and the process was reflected on
+    if all(r["state"] in ("met", "blocked") for r in results):
+        results = results + [{"id": "reflection", "check": "reflection filled", "state": "unmet",
+                              "why": "fill reflection." + ", reflection.".join(GAP_FIELDS) + " in the goal record"}]
+    count = bump(root, session, key)
     if count <= MAX_BLOCKS:
         gap = write_gap(root, goal, results).relative_to(root)
         return block(f"Goal not met ({count}/{MAX_BLOCKS}): {summary(results)}. Continue until each check "

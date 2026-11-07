@@ -1,0 +1,10 @@
+{
+  "id": "finish-reflection-before-blocked-exit",
+  "rule": "Ending with named blockers requires the reflection to be filled",
+  "file": "tools/finish_check.py",
+  "find": "    if all(r[\"state\"] in (\"met\", \"blocked\") for r in results) and reflected(goal):",
+  "replace": "    if all(r[\"state\"] in (\"met\", \"blocked\") for r in results):",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_hook_allows_finish_with_named_blockers_only_after_reflection"
+  ]
+}

@@ -54,12 +54,24 @@ class HygieneTests(unittest.TestCase):
         self.commit("docs/plans/2026-10-28-rollout.md", "x")
         self.commit("docs/reviews/review-2026-11-01.md", "x")
         self.commit("handoff-20261101.md", "x")
+        self.commit("docs/notes/2026-11-07-plan.md", "x")
+        self.commit("docs/2026-11-07 review.md", "x")
         self.commit(".tmp/run/out.txt", "x")
         self.commit("build.log", "x")
         result = self.run_tool()
         self.assertEqual(result.returncode, 0)  # report mode never fails
-        for expected in ("docs/plans/2026-10-28-rollout.md", "handoff-20261101.md", ".tmp/run/out.txt", "build.log"):
+        for expected in ("docs/plans/2026-10-28-rollout.md", "handoff-20261101.md", ".tmp/run/out.txt", "build.log",
+                         "docs/notes/2026-11-07-plan.md", "docs/2026-11-07 review.md"):
             self.assertIn(expected, result.stdout)
+
+    def test_fast_forward_merged_branch_is_reported(self):
+        self.git("checkout", "-q", "-b", "feat")
+        self.commit("feat.txt", "x")
+        self.git("checkout", "-q", "main")
+        self.git("merge", "-q", "--ff-only", "feat")
+        result = self.run_tool("--strict")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("merged branch not deleted: feat", result.stdout)
 
     def test_local_trunk_is_not_flagged_against_its_remote(self):
         self.git("update-ref", "refs/remotes/origin/main", "HEAD")
@@ -70,9 +82,9 @@ class HygieneTests(unittest.TestCase):
         self.commit("references/research-2026-09/README.md", "x")
         self.commit("experiments/2026-09-20-trial.md", "x")
         self.commit("db/migrate/20240101120000_add_status_to_users.rb", "x")
-        self.commit("docs/release-plan-2025-01-01.md", "x")
         self.commit("tmp/.keep", "")
         self.commit("test/fixtures/sample.log", "x")
+        self.commit("src/status/20200101_migration.sql", "x")
         self.assertIn("clean", self.run_tool("--strict").stdout)
 
 

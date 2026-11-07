@@ -1,11 +1,12 @@
 .DEFAULT_GOAL := help
-.PHONY: help check control-trial contributor-trial external-report external-smoke guidance-budget guidance-delta finish-check hygiene
+.PHONY: help check control-trial contributor-trial external-report external-smoke guidance-budget guidance-delta finish-check hygiene prove findings
 help:
-	@printf '%s\n' 'Read AGENTS.md for scope and privacy.' 'make check: offline contributor regressions and native control integration; Python 3.9+ and Git.' 'make finish-check: refuse to finish while .agent/goal.json is unmet.' 'make hygiene: fail on merged-but-kept branches, extra worktrees, dated plan/handoff trees or tracked scratch.' 'make guidance-delta: fail when runtime prose grows since BASE (default origin/main) without a mechanism.' 'make control-trial: exercise outcome, runtime, recovery and evaluation command routes.' 'make contributor-trial: run make check from cold/stale disposable clones of committed HEAD.' 'make external-report: show instrumented external-practice use in this checkout.' 'make external-smoke: network-enabled pinned-upstream fixture; installs into a private cache.'
+	@printf '%s\n' 'Read AGENTS.md for scope and privacy.' 'make check: offline contributor regressions and native control integration; Python 3.9+ and Git.' 'make finish-check: refuse to finish while .agent/goal.json is unmet.' 'make findings: fail while any review finding in validation/findings.jsonl is open.' 'make prove: disable each rule in validation/mutations in a disposable copy and require its tests to fail.' 'make hygiene: fail on merged-but-kept branches, extra worktrees, dated plan/handoff trees or tracked scratch.' 'make guidance-delta: fail when runtime prose grows since BASE (default origin/main) without a mechanism.' 'make control-trial: exercise outcome, runtime, recovery and evaluation command routes.' 'make contributor-trial: run make check from cold/stale disposable clones of committed HEAD.' 'make external-report: show instrumented external-practice use in this checkout.' 'make external-smoke: network-enabled pinned-upstream fixture; installs into a private cache.'
 check:
 	@python3 -m unittest discover -s tools/tests -v
 	@python3 tools/check-outcome-controls.py
 	@python3 tools/check_guidance_budget.py
+	@python3 tools/check_findings.py
 control-trial:
 	@python3 tools/check-outcome-controls.py
 guidance-budget:
@@ -14,6 +15,10 @@ guidance-delta:
 	@python3 tools/check_guidance_budget.py --base $(or $(BASE),origin/main)
 finish-check:
 	@python3 tools/finish_check.py
+findings:
+	@python3 tools/check_findings.py --strict
+prove:
+	@python3 tools/prove_guards.py
 hygiene:
 	@python3 tools/check_hygiene.py --strict $(if $(BASE),--base $(BASE),)
 contributor-trial:

@@ -1,0 +1,10 @@
+{
+  "id": "finish-pass-needs-evidence",
+  "rule": "A manual item passes only with evidence, never by self-assertion",
+  "file": "tools/finish_check.py",
+  "find": "        elif item.get(\"status\") == \"pass\" and text(item.get(\"evidence\")):",
+  "replace": "        elif item.get(\"status\") == \"pass\":",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_self_declared_pass_needs_evidence"
+  ]
+}
