@@ -32,6 +32,8 @@ An experiment should define workload, environment, success criteria, model/setti
 
 ## Bounded tool trials
 
+- [`outcome-evidence-control.md`](outcome-evidence-control.md) — discriminating delivery, evidence, recovery and resource cases, with executable mechanism coverage and scoped worker observations.
+
 - [`harness-tool-trials-2026-09-24.md`](harness-tool-trials-2026-09-24.md) — verified observation recall and an isolated MCP schema-compression fixture, with explicit limits on what the trials establish.
 - [`fixtures/coordination-replay/README.md`](fixtures/coordination-replay/README.md) — synthetic cross-component release repair with retained logs and independent source/package/install/consumer acceptance; suitable for paired coordinator-context trials.
 

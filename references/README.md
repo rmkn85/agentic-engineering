@@ -17,6 +17,8 @@ The operational docs should therefore contain the **current decision rule**. Thi
 
 ## Contents
 
+- [`outcome-evidence-control-2026-11.md`](outcome-evidence-control-2026-11.md) — human engineering management and coding-agent evidence behind scoped delivery claims, complete observations, bounded recovery and preservation before retirement; hypotheses and revision criteria.
+
 - [`reasoning-effort-2026-11.md`](reasoning-effort-2026-11.md) — effort economics, prompt-induced alternative exploration, evidence limits, and the rationale for uncertainty-based routing with proportional sampling.
 
 - [`context-and-instruction-engineering-2026-09.md`](context-and-instruction-engineering-2026-09.md) — research behind the current instruction/context design, including OpenAI, Anthropic/Claude Code, Cursor, GitHub Copilot, LangChain, Promptfoo, DSPy, ACE, long-context research, BMAD, and Superpowers.

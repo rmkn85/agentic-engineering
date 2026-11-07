@@ -34,7 +34,10 @@ it should not become an archive the next agent must reread.
 
 ## Focus on the journey people commonly use
 
-Choose work by its contribution to a usable product journey. Use **80/20** as a
+Choose work by its contribution to the controlling user outcome and explicit
+priorities. A ready task is eligible work, not automatically the next priority.
+A proposed solution is a hypothesis: establish the problem and why that mechanism
+is necessary before delegating its construction. Use **80/20** as a
 qualitative guide: concentrate on common scenarios while covering less common
 scenarios where requirements or consequences make them necessary. Within that
 focus, use **70/30** to favor features and use cases over the enabling work that
@@ -81,7 +84,12 @@ contract and required evidence.
    owners, contracts and renderer. Use one real source-bound example and the
    existing tools. Identify the defect or unknown preventing the result. Avoid
    a broad inventory of unrelated systems or a replacement implementation.
-3. **Choose the preserving mechanism.** Settle the few cross-boundary decisions
+3. **Choose the preserving mechanism.** Identify the semantic owner before adding
+   an interface. Check whether an internal repair or existing contract supplies
+   the needed behavior; a stale result alone does not establish a need for a new
+   public refresh API. Add a public surface only for a required caller, authority
+   or trust boundary, preserving ownership and refusal semantics. Settle the few
+   cross-boundary decisions
    that control correctness before coding: semantics, dates/units, state memory,
    missingness, ownership and the consumer contract where relevant. Resolve an
    uncertainty with the smallest observation that can change the decision.
@@ -108,6 +116,48 @@ If successive increments leave the same primary gap unchanged, reconsider the
 mechanism and work ordering before another similar patch. Keep the working parts;
 do not restart discovery wholesale. Record the evidence-backed rationale and
 subsequent effect in the task or commit message, not in source/configuration.
+
+## Scope delivery claims independently
+
+Use the existing task or receipt to distinguish these claims where applicable;
+they are neither a new task-status enum nor a universal linear pipeline.
+
+| Claim | Evidence it needs |
+| --- | --- |
+| Implemented | The required mechanism exists in the identified candidate |
+| Verified | An independent check supports the specified behavior and scope |
+| Integrated | The actual consumer composes and invokes that candidate correctly |
+| Available | The intended user can reach the capability in the stated environment now |
+| Accepted | The authorized acceptance conditions and required judgment are satisfied |
+
+Select applicability with the work's contract, before a failed check invites an
+exemption. A documentation edit need not acquire a deployment prerequisite.
+Use unknown when proof is missing and not applicable with a scope reason.
+Acceptance can remain valid for a version while its availability later regresses;
+state the affected version/environment rather than collapsing every claim.
+
+For consequential claims, retain source/candidate identity and actual loaded,
+installed or served artifact identity, scenario/entrypoint, relevant environment,
+substantive result/errors, coverage and invalidation condition in existing
+receipts. Source equality does not prove the runtime loaded it. Keep a comparison
+control's actual identity too; an old test against a different artifact is not a
+valid control for the candidate. Process exit describes execution, not substantive
+completion: use native producers' completion/error verdicts and propagate failures
+through actual callers and CI. A successful generic command remains useful
+process evidence without product qualification. Do not infer a universal verdict
+from a printed success token or arbitrary log regex.
+
+For human-facing work, inspect representative ordinary composed output through
+the actual primary interaction. A diagnostic fixture, hidden action, isolated
+component render or numerical proxy cannot establish ordinary readability,
+visual quality or comprehension. Use the intended user's context and applicable
+product judgment independently of data correctness and machine accessibility.
+Retain unrun human/visual checks instead of claiming acceptance from test totals.
+
+Detection and containment are not remediation completion. When repair is required,
+verify the corrected result or obtain an authorized irreparable disposition with
+usable investigation and explicit limitations. Do not silently close the outcome
+at a provenance report.
 
 ## Performance work must change the user's wait
 

@@ -1,5 +1,9 @@
 # Instruction and context adherence
 
+For delivery drift, partial/stale evidence, internal limits and resource cleanup,
+use the [outcome/evidence contrasts](outcome-evidence-control.md) alongside this
+protocol. Keep their evaluator expectations out of worker task context.
+
 Status: regression and experiment protocol. The goal is to discover the **smallest reliably sufficient instruction/context configuration**, not the shortest prompt and not the most comprehensive manual.
 
 Use this when an instruction changes important behavior, when a lightweight agent appears to ignore guidance, when the instruction stack is growing, or when context pressure/interference is a plausible cause of failures.

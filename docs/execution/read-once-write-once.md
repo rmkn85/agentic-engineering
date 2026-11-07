@@ -38,4 +38,12 @@ A completed unit becomes dirty when a relevant assumption changes, such as:
 - a generated contract changes
 - a failing integration test reveals a hidden dependency
 
+Source hashes alone do not validate mutable runtime facts. Record the observation
+time and relevant conditions for permissions, service state, loaded artifacts and
+capabilities; refresh when a condition affecting the decision changes. An old
+capability failure is historical evidence, not proof of current failure. Immutable
+source findings remain reusable while their relevant inputs are unchanged. Use
+[observation coverage and invalidation](observation-economy.md#coverage-belongs-to-the-observation)
+for bounded retrieval; avoid blanket TTLs and ceremonial rereading.
+
 This mirrors incremental compilation: recompute what is invalid, not everything that existed before it.

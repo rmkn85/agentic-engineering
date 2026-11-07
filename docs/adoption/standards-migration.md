@@ -62,7 +62,7 @@ Enable new mechanical checks using the project's normal commands. A scoped exist
 
 ### 5. Deliver instructions to the actual agents
 
-Updating a file does not reload a running host or worker. Explicitly read the revised local entry in the active session. Pass the affected contract and revision to active workers before their next relevant write. Confirm which revision each relevant context received; receipt is not evidence of behavioral adherence.
+Updating a file does not reload a running host or worker. Explicitly read the revised local entry in the active session. Pass the affected contract and revision to active workers before their next relevant write. Confirm which revision each relevant context received; receipt is not evidence of behavioral adherence. Source-only checks, matching copies and acknowledged updates do not establish adoption. Exercise the affected active worker through its actual normal entry and instruction stack on a representative decision; retain the exact received revision and observed behavior. An extra reminder supplied only for the trial must not masquerade as ordinary-stack proof.
 
 Where the host cannot refresh a context, checkpoint and restart only the affected work at a supported safe boundary. Preserve completed work and reconcile outputs produced under the prior contract. Do not invent a reload command or assume every host inherits the same files. Keep the changes in the local approved instruction route so future sessions receive them without this chat.
 

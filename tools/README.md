@@ -116,6 +116,25 @@ python3 tools/codex-bench.py \
 
 Use separate `CODEX_HOME` directories or Codex profiles for baseline and experimental configurations. Do not change model/reasoning/task at the same time as the feature being benchmarked unless the experiment is explicitly about that combined system.
 
+`wall_seconds` remains worker-only for compatibility. `eval_wall_seconds` measures
+the chosen check; the measured `loop_wall_seconds` includes setup through evaluation
+completion (or worker completion without evaluation). It excludes retirement,
+reporting, prior task time and subsequent human acceptance/publication. The
+comparison labels these scopes separately and leaves a passing-evaluation loop
+unavailable without successful worker/evaluation evidence and valid measured
+timing. Passing an evaluation proves only the behavior that command checks.
+
+Worktree retirement is conservative: `--keep-worktree` retains it explicitly;
+changed HEAD, tracked/untracked/ignored state, hidden index flags, unique commits
+in the worktree's HEAD reflog, or failed cleanup retains it with a
+`worktree_lifecycle` reason in `metrics.json`. Only a clean, unchanged worktree is
+removed, without force. Retained source and evidence must be harvested and verified
+before using the native cleanup route; a failed task is not authority to delete
+its only recoverable work. This runner manages only its own created worktree,
+not shared caches or unrelated processes.
+It assumes the run's producers have stopped; it cannot restore data already
+deleted by a worker or commits whose reflog evidence was manually expired.
+
 Run artifacts are written under `.agent-bench/runs/` by default. The runner exposes that exact directory as `AGENT_RUN_ARTIFACTS` to the agent process and evaluation command. An authorized producer may write one `practice-feedback.json` there using the [existing practice lifecycle](../docs/evidence/practice-lifecycle.md) format. After evaluation, the runner validates it, checks referenced local artifact digests and retains `practice-summary.json`; `metrics.json` records `recorded`, `not_recorded` or `invalid` separately from native acceptance. No prompt is injected, model call added or sandbox permission widened; use the existing authorized evaluator if the agent cannot write the run directory. Missing feedback is not inferred use, zero cost or failure of the game.
 
 ## `practice_feedback.py`

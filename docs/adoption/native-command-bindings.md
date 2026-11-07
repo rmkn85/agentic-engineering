@@ -12,6 +12,23 @@ A dominant-language label, test-routing category or repository name is not an en
 
 For each route, bind the working directory, native command, selected input/dependency owners, permitted effects and evidence boundary. Keep source acquisition, environment installation, small fixtures, private resources, service lifecycle and publication separate. Place an owner-specific exception beside the owner's template rather than growing a universal switch or giving a low-cost agent contradictory setup recipes.
 
+## Prove the actual operational entry
+
+Bind the claimed result to preparation, working directory, command, interpreter
+and import/dependency layout, produced artifact and actual consumer. Check the
+captured or installed layout through that entry before asking an operator to
+mutate a service. A unit test importing source from the checkout does not prove
+the installed interpreter can load it. Use a safe representative environment for
+the reached boundary and verify pre-effect dependency checks and failure
+propagation through real callers. Keep source-only validation useful when the
+operational environment is unavailable; leave the operational claim open.
+
+For reversible changes, exercise the declared rollback with preserved state and
+known-good artifact through its native route. State unavailable prerequisites and
+irreversible effects before the dependent operation. A printed rollback command
+is not restore proof. Reuse existing activities and receipts; an isolated function
+edit does not need an operational rehearsal unless its affected contract does.
+
 ## Sandbox-first external activities
 
 Plan and complete everything the sandbox already permits before requesting broader access: source edits, inspection, fixtures, local builds/checks, command implementation and a reviewable non-mutating plan. Use authorized structured tools when they already provide the required activity. Identify the remaining external effect and why it cannot stay inside the sandbox; do not treat a failed broad command as evidence that every part needs escalation.
