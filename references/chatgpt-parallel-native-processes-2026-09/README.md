@@ -36,7 +36,7 @@ See [environment.json](environment.json) for the machine-readable capability sna
 | Software Vulkan | No ICD manifest in the standard location; not provisioned or executed in this experiment |
 | Native executables | Git, Node, GNU timeout, taskset, FFmpeg and a compiler available; no Codex, Docker or Podman executable on PATH |
 | Network | One ordinary public Git clone failed on GitHub DNS resolution. Web/GitHub connector reads worked separately. A generic download tool did not deliver the repository archive. No broader network capability was inferred |
-| Input availability | The previously supplied/project-associated Godot ZIP was mounted in this session. Its continued availability is an observation, not proof of a persistent installed engine across all chats |
+| Input availability | The previously supplied Godot ZIP was mounted in this session. Its continued availability is an observation, not proof of a persistent installed engine across all chats |
 | Model routing | No callable general spawn interface exposed here; model token/cost/routing telemetry unavailable, not zero |
 
 The CPU quota is derived from its quota/period, not from visible processor count. Linux cgroup controllers apply resource limits to process groups; spawning children does not itself allocate additional quota. [S3]

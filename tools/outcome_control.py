@@ -10,6 +10,9 @@ import shutil
 import sys
 import tempfile
 from datetime import datetime, timezone
+
+# Must equal project_work.TASK_SCHEMAS; tools/tests/test_project_work.py enforces it.
+TASK_SCHEMAS = ('task-record/v1', 'axioms-task/v1')
 from pathlib import Path, PurePosixPath
 
 SCHEMA = 'outcome-control/v1'
@@ -486,7 +489,7 @@ def reconcile(root, task_path, expected_sha256, proposal):
         current = json.loads(original)
         proposed = read_json(proposal)
         require(isinstance(proposed, dict) and proposed.get('id') == target.stem == current.get('id') and
-                proposed.get('schema') == current.get('schema') == 'axioms-task/v1', 'different task identity')
+                proposed.get('schema') == current.get('schema') in TASK_SCHEMAS, 'different task identity')
         require(authority_digest(proposed) == authority_digest(current), 'reconcile cannot change authority or limits')
         require(same_json(proposed.get('depends'), current.get('depends')), 'reconcile cannot change dependency contract')
         mutable = {'status', 'current', 'evidence', 'updatedAt', 'completedAt', 'control', 'history'}

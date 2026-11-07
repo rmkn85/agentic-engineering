@@ -28,7 +28,7 @@ def artifact(root, path, content):
 
 def fixture(root):
     source = artifact(root, 'src/result.txt', b'Observable result\n')
-    task = {'schema': 'axioms-task/v1', 'id': 'RESULT-1', 'title': 'Deliver result', 'outcome': 'Consumer reads result',
+    task = {'schema': 'task-record/v1', 'id': 'RESULT-1', 'title': 'Deliver result', 'outcome': 'Consumer reads result',
             'status': 'in-progress', 'depends': [], 'acceptance': ['Exact result visible'], 'evidence': [],
             'current': {'summary': 'Candidate ready', 'nextAction': 'Verify consumer', 'blockers': []}}
     rules = {claim: {'applicable': claim in ('implemented', 'verified'), 'reason': 'Local file consumer' if claim in ('implemented', 'verified') else 'No separate boundary in this local example',
@@ -98,7 +98,7 @@ class OutcomeControlTests(unittest.TestCase):
     def test_direct_done_bypass_and_native_reader(self):
         self.task['status'] = 'done'
         self.write_task()
-        artifact(self.root, 'work/frontier.json', {'schema': 'axioms-frontier/v1', 'repository': 'sample/result',
+        artifact(self.root, 'work/frontier.json', {'schema': 'work-frontier/v1', 'repository': 'sample/result',
                  'objective': 'Deliver result', 'mode': 'product', 'product': ['RESULT-1'], 'maintenance': [], 'parallel': []})
         result = subprocess.run([sys.executable, str(TOOLS / 'project_work.py'), '--root', str(self.root), 'validate'], capture_output=True, text=True)
         self.assertEqual(result.returncode, 1)
@@ -109,7 +109,7 @@ class OutcomeControlTests(unittest.TestCase):
         reader.mkdir()
         (reader / 'project_work.py').write_bytes((TOOLS / 'project_work.py').read_bytes())
         self.write_task()
-        artifact(self.root, 'work/frontier.json', {'schema': 'axioms-frontier/v1', 'repository': 'sample/result',
+        artifact(self.root, 'work/frontier.json', {'schema': 'work-frontier/v1', 'repository': 'sample/result',
                  'objective': 'Deliver result', 'mode': 'product', 'product': ['RESULT-1'], 'maintenance': [], 'parallel': []})
         command = [sys.executable, str(reader / 'project_work.py'), '--root', str(self.root), 'validate']
         self.assertIn('requires outcome_control.py', subprocess.run(command, capture_output=True, text=True).stdout)
@@ -124,7 +124,7 @@ class OutcomeControlTests(unittest.TestCase):
 
     def test_native_policy_prevents_deleted_control_and_rejects_unknown_malformed(self):
         self.write_task()
-        frontier = {'schema': 'axioms-frontier/v1', 'repository': 'sample/result',
+        frontier = {'schema': 'work-frontier/v1', 'repository': 'sample/result',
                     'objective': 'Deliver result', 'mode': 'product', 'product': ['RESULT-1'], 'maintenance': [], 'parallel': [],
                     'controlPolicy': {'schema': 'outcome-policy/v1', 'requiredTasks': ['RESULT-1']}}
         def validate():

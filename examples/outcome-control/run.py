@@ -32,7 +32,7 @@ def build_example(root):
                     'scenario': 'local-result/' + claim, 'prerequisites': ['implemented'] if claim == 'verified' else [],
                     'classes': ['mechanical'], 'producers': ['file-check'], 'reviewers': ['example-owner'],
                     'loadedRequired': claim == 'verified'} for claim in oc.CLAIMS}
-    task = {'schema': 'axioms-task/v1', 'id': 'RESULT-1', 'title': 'Deliver a local result',
+    task = {'schema': 'task-record/v1', 'id': 'RESULT-1', 'title': 'Deliver a local result',
             'status': 'in-progress', 'outcome': 'The local reader receives the exact expected result',
             'depends': [], 'acceptance': ['The local reader reads Observable result followed by a newline'], 'evidence': [],
             'current': {'summary': 'Consumer check pending', 'nextAction': 'Read the result', 'blockers': []},
@@ -72,7 +72,7 @@ def build_example(root):
     task['status'] = 'done'
     task['current'] = {'summary': 'Exact local consumer result verified', 'nextAction': '', 'blockers': []}
     write(root, 'work/tasks/RESULT-1.json', task)
-    write(root, 'work/frontier.json', {'schema': 'axioms-frontier/v1', 'repository': 'sample/result',
+    write(root, 'work/frontier.json', {'schema': 'work-frontier/v1', 'repository': 'sample/result',
           'objective': 'Verify a local result', 'controlPolicy': {'schema': 'outcome-policy/v1', 'requiredTasks': ['RESULT-1']}, 'mode': 'product', 'product': ['RESULT-1'], 'maintenance': [], 'parallel': []})
     write(root, 'gate-request.json', request)
     return task

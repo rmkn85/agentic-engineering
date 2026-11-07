@@ -13,8 +13,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
-TASK_SCHEMA = 'axioms-task/v1'
-FRONTIER_SCHEMA = 'axioms-frontier/v1'
+TASK_SCHEMA = 'task-record/v1'
+FRONTIER_SCHEMA = 'work-frontier/v1'
+# Earlier project-named identifiers stay valid so existing records need no rewrite.
+TASK_SCHEMAS = (TASK_SCHEMA, 'axioms-task/v1')
+FRONTIER_SCHEMAS = (FRONTIER_SCHEMA, 'axioms-frontier/v1')
 STATUSES = ('planned', 'in-progress', 'blocked', 'done', 'cancelled')
 ID = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._-]*$')
 REPOSITORY = re.compile(r'^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$')
@@ -44,7 +47,7 @@ def task_errors(task):
     if not isinstance(task, dict):
         return ['task must be an object']
     errors = []
-    if task.get('schema') != TASK_SCHEMA:
+    if task.get('schema') not in TASK_SCHEMAS:
         errors.append('schema must be ' + TASK_SCHEMA)
     if not isinstance(task.get('id'), str) or not ID.fullmatch(task['id']):
         errors.append('invalid id')
@@ -103,7 +106,7 @@ def load_repository(root):
             raise ValueError('frontier must be an object')
         result['frontier'] = frontier
         result['sources'].append(('work/frontier.json', raw))
-        if frontier.get('schema') != FRONTIER_SCHEMA:
+        if frontier.get('schema') not in FRONTIER_SCHEMAS:
             error('frontier schema must be ' + FRONTIER_SCHEMA)
         if not isinstance(frontier.get('repository'), str) or not REPOSITORY.fullmatch(frontier['repository']):
             error('frontier repository must be owner/name')
