@@ -11,6 +11,8 @@ import unittest
 
 AGENTS = Path(__file__).resolve().parents[2] / "AGENTS.md"
 OBLIGATIONS = {
+    "start from the audit's focus": r"Start with `python3 tools/work_audit.py` and do its FOCUS line first unless the user names a different task",
+    "progress is proven behaviour": r"Progress is changed behaviour that a check proves",
     "goal record first": r"\.agent/goal\.json",
     "finish through the gate": r"make finish-check",
     "never weaken acceptance": r"never invent requirements or weaken acceptance",

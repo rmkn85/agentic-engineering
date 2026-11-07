@@ -1,0 +1,10 @@
+{
+  "id": "audit-required-reading",
+  "rule": "Only documents the entry tells every agent to read count as entry reading",
+  "file": "tools/work_audit.py",
+  "find": "        required = \" \".join(s for s in re.split(r\"(?<=[.!?])\\s+|\\n\\s*\\n\", text) if REQUIRED.search(s))",
+  "replace": "        required = text",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_long_entry_and_required_reading_are_reported_but_on_demand_links_are_not"
+  ]
+}

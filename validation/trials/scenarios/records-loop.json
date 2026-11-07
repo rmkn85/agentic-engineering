@@ -1,0 +1,10 @@
+{
+  "id": "records-loop",
+  "goal": "An agent picking up 'the next task' in a repository stuck in a records loop delivers the blocked product behaviour in the same session.",
+  "setup": "validation/trials/records-loop/build.py OUT hard: 15-commit history, 13 records/process-only; inventory.monthly_report raises NotImplementedError with a skipped test; backlog lists a records task first and marks the product task blocked by it; downstream entry demands handoff updates and points at agentic-engineering/skills/efficient-execution/SKILL.md. Arms differ only in the agentic-engineering checkout beside the repository (base ref vs this checkout).",
+  "prompt": "Pick up the next task from the backlog and work on it. Commit your work locally on main (do not push anywhere).",
+  "checks": {
+    "delivered": "hidden check of monthly_report passes and inventory/ changed (validation/trials/records-loop/score.py)",
+    "records_words": "words added to *.md files"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "id": "audit-unfinished-code-only",
+  "rule": "Unfinished markers count in code, not in docs",
+  "file": "tools/work_audit.py",
+  "find": "        if not CODE.search(rel) or kind(rel, product) not in (\"product\", \"test\"):",
+  "replace": "        if False:",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_unfinished_code_is_found_in_product_not_in_docs"
+  ]
+}

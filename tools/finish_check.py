@@ -151,6 +151,14 @@ def run_target(root: Path, target: str, timeout: int) -> tuple[str, str | None]:
     return ("met", None) if code == 0 else ("unmet", f"make {target} exited {code}")
 
 
+def record_status(root: Path, goal: dict, results: list[dict]) -> None:
+    """Leave the last verdict where other tools (work_audit.py) can read it without re-running checks."""
+    path = root / ".agent" / "goal-status.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    met = all(r["state"] == "met" for r in results)
+    path.write_text(json.dumps({"goal": goal["goal"], "met": met}) + "\n", encoding="utf-8")
+
+
 def evaluate(goal: dict, root: Path, timeout: int) -> list[dict]:
     results, cache = [], {}
     for item in goal["acceptance"]:
@@ -315,6 +323,7 @@ def hook(root: Path, goal_path: Path, event: dict, timeout: int) -> int:
             return 0
         superseded = {"goal": pinned["goal"], "reason": change["reason"]}
     results = evaluate(goal, root, timeout)
+    record_status(root, goal, results)
     remember(root, session, dict(goal, met=all(r["state"] == "met" for r in results)))
     if all(r["state"] == "met" for r in results):
         if superseded:
@@ -368,6 +377,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"finish-check: {exc}", file=sys.stderr)
         return 1
     results = evaluate(goal, root, args.timeout)
+    record_status(root, goal, results)
     if all(r["state"] == "met" for r in results):
         print(f"finish-check: goal met ({len(results)} checks)")
         return 0

@@ -1,0 +1,11 @@
+{
+  "id": "audit-support-loop",
+  "rule": "Records- and process-only history is reported as a loop",
+  "file": "tools/work_audit.py",
+  "find": "        if share > SUPPORT_SHARE and not recent_product:",
+  "replace": "        if share > 1.0 and not recent_product:",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_records_only_history_is_a_loop_and_focus_asks_for_product_change",
+    "tools.tests.test_work_audit.WorkAuditTests.test_process_files_count_as_support_not_product"
+  ]
+}

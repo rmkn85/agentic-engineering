@@ -1,0 +1,10 @@
+{
+  "id": "audit-repeats-are-recent",
+  "rule": "Only repeats that include the latest commits are reported",
+  "file": "tools/work_audit.py",
+  "find": "                    if n >= 3 and len(text.split()) == 3 and text in latest]",
+  "replace": "                    if n >= 3 and len(text.split()) == 3]",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_old_repeats_followed_by_different_work_are_not_reported"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "audit-product-wins",
+  "rule": "A commit that touches product counts as product",
+  "file": "tools/work_audit.py",
+  "find": "        main = next((k for k in (\"product\", \"test\", \"process\", \"records\") if k in kinds), \"records\")",
+  "replace": "        main = next((k for k in (\"records\", \"process\", \"test\", \"product\") if k in kinds), \"records\")",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_a_commit_touching_product_counts_as_product"
+  ]
+}

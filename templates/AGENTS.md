@@ -1,28 +1,37 @@
 # AGENTS.md template
 
-Keep this file small and durable.
+Copy this into a repository and fill the bracketed parts. Keep it under about
+400 words: a map, not a manual. `AE` below is the path to an agentic-engineering
+checkout, for example `../agentic-engineering`.
 
-## Repository purpose
-Describe what the repository owns and explicitly does not own.
+## What this repository delivers
+[One paragraph: the user outcome it owns, and what it does not own.]
 
-## Start here
-Point to the minimum canonical architecture/task documentation.
+## Every task, in this order
+1. **Focus.** Run `python3 AE/tools/work_audit.py --root .` and do its FOCUS line
+   first, unless the user names a different task. It reads this
+   repository's history, so it works the same for every agent.
+2. **Goal.** Write the outcome and the checks that prove it in
+   `.agent/goal.json` (`python3 AE/tools/finish_check.py --help`).
+3. **Change behaviour.** Progress is changed behaviour that a check proves.
+   Records, handoffs and process changes support it: replace them instead of
+   appending, and keep them a small share of commits.
+4. **Prove.** Run [the cheapest check that proves the goal: command]. Fix what
+   fails; a skipped test is unfinished work.
+5. **Finish.** Run `python3 AE/tools/finish_check.py --root .`. If a real
+   blocker remains, mark the item blocked with the reason and the reflection.
+   Do executable work now; "next steps" are only for work you cannot do.
 
-## Build and test
-Document deterministic commands and the cheapest useful validation sequence.
+## Commands
+[Build, test and run commands. List the local ones agents may run without
+approval in `configs/allowed-activities.json`; everything else needs approval.]
 
-## Agent execution rules
-- Inspect before modifying.
-- Preserve behavior unless the task explicitly changes it.
-- Before finalizing, re-check the requested outcome against actual state and evidence. Continue necessary authorized work rather than listing executable next steps; stop only when complete or genuinely blocked, without expanding into optional work.
-- Prefer deterministic tools for deterministic transformations.
-- Keep tool output concise; inspect full logs only when needed.
-- Record important assumptions and invalidations; preserve retrieval limits and refresh mutable facts when relevant conditions change.
-- Run appropriate verification through available authorized routes; diagnose relevant failures, repair and reverify before declaring completion.
+## Hard limits
+[Only the few things that must never happen here, each with its reason.]
 
-## Local overrides
-Document project-specific constraints here rather than modifying shared engineering guidance.
+## Handoff
+One file, under 800 words: goal, last proven state, next action. History is in Git.
 
-For source-code subtrees, prefer a small scoped/nested instruction such as [`source-AGENTS-agent-legible.md`](source-AGENTS-agent-legible.md) instead of adding code-writing detail to every repository-wide agent turn.
-
-For multi-component delivery or resource retirement, route to the relevant local copy of the [direct-delivery method](../docs/execution/direct-delivery.md) or [resource lifecycle](../docs/execution/resource-lifecycle.md). Keep procedures on demand and adapt these links when adopting the template.
+For source-code subtrees, prefer a small nested instruction such as
+[`source-AGENTS-agent-legible.md`](source-AGENTS-agent-legible.md). Link deeper
+procedures; do not inline them.

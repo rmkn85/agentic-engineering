@@ -96,6 +96,13 @@
     {
       "command": [
         "python3",
+        "tools/work_audit.py"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "python3",
         "tools/blind_review.py",
         "prompt"
       ],

@@ -1,0 +1,10 @@
+{
+  "id": "audit-declared-product",
+  "rule": "Declared product paths override the defaults",
+  "file": "tools/work_audit.py",
+  "find": "    if any(fnmatch.fnmatch(path, pattern) for pattern in product):",
+  "replace": "    if False:",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_product_paths_can_be_declared"
+  ]
+}
