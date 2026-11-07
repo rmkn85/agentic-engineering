@@ -50,11 +50,27 @@ The strongest recurring mechanisms are:
 
 Agent legibility should not be a cleanup phase reserved for mature code. Each code-writing or code-changing operation should preserve or improve the local mental-model boundary.
 
-Before writing or changing a unit:
+### Choose the simplest sufficient implementation
 
-1. identify the smallest context that *should* be sufficient to understand its behavior;
-2. identify the contract/state/dependencies that must be explicit inside that boundary;
-3. avoid introducing hidden coupling that forces a future reader to widen the boundary.
+Before writing or reviewing a change, trace the required behavior through its
+existing owner and actual callers. Use the smallest complete implementation that
+preserves the contract. Justify added public interfaces, abstractions, layers,
+fallbacks, configuration and repeated validation by an actual requirement,
+supported caller, trust boundary or independently changing decision. An internal
+operation's existence alone does not justify publishing it as a new public API.
+
+Compare the candidate with one plausible simpler complete implementation. Name
+the requirement or supported case that the simpler version would fail; if none
+does, use it. This is a focused implementation and review judgment, not a new
+document, mandatory second reviewer or exhaustive alternatives exercise. Keep any
+material rationale in the existing task or review. Passing tests establish tested
+behavior; they do not establish the necessity of every added surface.
+
+Preserve monetary precision, provenance, missingness, compatibility and supported
+failure behavior. Similar checks at separate trust boundaries may be necessary;
+consolidate duplicated decisions without deleting independent protection. Identify
+the smallest explicit contract/state/dependency context needed to predict the
+result, and avoid hidden coupling that forces readers to widen it.
 
 After touching it, ask:
 
@@ -62,7 +78,11 @@ After touching it, ask:
 
 If not, first simplify the local design or expose the missing contract/state/dependency. Do not reflexively add a long explanatory comment that permanently compensates for avoidable complexity.
 
-Do not turn this into mandatory opportunistic rewrites of unrelated legacy code. The rule is: **leave touched code no harder to model than before, and cheaply improve obvious local obstacles when doing so is low-risk.**
+Leave touched code no harder to model than before. Remove proven unreachable code
+and cheaply improve obvious local obstacles when doing so is low-risk. Establish
+callers and compatibility obligations before retiring an old path; uncertain use
+is not proof of dead code. Keep boundary changes coherent and separately scoped
+when necessary, without turning ordinary delivery into unrelated legacy rewrites.
 
 ## Locality beats fragmentation
 
@@ -286,6 +306,16 @@ Depending on language/project, useful enforcement may include:
 These mechanisms protect the conditions under which bounded mental modeling is likely to remain cheap. They do **not** prove that a language model actually understands the code.
 
 Prefer a small number of high-value, low-noise rules. A noisy rule that agents routinely suppress is not a useful guardrail.
+
+Use the project's existing checks and supported safe fixes, such as configured
+Ruff checks for Python, for exact mechanical cleanup; inspect the diff and verify
+the affected behavior. Select targeted unused-code or dependency analysis when a
+caller or coupling question warrants it, and inspect dynamic/plugin entrypoints
+before deletion. Repository/agent-readiness checks, including agentlint where
+adopted, assess their declared readiness criteria. None of these tools decides
+whether an added public operation is required or a simpler complete design would
+suffice. Keep generated schemas and fixtures distinct from authored control flow
+when interpreting size or complexity signals.
 
 ## Common agent-hostile structures
 
