@@ -119,6 +119,38 @@ def collect_practice_feedback(run_dir):
         return {"state": "invalid", "error": str(error)}
 
 
+def retire_worktree(repo, worktree, base_commit, keep=False):
+    """Retire only this run's clean, unchanged worktree; retain all unique data."""
+    receipt = {"state": "retained", "path": str(worktree)}
+    if keep:
+        return {**receipt, "reason": "explicit_keep"}
+    try:
+        head = git(worktree, "rev-parse", "HEAD")
+        if head != base_commit:
+            return {**receipt, "reason": "head_differs_from_base", "head_commit": head}
+        entries = git(worktree, "ls-files", "-v", "-z").split("\0")
+        if any(entry and (entry[0] == "S" or entry[0].islower()) for entry in entries):
+            return {**receipt, "reason": "index_flags_can_hide_changes"}
+        # This worktree's HEAD reflog can retain a detached result even after
+        # the worker resets HEAD to base. Do not inspect sibling worktree logs.
+        reflog = git(worktree, "reflog", "show", "--format=%H", "HEAD").splitlines()
+        if not reflog:
+            return {**receipt, "reason": "head_reflog_unavailable"}
+        unique = git(worktree, "rev-list", "--max-count=1", *dict.fromkeys(reflog),
+                     "--not", base_commit)
+        if unique:
+            return {**receipt, "reason": "head_reflog_contains_unique_commit", "head_commit": unique}
+        # Default status omits ignored files. They may be the only copy of a
+        # result, so include them before considering removal.
+        status = git(worktree, "status", "--porcelain", "--untracked-files=all", "--ignored")
+        if status:
+            return {**receipt, "reason": "tracked_untracked_or_ignored_changes"}
+        git(repo, "worktree", "remove", str(worktree))
+    except (OSError, subprocess.SubprocessError) as error:
+        return {**receipt, "reason": "retirement_failed", "error": str(error)}
+    return {"state": "removed", "path": str(worktree), "reason": "clean_unchanged"}
+
+
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--repo", default=".")
@@ -135,6 +167,7 @@ def main():
     ap.add_argument("--codex-arg", action="append", default=[])
     ns=ap.parse_args()
 
+    setup_started=time.monotonic()
     repo=Path(ns.repo).resolve()
     prompt=ns.prompt if ns.prompt is not None else Path(ns.prompt_file).read_text()
     commit=git(repo,"rev-parse",ns.base)
@@ -165,6 +198,7 @@ def main():
     with events_path.open("w") as out, stderr_path.open("w") as err:
         proc=subprocess.run(cmd,cwd=wt,env=env,text=True,stdout=out,stderr=err)
     wall=time.monotonic()-started
+    loop_wall=time.monotonic()-setup_started
 
     usage, per_turn, counts=summarize_events(events_path)
     root_responses=summarize_root_responses(events_path,env.get("CODEX_HOME"))
@@ -176,6 +210,7 @@ def main():
                           stdout=(run_dir/"eval.stdout.log").open("w"),
                           stderr=(run_dir/"eval.stderr.log").open("w"))
         eval_wall=time.monotonic()-t; eval_code=ep.returncode
+        loop_wall=time.monotonic()-setup_started
 
     diff_num=git(wt,"diff","--numstat")
     changed=git(wt,"status","--short")
@@ -192,22 +227,24 @@ def main():
     input_t=usage["input_tokens"]
     cached_t=usage["cached_input_tokens"]
     cache_known=input_t is not None and cached_t is not None
+    lifecycle=retire_worktree(repo,wt,commit,ns.keep_worktree)
     metrics={
         "schema":1,"label":ns.label,"timestamp_utc":ts,"repo":str(repo),"base_commit":commit,
         "codex_home":env.get("CODEX_HOME"),"profile":ns.profile,"codex_exit_code":proc.returncode,
-        "wall_seconds":wall,"eval_command":ns.eval_command,"eval_exit_code":eval_code,"eval_wall_seconds":eval_wall,
+        "wall_seconds":wall,"loop_wall_seconds":loop_wall,
+        "timing_scope":{"wall_seconds":"Codex subprocess only",
+                        "loop_wall_seconds":"local setup start through chosen evaluation completion (or worker completion without evaluation); excludes retirement and reporting"},
+        "eval_command":ns.eval_command,"eval_exit_code":eval_code,"eval_wall_seconds":eval_wall,
         "usage":usage,"per_turn_usage":per_turn,"root_responses":root_responses,"counts":counts,
         "derived":{"fresh_input_tokens_floor":max(input_t-cached_t,0) if cache_known else None,
                    "cache_ratio":cached_t/input_t if cache_known and input_t else None},
         "git":{"changed_files":changed_files,"insertions":ins,"deletions":dels},
-        "command":cmd,"worktree":str(wt),
+        "command":cmd,"worktree":str(wt),"worktree_lifecycle":lifecycle,
         "practice_feedback":collect_practice_feedback(run_dir)
     }
     (run_dir/"metrics.json").write_text(json.dumps(metrics,indent=2)+"\n")
     print(json.dumps(metrics,indent=2))
 
-    if not ns.keep_worktree:
-        git(repo,"worktree","remove","--force",str(wt),capture=False)
     return proc.returncode if proc.returncode else (eval_code or 0)
 
 if __name__=="__main__":
