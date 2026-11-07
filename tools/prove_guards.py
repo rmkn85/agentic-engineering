@@ -5,7 +5,9 @@ Each validation/mutations/*.json disables one rule in a disposable copy of the
 repository (an exact text replacement) and names the tests that must then
 fail. If those tests still pass, they do not protect the rule; if the
 replacement text is missing, the mutation is stale; if the tests fail even
-without the mutation, the proof is broken. Any of these fails the proof.
+without the mutation, or the mutated code does not compile, or the tests only
+error instead of failing an assertion, the proof is broken. Any of these fails
+the proof.
 
     {"id": "short-name", "rule": "what must hold", "file": "tools/x.py",
      "find": "exact text", "replace": "text that disables the rule",
@@ -17,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -66,12 +69,18 @@ def prove(root: Path, mutation: dict, timeout: int) -> tuple[str, str]:
         if count != 1:
             return "stale", f"find text occurs {count} times in {mutation['file']}"
         target.write_text(text.replace(mutation["find"], mutation["replace"]), encoding="utf-8")
+        if target.suffix == ".py":
+            compiled = subprocess.run([sys.executable, "-m", "py_compile", str(target)], capture_output=True, text=True)
+            if compiled.returncode != 0:
+                return "broken", "the mutation breaks the code instead of disabling the rule"
         try:
             result = subprocess.run(run, cwd=copy, capture_output=True, text=True, timeout=timeout, check=False)
         except subprocess.TimeoutExpired:
             return "caught", "tests timed out under the mutation"
         if result.returncode == 0:
             return "survived", "tests still pass with the rule disabled"
+        if not re.search(r"^FAIL: ", result.stderr, re.M):
+            return "broken", "tests only errored; a catch needs an assertion to fail on the disabled rule"
         return "caught", "tests pass as written and fail with the rule disabled"
 
 

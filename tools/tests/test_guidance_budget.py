@@ -131,5 +131,31 @@ class GuidanceBudgetTamperingTests(GuidanceBudgetTests):
         self.assertEqual(self.run_tool("--base", "HEAD").returncode, 0)
 
 
+class GuidanceBudgetProportionTests(unittest.TestCase):
+    setUp = GuidanceBudgetTests.setUp
+    config, git, write, run_tool = (GuidanceBudgetTests.config, GuidanceBudgetTests.git,
+                                    GuidanceBudgetTests.write, GuidanceBudgetTests.run_tool)
+
+    def test_one_trivial_test_cannot_pay_for_a_large_rule_text(self):
+        self.write("docs/guide.md", "alpha beta " + "rule " * 2400)
+        self.write("tools/tests/test_trivial.py", "def test_trivial():\n    assert True\n")
+        result = self.run_tool("--base", "HEAD")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("pay for 150", result.stderr)
+
+    def test_proportionate_growth_passes(self):
+        self.write("docs/guide.md", "alpha beta " + "rule " * 100)
+        self.write("tools/tests/test_rule.py", "def test_rule():\n    assert True\n")
+        self.assertEqual(self.run_tool("--base", "HEAD").returncode, 0)
+
+    def test_narrowing_what_is_measured_fails(self):
+        narrowed = json.loads(json.dumps(CONFIG))
+        narrowed["runtime"] = ["AGENTS.md", "CLAUDE.md", ".claude/*.md"]
+        self.config(narrowed)
+        result = self.run_tool("--base", "HEAD")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("narrows what is measured", result.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -40,14 +40,17 @@ CAPTURE_TOOLS = {"scrot", "gnome-screenshot", "grim", "maim", "spectacle", "flam
 GRAB = re.compile(r"\b(x11grab|gdigrab|avfoundation|kmsgrab|pipewiregrab|ximagesrc|pipewiresrc|"
                   r"ScreenCast|Screenshot)\b")
 DESKTOP_LIBS = re.compile(r"\b(pyautogui|pynput|ImageGrab|mss|robotjs|nut-js|Xlib\.ext\.xtest)\b")
-SHELLS = {"bash", "sh", "zsh", "dash", "ksh"}
+SHELLS = {"bash", "sh", "zsh", "dash", "ksh", "fish", "ash", "mksh"}
+KEYWORDS = {"{", "}", "!", "if", "then", "else", "elif", "fi", "do", "done", "while", "until", "case", "esac",
+            "function", "select", "coproc", "[[", "]]"}
+INTERPRETERS = re.compile(r"(python[0-9.]*|node|ruby|perl|php)$")
 # wrapper -> options that take a value
 WRAPPERS = {
     "sudo": {"-u", "-g", "-h", "-p", "-C", "-D", "-r", "-t", "-U"}, "doas": {"-u", "-C"},
     "env": {"-u", "-C", "-S"}, "nohup": set(), "time": {"-f", "-o"}, "nice": {"-n"},
     "ionice": {"-c", "-n", "-p"}, "command": set(), "exec": {"-a"}, "stdbuf": {"-i", "-o", "-e"},
     "timeout": {"-s", "-k", "--signal", "--kill-after"}, "xargs": {"-I", "-n", "-P", "-d", "-L", "-s", "-E", "-a"},
-    "setsid": set(), "chrt": set(), "taskset": set(),
+    "setsid": set(), "chrt": set(), "taskset": set(), "busybox": set(), "flock": {"-w", "-E"},
 }
 TIMED = {"timeout", "taskset", "chrt"}  # first positional is a duration / mask / priority
 XVFB_OPTS = {"-s", "-n", "-f", "-e", "-w", "-p", "--server-args", "--server-num", "--auth-file",
@@ -164,9 +167,17 @@ def unwrap(words: list[str], ctx: dict) -> list[str]:
     """Drop variable assignments and wrapper commands with their options."""
     while words:
         head = words[0]
+        if head in KEYWORDS:
+            words = words[1:]
+            continue
+        if head in ("for", "select", "case"):
+            return []  # a loop or case header runs no command; the body follows "do" or ")"
         if re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", head):
             if head.startswith("DISPLAY="):
                 ctx["isolated"] = False
+            if head.startswith(("GIT_DIR=", "GIT_WORK_TREE=")):
+                ctx["git_dir"] = head.split("=", 1)[1]
+                ctx["git_dir_forced"] = True
             words = words[1:]
             continue
         name = PurePosixPath(head).name
@@ -190,7 +201,7 @@ def cluster(arg: str, letter: str) -> bool:
 
 
 def broad_path(arg: str) -> bool:
-    return arg in (".", "./", ":/", ":/*", "*", "..") or arg.endswith("/") or arg.endswith("/*")
+    return arg in (".", "./", ":/", ":/*", "*", "..") or arg.endswith("/") or "*" in arg or "?" in arg
 
 
 def git_violation(args: list[str], ctx: dict) -> tuple[str, bool] | None:
@@ -202,7 +213,13 @@ def git_violation(args: list[str], ctx: dict) -> tuple[str, bool] | None:
         option = args[0].split("=", 1)[0]
         if option == "-C" and len(args) > 1:
             workdir = os.path.join(workdir or ".", args[1])
+        if option in ("--work-tree", "--git-dir"):
+            value = args[0].split("=", 1)[1] if "=" in args[0] else (args[1] if len(args) > 1 else None)
+            workdir = os.path.join(workdir or ".", value) if value else None
+            ctx["git_dir_forced"] = True
         args = args[2:] if option in GIT_GLOBAL_OPTS and "=" not in args[0] else args[1:]
+    if ctx.get("git_dir_forced") and ctx.get("git_dir") and workdir == ctx.get("cwd"):
+        workdir = ctx["git_dir"]
     ctx["git_dir"] = workdir
     if not args:
         return None
@@ -224,6 +241,9 @@ def git_violation(args: list[str], ctx: dict) -> tuple[str, bool] | None:
         return "discard: forced or whole-directory checkout drops uncommitted work; stash it first", True
     elif sub in ("switch", "checkout") and any(a in ("-C", "-B", "--force-create") for a in rest):
         return "discard: resetting an existing branch can drop its unmerged commits; create a new branch", True
+    elif sub == "branch" and any(a in ("-f", "--force") or cluster(a, "f") for a in rest) and not any(
+            a in ("-d", "--delete", "-D") for a in rest):
+        return "discard: branch -f moves an existing branch and can drop its commits; create a new branch", True
     elif sub == "update-ref" and any(a in ("-d", "--delete") for a in rest):
         return "discard: deleting a ref can drop unmerged commits; use git branch -d", True
     elif sub == "switch" and any(a in ("-f", "--force", "--discard-changes") or cluster(a, "f") for a in rest):
@@ -256,7 +276,7 @@ def check(words: list[str], ctx: dict, depth: int = 0) -> str | None:
         return None
     name = PurePosixPath(words[0]).name
     args = words[1:]
-    if name == "cd":
+    if name in ("cd", "pushd"):
         target = args[0] if args else "~"
         if "$" in target or target == "-" or ctx.get("cwd") is None and not target.startswith(("/", "~")):
             ctx["cwd"] = None  # unknown directory: never treated as disposable
@@ -267,9 +287,20 @@ def check(words: list[str], ctx: dict, depth: int = 0) -> str | None:
             a.startswith("DISPLAY=") for a in args):
         ctx["isolated"] = False
         return None
-    if name == "gh" and args[:1] == ["api"] and re.search(r"(-X|--method)\s*=?\s*DELETE", " ".join(args), re.I) \
-            and "git/refs" in " ".join(args):
-        return "remote deletion: deleting a published branch or tag needs the owner"
+    if name == "gh" and (args[:2] in (["repo", "delete"], ["release", "delete"], ["release", "delete-asset"])
+                         or (args[:1] == ["api"] and re.search(r"(-X|--method)\s*=?\s*DELETE", " ".join(args), re.I))):
+        return "remote deletion: deleting published repositories, releases or refs needs the owner"
+    if name in SHELLS and "<<<" in args:
+        index = args.index("<<<")
+        if index + 1 < len(args):
+            return violation(args[index + 1], ctx, depth + 1)
+    if INTERPRETERS.match(name):
+        code = " ".join(args)
+        if re.search(r"os\.system|subprocess|child_process|execSync|spawnSync|`|system\(|exec\(", code):
+            for literal in re.findall(r"""(?:'([^']*)'|"([^"]*)")""", code):
+                found = violation(literal[0] or literal[1], ctx, depth + 1)
+                if found:
+                    return found
     if name == "xvfb-run":
         inner = list(args)
         while inner and inner[0].startswith("-"):
@@ -302,10 +333,14 @@ def check(words: list[str], ctx: dict, depth: int = 0) -> str | None:
                 return None  # disposable clone in a temporary directory
             return reason
         return None
-    if name == "rm" and any(cluster(a, "r") or cluster(a, "R") or a == "--recursive" for a in args) and any(
-            PurePosixPath(a.rstrip("/")).name == ".git" for a in args if not a.startswith("-")):
-        if not under_temp(ctx.get("cwd")):
-            return "discard: deleting .git destroys all local history; ask the owner"
+    if name in ("rm", "mv"):
+        targets = [a for a in args if not a.startswith("-")]
+        recursive = name == "mv" or any(cluster(a, "r") or cluster(a, "R") or a == "--recursive" for a in args)
+        for target in (targets if name == "rm" else targets[:-1]):
+            path = os.path.join(ctx.get("cwd") or "/", os.path.expanduser(target))
+            is_repo = PurePosixPath(target.rstrip("/")).name == ".git" or os.path.isdir(os.path.join(path, ".git"))
+            if recursive and is_repo and not under_temp(path if os.path.isabs(path) else None):
+                return f"discard: {name} of a repository or its .git destroys local history; ask the owner"
     if not ctx.get("isolated"):
         joined = " ".join(words)
         if name in INPUT_TOOLS:
@@ -360,8 +395,12 @@ def main(argv: list[str] | None = None) -> int:
         try:
             event = json.loads(sys.stdin.read() or "{}")
         except (json.JSONDecodeError, UnicodeDecodeError):
+            print("guard: warning: hook input was not JSON; command not checked", file=sys.stderr)
             return 0
-        if not isinstance(event, dict) or event.get("tool_name") != "Bash":
+        if not isinstance(event, dict):
+            print("guard: warning: hook input was not an object; command not checked", file=sys.stderr)
+            return 0
+        if event.get("tool_name") != "Bash":
             return 0
         tool_input = event.get("tool_input")
         command = tool_input.get("command") if isinstance(tool_input, dict) else None

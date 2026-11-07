@@ -1,0 +1,10 @@
+{
+  "id": "trial-suite-baseline",
+  "rule": "A trial's suite check counts only failures the agent introduced",
+  "file": "tools/run_trial.py",
+  "find": "    return set(after) <= set(before)",
+  "replace": "    return not after",
+  "tests": [
+    "tools.tests.test_run_trial.RunTrialTests.test_suite_check_counts_only_new_failures"
+  ]
+}

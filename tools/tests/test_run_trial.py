@@ -71,6 +71,21 @@ class RunTrialTests(unittest.TestCase):
         result = json.loads(self.run_tool("score", str(self.out), "--agent", "prose").stdout)
         self.assertFalse(result["checks"]["added-test"])
 
+    def test_suite_check_counts_only_new_failures(self):
+        (self.root / "tools" / "tests" / "test_base.py").write_text(
+            "import unittest\nclass B(unittest.TestCase):\n    def test_old(self):\n        self.fail('was broken')\n")
+        scenario = self.root / "validation" / "trials" / "scenarios" / "demo.json"
+        scenario.write_text(json.dumps({"id": "demo", "claim": "c", "task": "t", "checks": ["suite"]}))
+        subprocess.run(GIT + ["add", "."], cwd=self.root, check=True)
+        subprocess.run(GIT + ["commit", "-qm", "suite"], cwd=self.root, check=True)
+        self.run_tool("prepare", "demo", "--arm", "guided", "--out", str(self.out))
+        same = json.loads(self.run_tool("score", str(self.out), "--agent", "a").stdout)
+        self.assertTrue(same["checks"]["suite"])  # the old failure is not the agent's
+        (self.out / "tools" / "tests" / "test_new.py").write_text(
+            "import unittest\nclass N(unittest.TestCase):\n    def test_new(self):\n        self.fail('agent broke it')\n")
+        worse = json.loads(self.run_tool("score", str(self.out), "--agent", "b").stdout)
+        self.assertFalse(worse["checks"]["suite"])
+
     def test_existing_directory_and_unknown_checks_are_refused(self):
         self.out.mkdir()
         self.assertEqual(self.run_tool("prepare", "demo", "--arm", "guided", "--out", str(self.out)).returncode, 1)

@@ -20,7 +20,10 @@ class CheckFindingsTests(unittest.TestCase):
         (self.root / "tools" / "tests" / "test_x.py").write_text(
             "import unittest\nclass XTests(unittest.TestCase):\n    def test_guarded(self):\n        pass\n")
         (self.root / "validation" / "mutations").mkdir(parents=True)
-        (self.root / "validation" / "mutations" / "m1.json").write_text("{}")
+        (self.root / "validation" / "mutations" / "m1.json").write_text(
+            json.dumps({"tests": ["tools.tests.test_x.XTests.test_guarded"]}))
+        (self.root / "validation" / "mutations" / "other.json").write_text(
+            json.dumps({"tests": ["tools.tests.test_x.XTests.test_unrelated"]}))
 
     def ledger(self, *rows):
         (self.root / "validation" / "findings.jsonl").write_text(
@@ -49,8 +52,17 @@ class CheckFindingsTests(unittest.TestCase):
         for status in ("addressed", "declined"):
             self.ledger({"id": "F1", "status": status})
             self.assertEqual(self.run_tool().returncode, 1, status)
-            self.ledger({"id": "F1", "status": status, "note": "why"})
+            self.ledger({"id": "F1", "status": status, "note": "."})
+            self.assertEqual(self.run_tool().returncode, 1, status)
+            self.ledger({"id": "F1", "status": status, "note": "kept on purpose for compatibility"})
             self.assertEqual(self.run_tool().returncode, 0, status)
+
+    def test_borrowed_mutation_does_not_prove_a_finding(self):
+        self.ledger({"id": "F1", "status": "fixed", "tests": ["tools.tests.test_x.XTests.test_guarded"],
+                     "mutation": "other"})
+        result = self.run_tool()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("proves other tests", result.stderr)
 
     def test_open_findings_fail_only_in_strict_mode(self):
         self.ledger({"id": "F1", "status": "open"})

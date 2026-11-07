@@ -1,0 +1,10 @@
+{
+  "id": "ledger-own-mutation",
+  "rule": "A finding is proven only by a mutation that exercises its own tests",
+  "file": "tools/check_findings.py",
+  "find": "                if not guarded & set(tests):",
+  "replace": "                if False:",
+  "tests": [
+    "tools.tests.test_check_findings.CheckFindingsTests.test_borrowed_mutation_does_not_prove_a_finding"
+  ]
+}

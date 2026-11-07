@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -73,8 +74,22 @@ def check_no_unpaid_prose(clone: Path, start: str) -> bool:
     return make(clone, "guidance-delta", f"BASE={start}")
 
 
+def failing_tests(clone: Path) -> list[str] | None:
+    try:
+        result = subprocess.run([sys.executable, "-m", "unittest", "discover", "-s", "tools/tests"], cwd=clone,
+                                capture_output=True, text=True, timeout=900, check=False)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    return sorted(set(re.findall(r"^(?:FAIL|ERROR): (\S+ \([^)]*\))", result.stderr, re.M)))
+
+
 def check_suite(clone: Path, start: str) -> bool:
-    return make(clone, "check")
+    """No test fails that did not already fail before the agent started (arms differ in setup)."""
+    state = json.loads((clone / STATE).read_text(encoding="utf-8"))
+    before, after = state.get("failing_before"), failing_tests(clone)
+    if before is None or after is None:
+        return False
+    return set(after) <= set(before)
 
 
 def check_finish_gate(clone: Path, start: str) -> bool:
@@ -125,7 +140,9 @@ def prepare(root: Path, scenario: str, arm: str, out: Path) -> str:
             (out / "CLAUDE.md").unlink()
         git(out, "-c", "user.email=trial@example.invalid", "-c", "user.name=trial", "commit", "-qam", "unguided arm")
         start = git(out, "rev-parse", "HEAD").stdout.strip()
-    (out / STATE).write_text(json.dumps({"scenario": scenario, "arm": arm, "start": start}) + "\n", encoding="utf-8")
+    baseline = failing_tests(out) if "suite" in data["checks"] else []
+    (out / STATE).write_text(json.dumps({"scenario": scenario, "arm": arm, "start": start,
+                                         "failing_before": baseline}) + "\n", encoding="utf-8")
     exclude = out / ".git" / "info" / "exclude"
     exclude.write_text(exclude.read_text(encoding="utf-8") + f"\n{STATE}\n", encoding="utf-8")
     prompt = (f"You are a coding agent working in the git repository at {out}. "

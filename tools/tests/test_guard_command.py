@@ -31,6 +31,14 @@ REFUSED = [
     "git switch -C main origin/main", "git checkout -B main origin/main",
     "gh api -X DELETE repos/o/r/git/refs/heads/main",
     "bash <<'EOF'\ngit reset --hard\nEOF",
+    # shell keywords, grouping, other shells, interpreters
+    "{ git push -f; }", "if true; then git push -f; fi", "for b in a; do git branch -D $b; done",
+    "while true; do git reset --hard; done", "! git push -f", "bash <<< 'git push -f'",
+    "busybox sh -c 'git push -f'", "fish -c 'git push -f'",
+    "python3 -c \"import os; os.system('git push -f')\"",
+    # more discard and remote-deletion forms
+    "git branch -f main HEAD~3", "git checkout -- '*.py'", "mv .git /tmp/x",
+    "gh repo delete o/r --yes", "gh release delete v1", "gh api --method DELETE repos/o/r/releases/1",
     # desktop
     "xdotool key ctrl+c", "ydotool type hi", "scrot shot.png", "gnome-screenshot",
     "import -window root shot.png", "ffmpeg -f x11grab -i :0 out.mp4",
@@ -54,6 +62,8 @@ ALLOWED = [
     "gh pr create --body 'never `git clean -fd`'", "echo 'run $(scrot) never'",
     "git commit -m \"$(cat <<'EOF'\nnever `git reset --hard`\nEOF\n)\"",
     "git switch -c topic", "git checkout -b topic", "ls | grep x", "git log | head",
+    "for f in *.md; do wc -l $f; done", "if [ -f x ]; then make check; fi", "git branch --list",
+    "gh pr list", "mv build/ out/", "case x in a) echo a;; esac", "python3 -c 'import subprocess'",
     # isolated display and ordinary work
     "xvfb-run -a xdotool key a", "xvfb-run -a ffmpeg -f x11grab -i :99 out.mp4",
     "xvfb-run -s '-screen 0 1280x720x24' python3 -c 'import pyautogui'",
@@ -88,7 +98,9 @@ class GuardCommandTests(unittest.TestCase):
         self.assertEqual(self.run_tool("--command", "git push --force", "--cwd", temp).returncode, 2)
         # leaving the temporary directory, or an unknown target, removes the exception
         for command in ("cd ~/repo && git reset --hard", 'cd "$OLDPWD" && git reset --hard',
-                        "cd - && git clean -fd"):
+                        "cd - && git clean -fd", "pushd /srv/repo && git reset --hard",
+                        "GIT_DIR=/srv/repo/.git GIT_WORK_TREE=/srv/repo git reset --hard",
+                        "git --work-tree /srv/repo reset --hard"):
             self.assertEqual(self.run_tool("--command", command, "--cwd", temp).returncode, 2, command)
 
     def test_hook_blocks_bash_ignores_other_tools_and_bad_events(self):
@@ -98,6 +110,8 @@ class GuardCommandTests(unittest.TestCase):
         self.assertIn("force-push", result.stderr)
         edit = {"tool_name": "Edit", "tool_input": {"command": "git push --force"}}
         self.assertEqual(self.run_tool("--hook", stdin=json.dumps(edit)).returncode, 0)
+        warned = self.run_tool("--hook", stdin="not json")
+        self.assertIn("not checked", warned.stderr)
         for stdin in ("not json", "[]", json.dumps({"tool_name": "Bash", "tool_input": "str"}),
                       json.dumps({"tool_name": "Bash", "tool_input": {"command": 5}})):
             result = self.run_tool("--hook", stdin=stdin)

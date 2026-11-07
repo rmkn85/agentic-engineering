@@ -19,8 +19,10 @@ default-reading file. Path matching ignores case. Words are whitespace tokens.
 
 Against a base, the config cannot be loosened: default-reading files and
 runtime patterns are the union of base and current, evidence patterns their
-intersection. Evidence must contain a test function or assertion (or, for
-trial results, non-empty data); blank lines and empty files do not count.
+intersection, and narrowing what is measured fails. Evidence must contain
+test functions (or assertions) or trial records; blank lines, notes and empty
+files do not count. Growth must be proportionate: each added test function or
+trial record pays for words_per_evidence words (default 150).
 """
 from __future__ import annotations
 
@@ -34,6 +36,7 @@ import sys
 from pathlib import Path
 
 CONFIG = Path("configs/guidance-budget.json")
+WORDS_PER_EVIDENCE = 150  # runtime words one added test function or trial record pays for
 
 
 def words(text: str) -> int:
@@ -110,6 +113,11 @@ TEST_LINE = re.compile(r"^\s*(def test|async def test|assert\b|self\.assert)")
 
 def substantive(root: Path, base: str, path: str) -> bool:
     """True when the change adds a test function or assertion, or non-empty trial data."""
+    return evidence_units(root, base, path) > 0
+
+
+def evidence_units(root: Path, base: str, path: str) -> int:
+    """Added test functions (assertions count only when no function was added), or trial records."""
     tracked = subprocess.run(["git", "cat-file", "-e", f"HEAD:{path}"], cwd=root, capture_output=True).returncode == 0 \
         or subprocess.run(["git", "ls-files", "--error-unmatch", path], cwd=root, capture_output=True).returncode == 0
     if tracked:
@@ -119,15 +127,16 @@ def substantive(root: Path, base: str, path: str) -> bool:
         file = root / path
         added = file.read_text(encoding="utf-8", errors="replace").splitlines() if file.is_file() else []
     if path.endswith(".py"):
-        return any(TEST_LINE.match(line) for line in added)
+        functions = sum(1 for line in added if re.match(r"^\s*(async\s+)?def test", line))
+        return functions or (1 if any(TEST_LINE.match(line) for line in added) else 0)
     if path.endswith((".json", ".jsonl")):  # trial results and fixtures: real data, not notes
         text = "\n".join(added).strip()
         try:
             values = [json.loads(text)] if path.endswith(".json") else [json.loads(l) for l in added if l.strip()]
         except ValueError:
-            return False
-        return any(v not in ({}, [], None, "") for v in values)
-    return False
+            return 0
+        return sum(1 for v in values if v not in ({}, [], None, ""))
+    return 0
 
 
 def changed_paths(root: Path, base: str) -> list[str]:
@@ -153,6 +162,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     root = Path(args.root).resolve()
     config = json.loads((root / CONFIG).read_text(encoding="utf-8"))
+    current = json.loads(json.dumps(config))
     base = base_config(root, args.base) if args.base else None
     limit = config["default_reading"]["max_words"]
     config = effective(config, base)
@@ -170,16 +180,25 @@ def main(argv: list[str] | None = None) -> int:
             failures.append(f"budget raised from {previous} to {limit} words; budgets only go down")
         before = runtime_words(root, config, args.base)
         after = runtime_words(root, config, None)
-        evidence = [p for p in changed_paths(root, args.base)
-                    if matches(p, config["evidence"]) and substantive(root, args.base, p)]
-        if after > before and not evidence:
+        if base:
+            narrowed = [name for name, now, then in (
+                ("default_reading.files", set(current["default_reading"]["files"]), set(base["default_reading"]["files"])),
+                ("runtime", set(current["runtime"]), set(base["runtime"]))) if not now >= then]
+            if not set(current["evidence"]) <= set(base["evidence"]):
+                narrowed.append("evidence (widened)")
+            if narrowed:
+                failures.append(f"the budget config narrows what is measured: {', '.join(narrowed)}")
+        units = sum(evidence_units(root, args.base, p) for p in changed_paths(root, args.base)
+                    if matches(p, config["evidence"]))
+        allowance = units * config.get("words_per_evidence", WORDS_PER_EVIDENCE)
+        if after - before > allowance:
             failures.append(
-                f"runtime guidance grew by {after - before} words since {args.base} without a changed test or "
-                "trial result; add the check that fails without the rule, attach a trial, or delete an equal "
-                "amount of text")
+                f"runtime guidance grew by {after - before} words since {args.base}; {units} added test(s) or "
+                f"trial record(s) pay for {allowance}. Add the checks that fail without the new rules, attach "
+                "trials, or delete text")
         else:
-            print(f"guidance-budget: runtime guidance {before} -> {after} words; evidence paths changed: "
-                  f"{len(evidence)}")
+            print(f"guidance-budget: runtime guidance {before} -> {after} words; evidence units: {units} "
+                  f"(pays for {allowance})")
 
     for failure in failures:
         print(f"guidance-budget: FAIL: {failure}", file=sys.stderr)

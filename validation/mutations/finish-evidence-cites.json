@@ -1,0 +1,10 @@
+{
+  "id": "finish-evidence-cites",
+  "rule": "Manual evidence must cite a repository file or a URL",
+  "file": "tools/finish_check.py",
+  "find": "    if URL.search(evidence):\n        return True\n",
+  "replace": "    return True\n",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_manual_evidence_must_cite_a_file_or_url"
+  ]
+}

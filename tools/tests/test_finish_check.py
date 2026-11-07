@@ -8,11 +8,12 @@ import unittest
 
 
 TOOL = Path(__file__).resolve().parents[1] / "finish_check.py"
-MAKEFILE = ("ok:\n\t@true\nbad:\n\t@false\nhelp:\n\t@echo help\nloop:\n\t@python3 tools/finish_check.py\n"
-            "slow:\n\t@sleep 4242 & sleep 4242\n")
-REFLECTION = {"first_divergence": "deploy step", "guidance_followed": "goal first",
-              "guidance_missing_or_misleading": "no deploy route documented"}
-OWNER_OK = {"id": "h", "check": "owner accepted", "status": "pass", "evidence": "approved in review"}
+MAKEFILE = ("ok:\n\t@test -f Makefile\nbad:\n\t@false\nnoop:\n\t@true\nsay:\n\t@echo done\nhelp:\n\t@echo help\nloop:\n\t@python3 tools/finish_check.py\n"
+            "slow:\n\t@sleep {marker} & sleep {marker}\n")
+REFLECTION = {"first_divergence": "the deploy step needs credentials",
+              "guidance_followed": "wrote the goal record first",
+              "guidance_missing_or_misleading": "no deploy route is documented here"}
+OWNER_OK = {"id": "h", "check": "owner accepted", "status": "pass", "evidence": "approved in https://example.invalid/pr/12"}
 
 
 class FinishCheckTests(unittest.TestCase):
@@ -20,7 +21,9 @@ class FinishCheckTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        (self.root / "Makefile").write_text(MAKEFILE)
+        # A per-instance sleep duration, so parallel suites never see each other's processes.
+        self.marker = f"{40000 + (os.getpid() * 7 + id(self)) % 50000}.{os.getpid()}"
+        (self.root / "Makefile").write_text(MAKEFILE.replace("{marker}", self.marker))
         (self.root / "README").write_text("a file, not a target\n")
 
     def goal(self, *items, text="Users can export a report", reflection=None):
@@ -36,6 +39,10 @@ class FinishCheckTests(unittest.TestCase):
 
     def hook(self, session="s1"):
         return self.run_tool("--hook", stdin=json.dumps({"session_id": session, "stop_hook_active": True}))
+
+    def decision(self, result):
+        self.assertTrue(result.stdout.strip(), "the hook allowed the stop")
+        return json.loads(result.stdout)
 
     def gaps(self):
         return sorted((self.root / ".agent" / "gaps").glob("gap-*.json"))
@@ -65,6 +72,39 @@ class FinishCheckTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("without evidence", result.stdout)
 
+    def test_manual_items_alone_cannot_prove_a_goal(self):
+        self.goal(OWNER_OK)
+        result = self.run_tool()
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("no passing run check", result.stdout)
+
+    def test_manual_evidence_must_cite_a_file_or_url(self):
+        for evidence, met in (("x", False), ("it works", False), ("see Makefile", True),
+                              ("https://example.invalid/run/1", True)):
+            self.goal({"id": "t", "check": "tests pass", "run": "ok"},
+                      {"id": "h", "check": "owner", "status": "pass", "evidence": evidence})
+            self.assertEqual(self.run_tool().returncode == 0, met, evidence)
+
+    def test_recipes_that_cannot_fail_prove_nothing(self):
+        for run in ("noop", "say"):
+            self.goal({"id": "t", "check": "c", "run": run})
+            self.assertIn("cannot fail", self.run_tool().stdout)
+
+    def test_placeholder_blockers_and_reflection_do_not_end_the_session(self):
+        self.goal({"id": "t", "check": "tests pass", "run": "ok"},
+                  {"id": "d", "check": "deployed", "status": "blocked", "blocker": "-"},
+                  reflection={field: "-" for field in REFLECTION})
+        self.assertEqual(self.decision(self.hook()).get("decision"), "block")
+
+    def test_removing_the_goal_record_does_not_end_the_session_silently(self):
+        self.goal({"id": "t", "check": "tests pass", "run": "bad"})
+        self.decision(self.hook())
+        (self.root / ".agent" / "goal.json").unlink()
+        for _ in range(3):
+            self.assertIn("goal record was removed", self.decision(self.hook()).get("reason", ""))
+        final = self.decision(self.hook())
+        self.assertIn("NOT verified", final["systemMessage"])
+
     def test_target_without_recipe_proves_nothing(self):
         for run in ("README", "Makefile"):
             self.goal({"id": "t", "check": "c", "run": run})
@@ -83,7 +123,8 @@ class FinishCheckTests(unittest.TestCase):
     def test_blocked_needs_a_named_blocker(self):
         self.goal({"id": "h", "check": "deployed", "status": "blocked"})
         self.assertIn("status is blocked", self.run_tool().stdout)
-        self.goal({"id": "h", "check": "deployed", "status": "blocked", "blocker": "no deploy credentials"})
+        self.goal({"id": "t", "check": "tests pass", "run": "ok"},
+                  {"id": "h", "check": "deployed", "status": "blocked", "blocker": "no deploy credentials in this sandbox"})
         self.assertEqual(self.run_tool().returncode, 2)
         self.assertEqual(json.loads(self.gaps()[-1].read_text())["status"], "blocked")
 
@@ -118,38 +159,38 @@ class FinishCheckTests(unittest.TestCase):
     def test_hook_keeps_blocking_unmet_goal_then_ends_loudly(self):
         self.goal({"id": "t", "check": "tests pass", "run": "bad"})
         for attempt in range(1, 4):
-            decision = json.loads(self.hook().stdout)
-            self.assertEqual(decision["decision"], "block", attempt)
+            decision = self.decision(self.hook())
+            self.assertEqual(decision.get("decision"), "block", attempt)
             self.assertIn(f"({attempt}/3)", decision["reason"])
         final = self.hook()
         self.assertEqual(final.returncode, 0)
-        self.assertIn("NOT met", json.loads(final.stdout)["systemMessage"])
+        self.assertIn("NOT met", self.decision(final)["systemMessage"])
         self.assertTrue(json.loads(self.gaps()[-1].read_text())["session_ended_unmet"])
-        self.assertEqual(json.loads(self.hook("s2").stdout)["decision"], "block")  # new session starts over
+        self.assertEqual(self.decision(self.hook("s2")).get("decision"), "block")  # new session starts over
 
     def test_hook_allows_finish_with_named_blockers_only_after_reflection(self):
         items = ({"id": "t", "check": "tests pass", "run": "ok"},
-                 {"id": "d", "check": "deployed", "status": "blocked", "blocker": "no credentials"})
+                 {"id": "d", "check": "deployed", "status": "blocked", "blocker": "no deploy credentials in this sandbox"})
         self.goal(*items)
-        self.assertIn("reflection.first_divergence", json.loads(self.hook().stdout)["reason"])
+        self.assertIn("reflection.first_divergence", self.decision(self.hook())["reason"])
         self.goal(*items, reflection=REFLECTION)
         self.assertEqual(self.hook().stdout, "")
         record = json.loads(self.gaps()[-1].read_text())
-        self.assertEqual((record["status"], record["first_divergence"]), ("blocked", "deploy step"))
+        self.assertEqual((record["status"], record["first_divergence"]), ("blocked", REFLECTION["first_divergence"]))
 
     def test_targets_that_prove_nothing_or_call_the_gate_are_refused(self):
         (self.root / "tools").mkdir()
         (self.root / "tools" / "finish_check.py").write_text("")
-        for run, why in (("help", "proves nothing"), ("loop", "calls the finish gate")):
+        for run, why in (("help", "cannot fail"), ("loop", "calls the finish gate")):
             self.goal({"id": "t", "check": "c", "run": run})
             self.assertIn(why, self.run_tool().stdout)
 
     def test_timeout_kills_the_whole_process_tree(self):
-        self.addCleanup(subprocess.run, ["pkill", "-f", "sleep 4242"], capture_output=True)
+        self.addCleanup(subprocess.run, ["pkill", "-f", f"sleep {self.marker}"], capture_output=True)
         self.goal({"id": "t", "check": "c", "run": "slow"})
         result = self.run_tool("--timeout", "1")
         self.assertIn("timed out", result.stdout)
-        left = subprocess.run(["pgrep", "-f", "sleep 4242"], capture_output=True, text=True).stdout.split()
+        left = subprocess.run(["pgrep", "-f", f"sleep {self.marker}"], capture_output=True, text=True).stdout.split()
         self.assertEqual(left, [])
 
     def test_unpushed_commits_count_as_changes_without_a_goal(self):
@@ -161,18 +202,18 @@ class FinishCheckTests(unittest.TestCase):
         (self.root / "work.txt").write_text("x")
         subprocess.run(git + ["add", "."], cwd=self.root, check=True)
         subprocess.run(git + ["commit", "-qm", "work"], cwd=self.root, check=True)
-        self.assertIn("without a goal record", json.loads(self.hook().stdout)["reason"])
+        self.assertIn("without a goal record", self.decision(self.hook())["reason"])
 
     def test_a_new_goal_in_the_same_session_is_enforced_again(self):
         self.goal({"id": "t", "check": "c", "run": "bad"}, text="first goal")
         for _ in range(4):
             self.hook()
         self.goal({"id": "t", "check": "c", "run": "bad"}, text="second goal")
-        self.assertEqual(json.loads(self.hook().stdout)["decision"], "block")
+        self.assertEqual(self.decision(self.hook()).get("decision"), "block")
 
     def test_hook_asks_once_for_a_goal_record_when_files_changed(self):
         subprocess.run(["git", "init", "-q"], cwd=self.root, check=True)
-        first = json.loads(self.hook().stdout)
+        first = self.decision(self.hook())
         self.assertIn("without a goal record", first["reason"])
         self.assertEqual(self.hook().stdout, "")
 

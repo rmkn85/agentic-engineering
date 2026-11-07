@@ -79,12 +79,18 @@ def problems(root: Path) -> tuple[list[str], dict]:
                     errors.append(f"{name}: test {test} does not exist")
             mutation = row.get("mutation")
             if mutation:
-                if not (root / "validation" / "mutations" / f"{mutation}.json").is_file():
+                path = root / "validation" / "mutations" / f"{mutation}.json"
+                try:
+                    guarded = set(json.loads(path.read_text(encoding="utf-8")).get("tests", []))
+                except (OSError, ValueError, AttributeError):
                     errors.append(f"{name}: mutation {mutation} does not exist")
+                    continue
+                if not guarded & set(tests):
+                    errors.append(f"{name}: mutation {mutation} proves other tests, not this finding's")
                 else:
                     counts["proven"] += 1
-        elif status in ("addressed", "declined") and not str(row.get("note", "")).strip():
-            errors.append(f"{name}: {status} findings need a note saying why")
+        elif status in ("addressed", "declined") and len(re.findall(r"[A-Za-z]{2,}", str(row.get("note", "")))) < 3:
+            errors.append(f"{name}: {status} findings need a note saying why, in a sentence")
     return errors, counts
 
 

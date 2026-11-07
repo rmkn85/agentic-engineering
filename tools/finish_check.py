@@ -10,18 +10,22 @@ Goal record (default .agent/goal.json, untracked working state):
      "acceptance": [
        {"id": "tests", "check": "export tests pass", "run": "check"},
        {"id": "owner", "check": "owner accepts the layout",
-        "status": "pass", "evidence": "owner approved in PR #12"}
+        "status": "pass", "evidence": "approved in https://example.org/pr/12"}
      ]}
 
 Rules:
 - "run" names a Makefile target with a recipe; the item passes only when
   `make <target>` exits 0. Commands are never read from the record. Targets
-  that prove nothing (help, finish-check, ...) or that call this gate are refused.
-- An item without "run" passes only with "status": "pass" plus non-empty
-  "evidence". "status": "blocked" needs a "blocker" naming what is missing.
-- Anything else is unmet.
+  that call this gate are refused.
+- An item without "run" passes only with "status": "pass" plus "evidence"
+  citing a repository file or a URL. "status": "blocked" needs a "blocker"
+  sentence naming what is missing.
+- Anything else is unmet. A goal needs at least one passing "run" item:
+  manual items alone cannot prove it. Recipes that cannot fail (true, :,
+  echo) prove nothing.
 - Ending with blocked items needs a "reflection" object in the record with
-  first_divergence, guidance_followed and guidance_missing_or_misleading.
+  first_divergence, guidance_followed and guidance_missing_or_misleading,
+  each a real sentence.
 
 Exit codes: 0 goal met (or no record, outside hook mode); 2 unmet, with a gap
 record written under .agent/gaps/; 1 invalid record.
@@ -49,7 +53,24 @@ STATUSES = {"pass", "blocked", "pending", "fail"}
 GAP_FIELDS = ("first_divergence", "guidance_followed", "guidance_missing_or_misleading")
 MAX_BLOCKS = 3
 NO_RECIPE = re.compile(r"Nothing to be done for|is up to date")
-PROVES_NOTHING = {"help", "finish-check", "default", "all"}
+CANNOT_FAIL = re.compile(r"^\s*(true|:|exit 0|echo(\s.*)?|printf(\s.*)?)\s*$")
+URL = re.compile(r"https?://\S+")
+
+
+def sentence(value) -> bool:
+    """Real text, not a placeholder: at least three words with letters."""
+    return text(value) and len(re.findall(r"[A-Za-z]{2,}", value)) >= 3
+
+
+def cites(root: Path, evidence: str) -> bool:
+    """Manual evidence must point at something checkable: a repository file or a URL."""
+    if URL.search(evidence):
+        return True
+    for token in re.findall(r"[\w./-]+", evidence):
+        candidate = (root / token).resolve()
+        if len(token) > 2 and candidate.is_relative_to(root) and candidate.is_file():
+            return True
+    return False
 
 
 class GoalError(ValueError):
@@ -93,8 +114,6 @@ def load_goal(path: Path) -> dict:
 
 
 def run_target(root: Path, target: str, timeout: int) -> tuple[str, str | None]:
-    if target in PROVES_NOTHING:
-        return "unmet", f"make {target} proves nothing about the goal"
     make = ["make", "--no-print-directory"]
     try:
         dry = subprocess.run(make + ["-n", target], cwd=root, capture_output=True, text=True,
@@ -103,6 +122,8 @@ def run_target(root: Path, target: str, timeout: int) -> tuple[str, str | None]:
             return "unmet", f"make {target} has no recipe, so it proves nothing"
         if "finish_check" in dry.stdout:
             return "unmet", f"make {target} calls the finish gate itself"
+        if all(CANNOT_FAIL.match(line) for line in dry.stdout.splitlines() if line.strip()):
+            return "unmet", f"make {target} only runs commands that cannot fail, so it proves nothing"
         proc = subprocess.Popen(make + [target], cwd=root, stdout=subprocess.DEVNULL,
                                 stderr=subprocess.DEVNULL, start_new_session=True)
     except FileNotFoundError:
@@ -126,15 +147,19 @@ def evaluate(goal: dict, root: Path, timeout: int) -> list[dict]:
             if run not in cache:
                 cache[run] = run_target(root, run, timeout)
             state, why = cache[run]
-        elif item.get("status") == "pass" and text(item.get("evidence")):
+        elif item.get("status") == "pass" and text(item.get("evidence")) and cites(root, item["evidence"]):
             state, why = "met", None
         elif item.get("status") == "pass":
-            state, why = "unmet", "status pass without evidence"
-        elif item.get("status") == "blocked" and text(item.get("blocker")):
+            state, why = "unmet", "status pass without evidence citing a repository file or URL"
+        elif item.get("status") == "blocked" and sentence(item.get("blocker")):
             state, why = "blocked", item["blocker"]
         else:
             state, why = "unmet", f"status is {item.get('status', 'missing')}"
         results.append({"id": item["id"], "check": item["check"], "state": state, "why": why})
+    machine = [r for item, r in zip(goal["acceptance"], results) if item.get("run")]
+    if not any(r["state"] == "met" for r in machine):
+        results.append({"id": "machine-check", "check": "at least one passing run check", "state": "unmet",
+                        "why": "no passing run check: manual items alone cannot prove the goal"})
     return results
 
 
@@ -200,7 +225,25 @@ def changed(root: Path) -> bool:
 
 def reflected(goal: dict) -> bool:
     reflection = goal.get("reflection")
-    return isinstance(reflection, dict) and all(text(reflection.get(field)) for field in GAP_FIELDS)
+    return isinstance(reflection, dict) and all(sentence(reflection.get(field)) for field in GAP_FIELDS)
+
+
+def remember(root: Path, session: str, goal: dict | None = None) -> dict | None:
+    """Store this session's goal so deleting the record cannot end the session silently."""
+    path = root / ".agent" / "finish-state.json"
+    try:
+        state = json.loads(path.read_text(encoding="utf-8"))
+        state = state if isinstance(state, dict) else {}
+    except (OSError, ValueError):
+        state = {}
+    key = f"goal:{session}"
+    if goal is None:
+        saved = state.get(key)
+        return saved if isinstance(saved, dict) else None
+    state[key] = goal
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(state) + "\n", encoding="utf-8")
+    return goal
 
 
 def block(reason: str) -> int:
@@ -211,6 +254,17 @@ def block(reason: str) -> int:
 def hook(root: Path, goal_path: Path, event: dict, timeout: int) -> int:
     session = str(event.get("session_id") or "unknown")
     if not goal_path.exists():
+        saved = remember(root, session)
+        if saved and text(saved.get("goal")):
+            count = bump(root, session, "goal-removed")
+            if count <= MAX_BLOCKS:
+                return block("The goal record was removed before the goal was met. Restore .agent/goal.json "
+                             f"and finish the work, or mark real blockers ({count}/{MAX_BLOCKS}).")
+            gap = write_gap(root, saved, [{"id": "goal-record", "check": "goal record present", "state": "unmet",
+                                           "why": "goal record removed"}], ended=True).relative_to(root)
+            print(json.dumps({"systemMessage": f"finish-check: session ended after its goal record was removed; "
+                                               f"goal NOT verified. Gap record: {gap}"}))
+            return 0
         if changed(root) and bump(root, session, "no-goal") == 1:
             return block("You changed files without a goal record. Write .agent/goal.json with the goal and "
                          "the checks that prove it (see python3 tools/finish_check.py --help), then finish. "
@@ -223,6 +277,7 @@ def hook(root: Path, goal_path: Path, event: dict, timeout: int) -> int:
             return block(f"Fix the goal record before finishing: {exc}")
         print(json.dumps({"systemMessage": f"finish-check: goal record still invalid ({exc}); session ended unchecked."}))
         return 0
+    remember(root, session, goal)
     results = evaluate(goal, root, timeout)
     if all(r["state"] == "met" for r in results):
         return 0

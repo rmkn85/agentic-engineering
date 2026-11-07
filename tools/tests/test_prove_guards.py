@@ -57,6 +57,26 @@ class ProveGuardsTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("broken", result.stdout)
 
+    def test_syntax_breaking_mutation_is_not_a_catch(self):
+        self.mutation("m", ["test_good.T.test_bad_refused"])
+        path = self.root / "validation" / "mutations" / "m.json"
+        data = json.loads(path.read_text())
+        data["replace"] = "return = = True"
+        path.write_text(json.dumps(data))
+        result = self.run_tool()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("breaks the code", result.stdout)
+
+    def test_error_only_failure_is_not_a_catch(self):
+        self.mutation("m", ["test_good.T.test_bad_refused"])
+        path = self.root / "validation" / "mutations" / "m.json"
+        data = json.loads(path.read_text())
+        data["replace"] = "return undefined_name"
+        path.write_text(json.dumps(data))
+        result = self.run_tool()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("only errored", result.stdout)
+
     def test_original_repository_is_never_modified(self):
         self.mutation("m", ["test_good.T.test_bad_refused"])
         self.run_tool()

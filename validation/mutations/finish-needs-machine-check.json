@@ -1,0 +1,10 @@
+{
+  "id": "finish-needs-machine-check",
+  "rule": "A goal needs at least one passing machine check; manual items alone cannot prove it",
+  "file": "tools/finish_check.py",
+  "find": "    if not any(r[\"state\"] == \"met\" for r in machine):",
+  "replace": "    if False:",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_manual_items_alone_cannot_prove_a_goal"
+  ]
+}

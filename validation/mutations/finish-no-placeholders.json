@@ -1,0 +1,10 @@
+{
+  "id": "finish-no-placeholders",
+  "rule": "Blockers and reflections must be real sentences",
+  "file": "tools/finish_check.py",
+  "find": "    return text(value) and len(re.findall(r\"[A-Za-z]{2,}\", value)) >= 3",
+  "replace": "    return text(value)",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_placeholder_blockers_and_reflection_do_not_end_the_session"
+  ]
+}
