@@ -278,10 +278,13 @@ def check(words: list[str], ctx: dict, depth: int = 0) -> str | None:
     args = words[1:]
     if name in ("cd", "pushd"):
         target = args[0] if args else "~"
-        if "$" in target or target == "-" or ctx.get("cwd") is None and not target.startswith(("/", "~")):
-            ctx["cwd"] = None  # unknown directory: never treated as disposable
+        # Home, variables, "-" and relative moves from an unknown place are never treated as
+        # disposable: a home directory holds real repositories even when HOME itself sits in /tmp.
+        if "$" in target or target == "-" or target.startswith("~") or (
+                ctx.get("cwd") is None and not target.startswith("/")):
+            ctx["cwd"] = None
         else:
-            ctx["cwd"] = os.path.join(ctx.get("cwd") or "/", os.path.expanduser(target))
+            ctx["cwd"] = os.path.join(ctx.get("cwd") or "/", target)
         return None
     if name in ("export", "declare", "typeset", "local", "readonly") and any(
             a.startswith("DISPLAY=") for a in args):

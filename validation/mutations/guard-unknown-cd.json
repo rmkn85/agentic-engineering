@@ -1,9 +1,9 @@
 {
   "id": "guard-unknown-cd",
-  "rule": "An unknown cd target never counts as a disposable temporary directory",
+  "rule": "Home, variable, \"-\" and unknown cd targets never count as a disposable temporary directory",
   "file": "tools/guard_command.py",
-  "find": "        if \"$\" in target or target == \"-\" or",
-  "replace": "        if",
+  "find": "        if \"$\" in target or target == \"-\" or target.startswith(\"~\") or (",
+  "replace": "        if (",
   "tests": [
     "tools.tests.test_guard_command.GuardCommandTests.test_disposable_clones_in_temp_may_discard_but_never_force_push"
   ]
