@@ -21,6 +21,12 @@ Each run creates a small diagnostic bundle:
 ```
 
 The command prints one line containing status, timing/size metadata, and paths to the manifest/excerpt/full log. It does **not** paste the excerpt into model context by default.
+`PASS` and `FAIL` retain their existing meaning: zero or nonzero **process exit**.
+Both outputs explicitly declare `process-exit` scope and a substantive verdict of
+`unassessed`. A zero exit, successful log capture, or matching hash does not prove
+product acceptance. Use the native product's acceptance evidence for that decision;
+this wrapper does not infer a verdict from stdout text.
+
 The line and manifest also carry a SHA-256 receipt for the full log. The receipt identifies exact content; the bundle path identifies where that content is currently retained.
 
 On failure, inspect in this order:
@@ -39,6 +45,43 @@ python3 tools/observation-recall.py .agent-cache/logs/<run>/manifest.json --byte
 ```
 
 Line spans are `START:COUNT` with one-based lines; byte spans use a zero-based offset. Recall verifies the artifact hash before emitting output. The default output limit is 16 KiB; narrow the request or explicitly raise `--max-output-bytes` when more evidence is needed. Bundles are local transient state and are not a durable evidence store.
+
+For a machine-readable coverage receipt, add `--json`:
+
+```bash
+python3 tools/observation-recall.py .agent-cache/logs/<run>/manifest.json --find 'test_name' --max-matches 20 --json
+```
+
+JSON reports the verified SHA-256 observation identity, selection, returned byte
+count and line numbers or byte extent. `output.data` is base64 so arbitrary bytes
+and slices through multibyte characters remain exact. `--max-output-bytes` caps the
+decoded payload, not JSON/base64 overhead. Ordinary output bytes are unchanged.
+
+Coverage has independent meanings:
+
+- `selection` is complete when the requested range or search suffix is exhausted,
+  including reaching EOF; otherwise it is partial.
+- `artifact` is complete only when all original bytes are returned by a range.
+  Search results alone never claim whole-document coverage.
+- `search_complete` describes the searched suffix; `whole_artifact_search_complete`
+  requires a search from line 1 through EOF. These are `null` (unknown/not assessed)
+  for range retrieval. Absence on one page cannot establish global absence.
+- `substantive_verdict` remains `unassessed`: retrieval completeness is not acceptance.
+
+A partial page provides `continuation_argv`, arguments to pass to the same script.
+They retain limits, artifact selection and an expected hash, rejecting a changed
+observation even if its manifest was replaced. Find continuation starts at the
+first omitted match, preserving original line numbers. An exact match limit is
+complete only after searching to EOF without an extra match; finding one extra
+match establishes a partial result without scanning the remaining suffix. Hash
+verification still requires one full artifact read, independent of selection.
+
+In JSON mode, byte requests larger than the payload cap return a capped page with
+continuation; ordinary mode preserves its existing rejection of oversized requests.
+Line/search pages never split lines: a single line that exceeds the bounded read
+limit causes an error with byte-retrieval guidance. Invalid starts beyond EOF
+(one-past-end is allowed), unsafe artifact references, symlinks and hash mismatches
+are rejected. Receipts establish retained content identity, not source freshness.
 
 Environment controls:
 

@@ -1,4 +1,5 @@
 import hashlib
+import base64
 import json
 import os
 from pathlib import Path
@@ -79,6 +80,113 @@ class ObservationRecallTests(unittest.TestCase):
         result = self.run_recall("--lines", "1:3", "--max-output-bytes", "4")
         self.assertEqual(result.returncode, 2)
         self.assertFalse(result.stdout)
+
+    def replace_log(self, data):
+        (self.manifest_path.parent / "full.log").write_bytes(data)
+        entry = self.manifest["evidence"][-1]
+        entry["sha256"] = hashlib.sha256(data).hexdigest()
+        self.manifest_path.write_text(json.dumps(self.manifest))
+
+    def receipt(self, *args):
+        result = self.run_recall("--json", *args)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return json.loads(result.stdout)
+
+    def test_json_find_exact_limit_and_later_match(self):
+        self.replace_log(b"hit\nmiss\nhit\n")
+        exact = self.receipt("--find", "hit", "--max-matches", "2")
+        self.assertTrue(exact["coverage"]["whole_artifact_search_complete"])
+        self.assertIsNone(exact["continuation_argv"])
+        self.assertEqual(exact["coverage"]["artifact"], "partial")
+        self.replace_log(b"hit\nmiss\nhit\nhit\n")
+        first = self.receipt("--find", "hit", "--max-matches", "2")
+        self.assertFalse(first["coverage"]["search_complete"])
+        self.assertEqual(first["returned"]["line_numbers"], [1, 3])
+        second = subprocess.run([sys.executable, str(RECALL), *first["continuation_argv"]],
+                                capture_output=True, check=False)
+        self.assertEqual(second.returncode, 0, second.stderr)
+        receipt = json.loads(second.stdout)
+        self.assertEqual(base64.b64decode(receipt["output"]["data"]), b"4:hit\n")
+        self.assertTrue(receipt["coverage"]["search_complete"])
+        self.assertFalse(receipt["coverage"]["whole_artifact_search_complete"])
+        self.assertEqual(self.run_recall("--find", "hit", "--max-matches", "2").stdout,
+                         b"1:hit\n3:hit\n")
+
+    def test_json_absence_scope_and_continuation_identity(self):
+        absent = self.receipt("--find", "missing")
+        self.assertTrue(absent["coverage"]["whole_artifact_search_complete"])
+        partial = self.receipt("--find", "alpha", "--start-line", "2")
+        self.assertFalse(partial["coverage"]["whole_artifact_search_complete"])
+        self.assertEqual(base64.b64decode(partial["output"]["data"]), b"")
+        self.assertEqual(self.run_recall("--json", "--find", "alpha", "--start-line", "99").returncode, 2)
+        self.assertEqual(self.run_recall("--json", "--bytes", "99:1").returncode, 2)
+        self.assertEqual(self.run_recall("--json", "--lines", "99:1").returncode, 2)
+        self.replace_log(b"hit\nhit\n")
+        first = self.receipt("--find", "hit", "--max-matches", "1")
+        self.replace_log(b"changed\n")
+        result = subprocess.run([sys.executable, str(RECALL), *first["continuation_argv"]],
+                                capture_output=True, check=False)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn(b"identity mismatch", result.stderr)
+        self.assertFalse(result.stdout)
+
+    def test_json_search_byte_limit_and_bounded_long_line(self):
+        self.replace_log(b"hit\nhit\n")
+        exact = self.receipt("--find", "hit", "--max-output-bytes", "12")
+        self.assertEqual(exact["coverage"]["selection"], "complete")
+        capped = self.receipt("--find", "hit", "--max-output-bytes", "6")
+        self.assertEqual(capped["coverage"]["selection"], "partial")
+        self.assertEqual(base64.b64decode(capped["output"]["data"]), b"1:hit\n")
+        self.replace_log(b"x" * 100 + b"\nhit\n")
+        result = self.run_recall("--json", "--find", "absent", "--max-output-bytes", "8")
+        self.assertEqual(result.returncode, 2)
+        self.assertFalse(result.stdout)
+        self.assertIn(b"use --bytes", result.stderr)
+
+    def test_json_empty_artifact_and_unterminated_line(self):
+        self.replace_log(b"")
+        self.assertEqual(self.receipt("--lines", "1:1")["coverage"]["artifact"], "complete")
+        self.assertTrue(self.receipt("--find", "absent")["coverage"]["whole_artifact_search_complete"])
+        self.replace_log("猫".encode("utf-8"))
+        found = self.receipt("--find", "猫", "--max-matches", "1")
+        self.assertEqual(base64.b64decode(found["output"]["data"]), "1:猫".encode("utf-8"))
+        self.assertTrue(found["coverage"]["whole_artifact_search_complete"])
+        self.assertEqual(self.receipt("--lines", "1:1")["coverage"]["artifact"], "complete")
+
+    def test_json_byte_caps_preserve_multibyte_and_continue(self):
+        data = "é猫z".encode("utf-8")
+        self.replace_log(data)
+        first = self.receipt("--bytes", "0:20", "--max-output-bytes", "3")
+        self.assertEqual(base64.b64decode(first["output"]["data"]), data[:3])
+        self.assertEqual(first["coverage"]["selection"], "partial")
+        result = subprocess.run([sys.executable, str(RECALL), *first["continuation_argv"]],
+                                capture_output=True, check=False)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        second = json.loads(result.stdout)
+        self.assertEqual(base64.b64decode(second["output"]["data"]), data[3:])
+        self.assertEqual(second["coverage"]["selection"], "complete")
+        self.assertIsNone(second["continuation_argv"])
+        self.assertIsNone(second["coverage"]["search_complete"])
+        self.assertEqual(self.run_recall("--bytes", "0:20", "--max-output-bytes", "3").returncode, 2)
+        whole = self.receipt("--bytes", "0:20")
+        self.assertEqual(whole["coverage"]["artifact"], "complete")
+
+    def test_json_line_output_cap_and_symlink_rejection(self):
+        self.replace_log(b"one\ntwo\nthree\n")
+        first = self.receipt("--lines", "1:3", "--max-output-bytes", "8")
+        self.assertEqual(base64.b64decode(first["output"]["data"]), b"one\ntwo\n")
+        self.assertEqual(first["coverage"]["selection"], "partial")
+        result = subprocess.run([sys.executable, str(RECALL), *first["continuation_argv"]],
+                                capture_output=True, check=False)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(base64.b64decode(json.loads(result.stdout)["output"]["data"]), b"three\n")
+        artifact = self.manifest_path.parent / "full.log"
+        target = self.root / "target"
+        artifact.rename(target)
+        artifact.symlink_to(target)
+        result = self.run_recall("--json", "--lines", "1:1")
+        self.assertEqual(result.returncode, 2)
+        self.assertIn(b"symlink", result.stderr)
 
     def test_buried_failure_remains_retrievable_beyond_tail(self):
         result = subprocess.run(
