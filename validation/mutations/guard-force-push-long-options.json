@@ -1,0 +1,10 @@
+{
+  "id": "guard-force-push-long-options",
+  "rule": "Force-push long options are refused",
+  "file": "tools/guard_command.py",
+  "find": "if any(a in (\"--force\", \"--mirror\") or a.startswith((\"--force-with-lease\", \"--force-if-includes\"))",
+  "replace": "if any(a in (\"--mirror\",) or a.startswith((\"--force-if-includes\",))",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_refused_commands"
+  ]
+}

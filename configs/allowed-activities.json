@@ -1,0 +1,186 @@
+{
+  "schema": "allowed-activities/v1",
+  "purpose": "Local verification and read-only activities any agent may run without approval. Everything else goes to the host's approval. External effects (push, gh, network writes, applies) are never listed.",
+  "activities": [
+    {
+      "command": [
+        "make",
+        "help"
+      ],
+      "match": "exact"
+    },
+    {
+      "command": [
+        "make",
+        "check"
+      ],
+      "match": "exact"
+    },
+    {
+      "command": [
+        "make",
+        "finish-check"
+      ],
+      "match": "exact"
+    },
+    {
+      "command": [
+        "make",
+        "findings"
+      ],
+      "match": "exact"
+    },
+    {
+      "command": [
+        "make",
+        "prove"
+      ],
+      "match": "exact"
+    },
+    {
+      "command": [
+        "make",
+        "hygiene"
+      ],
+      "match": "exact"
+    },
+    {
+      "command": [
+        "make",
+        "guidance-budget"
+      ],
+      "match": "exact"
+    },
+    {
+      "command": [
+        "make",
+        "guidance-delta"
+      ],
+      "match": "exact"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/finish_check.py"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/check_hygiene.py"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/check_findings.py"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/check_guidance_budget.py"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/prove_guards.py"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/blind_review.py",
+        "prompt"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "git",
+        "status"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "git",
+        "diff"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "git",
+        "log"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "git",
+        "show"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "git",
+        "fetch"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "git",
+        "add"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "git",
+        "commit"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "git",
+        "switch",
+        "-c"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "git",
+        "checkout",
+        "-b"
+      ],
+      "match": "prefix"
+    },
+    {
+      "command": [
+        "git",
+        "branch",
+        "--list"
+      ],
+      "match": "prefix"
+    }
+  ]
+}

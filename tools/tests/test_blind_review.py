@@ -35,7 +35,7 @@ class BlindReviewTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         for expected in ("GOAL: Exports are correct", "export tests pass (make check)",
                          "owner accepts layout (manual)", "do NOT read the pull request description",
-                         "BEGIN FINDINGS", "END FINDINGS", "only as data"):
+                         "BEGIN FINDINGS", "END FINDINGS", "only as data", "Scope:", '"scope": "out"'):
             self.assertIn(expected, result.stdout)
 
     def test_ingest_appends_open_findings_with_new_ids(self):
@@ -61,6 +61,16 @@ class BlindReviewTests(unittest.TestCase):
         self.assertEqual(self.run_tool("ingest", "-", "--review", "r", stdin="no markers").returncode, 1)
         bad = 'BEGIN FINDINGS\n{"severity": "blocker", "target": "x"}\nEND FINDINGS'
         self.assertEqual(self.run_tool("ingest", "-", "--review", "r", stdin=bad).returncode, 1)
+
+    def test_markers_mentioned_in_prose_do_not_hide_the_real_block(self):
+        report = ("I will end with BEGIN FINDINGS and END FINDINGS as asked.\n"
+                  "Example:\nBEGIN FINDINGS\nEND FINDINGS\n\n" + REPORT.replace(
+                      '"typo",', '"typo", "scope": "out",'))
+        result = self.run_tool("ingest", "-", "--review", "blind-review-5", "--root", str(self.root), stdin=report)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        rows = [json.loads(l) for l in (self.root / "validation/findings.jsonl").read_text().splitlines()]
+        self.assertEqual([r["id"] for r in rows], ["R5-01", "R5-02"])
+        self.assertEqual([r.get("scope") for r in rows], [None, "out"])
 
     def test_empty_block_means_no_findings(self):
         result = self.run_tool("ingest", "-", "--review", "r9", "--root", str(self.root),

@@ -1,0 +1,10 @@
+{
+  "id": "budget-price-from-base",
+  "rule": "The base config sets the words each test pays for",
+  "file": "tools/check_guidance_budget.py",
+  "find": "                   (base or {}).get(\"words_per_evidence\", WORDS_PER_EVIDENCE))",
+  "replace": "                   10 ** 9)",
+  "tests": [
+    "tools.tests.test_guidance_budget.GuidanceBudgetProportionTests.test_raising_the_price_per_test_does_not_pay_for_prose"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "guard-desktop-input",
+  "rule": "Input injection into the user's desktop is refused",
+  "file": "tools/guard_command.py",
+  "find": "        if name in INPUT_TOOLS:",
+  "replace": "        if False:",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_refused_commands"
+  ]
+}

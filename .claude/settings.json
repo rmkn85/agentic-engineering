@@ -1,4 +1,33 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(make help)",
+      "Bash(make check)",
+      "Bash(make finish-check)",
+      "Bash(make findings)",
+      "Bash(make prove)",
+      "Bash(make hygiene)",
+      "Bash(make guidance-budget)",
+      "Bash(make guidance-delta)",
+      "Bash(python3 tools/finish_check.py:*)",
+      "Bash(python3 tools/check_hygiene.py:*)",
+      "Bash(python3 tools/check_findings.py:*)",
+      "Bash(python3 tools/check_guidance_budget.py:*)",
+      "Bash(python3 tools/prove_guards.py:*)",
+      "Bash(python3 tools/blind_review.py prompt:*)",
+      "Bash(python3 -m unittest:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git fetch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git switch -c:*)",
+      "Bash(git checkout -b:*)",
+      "Bash(git branch --list:*)"
+    ]
+  },
   "hooks": {
     "Stop": [
       {

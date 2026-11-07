@@ -64,6 +64,13 @@ class HygieneTests(unittest.TestCase):
                          "docs/notes/2026-11-07-plan.md", "docs/2026-11-07 review.md"):
             self.assertIn(expected, result.stdout)
 
+    def test_more_scratch_and_dated_plan_spellings(self):
+        for path in ("scratch/try.py", "out.tmp", "docs/plan-2026.11.07.md", "docs/plans/2026-11-07.json"):
+            self.commit(path, "x")
+        result = self.run_tool()
+        for expected in ("scratch/try.py", "out.tmp", "docs/plan-2026.11.07.md", "docs/plans/2026-11-07.json"):
+            self.assertIn(expected, result.stdout)
+
     def test_fast_forward_merged_branch_is_reported(self):
         self.git("checkout", "-q", "-b", "feat")
         self.commit("feat.txt", "x")

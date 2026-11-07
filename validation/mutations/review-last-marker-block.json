@@ -1,0 +1,10 @@
+{
+  "id": "review-last-marker-block",
+  "rule": "Ingest reads the last findings block on its own lines",
+  "file": "tools/blind_review.py",
+  "find": "    for line in blocks[-1].splitlines():",
+  "replace": "    for line in blocks[0].splitlines():",
+  "tests": [
+    "tools.tests.test_blind_review.BlindReviewTests.test_markers_mentioned_in_prose_do_not_hide_the_real_block"
+  ]
+}

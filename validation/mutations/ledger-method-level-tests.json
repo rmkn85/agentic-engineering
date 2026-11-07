@@ -1,0 +1,10 @@
+{
+  "id": "ledger-method-level-tests",
+  "rule": "Fixed findings cite test methods, not classes",
+  "file": "tools/check_findings.py",
+  "find": "            return names[-1].startswith(\"test\") and all(",
+  "replace": "            return all(",
+  "tests": [
+    "tools.tests.test_check_findings.CheckFindingsTests.test_fixed_findings_cite_test_methods_not_classes"
+  ]
+}

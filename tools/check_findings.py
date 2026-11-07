@@ -11,7 +11,9 @@ trials or incidents:
      "tests": ["tools.tests.test_x.Class.test_name"], "mutation": "id",
      "note": "why, for addressed or declined"}
 
-- fixed: names at least one test; every test and mutation must exist.
+- fixed: names at least one test method (tools.tests.test_x.Class.test_name,
+  not a class); every test and mutation must exist. A fixed blocker needs a
+  mutation proof or a note saying why no mutation applies.
 - addressed: changed but not mechanically proven; needs a note.
 - declined: deliberately not changed; needs a note.
 - open: still to do.
@@ -39,8 +41,14 @@ def test_exists(root: Path, dotted: str) -> bool:
         if path.is_file():
             text = path.read_text(encoding="utf-8")
             names = parts[split:]
-            return all(re.search(rf"^\s*(class|def)\s+{re.escape(n)}\b", text, re.M) for n in names)
+            # The last name must be a test method: citing a whole class proves nothing specific.
+            return names[-1].startswith("test") and all(
+                re.search(rf"^\s*(class|def)\s+{re.escape(n)}\b", text, re.M) for n in names)
     return False
+
+
+def sentence(value) -> bool:
+    return len(re.findall(r"[A-Za-z]{2,}", str(value or ""))) >= 3
 
 
 def problems(root: Path) -> tuple[list[str], dict]:
@@ -78,6 +86,8 @@ def problems(root: Path) -> tuple[list[str], dict]:
                 if not test_exists(root, test):
                     errors.append(f"{name}: test {test} does not exist")
             mutation = row.get("mutation")
+            if row["severity"] == "blocker" and not mutation and not sentence(row.get("note")):
+                errors.append(f"{name}: a fixed blocker needs a mutation proof or a note saying why none applies")
             if mutation:
                 path = root / "validation" / "mutations" / f"{mutation}.json"
                 try:
@@ -89,7 +99,7 @@ def problems(root: Path) -> tuple[list[str], dict]:
                     errors.append(f"{name}: mutation {mutation} proves other tests, not this finding's")
                 else:
                     counts["proven"] += 1
-        elif status in ("addressed", "declined") and len(re.findall(r"[A-Za-z]{2,}", str(row.get("note", "")))) < 3:
+        elif status in ("addressed", "declined") and not sentence(row.get("note")):
             errors.append(f"{name}: {status} findings need a note saying why, in a sentence")
     return errors, counts
 

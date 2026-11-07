@@ -1,0 +1,10 @@
+{
+  "id": "guard-redirects-split",
+  "rule": "A redirect glued to an option does not hide it",
+  "file": "tools/guard_command.py",
+  "find": "punctuation_chars=\";&|()<>\")",
+  "replace": "punctuation_chars=\";&|()\")",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_redirects_do_not_hide_options"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "guard-display-option-leaves-isolation",
+  "rule": "An explicit -display under xvfb-run is not isolated",
+  "file": "tools/guard_command.py",
+  "find": "    if not ctx.get(\"isolated\") or elsewhere:",
+  "replace": "    if not ctx.get(\"isolated\"):",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_explicit_display_leaves_isolation"
+  ]
+}

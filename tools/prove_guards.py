@@ -76,7 +76,7 @@ def prove(root: Path, mutation: dict, timeout: int) -> tuple[str, str]:
         try:
             result = subprocess.run(run, cwd=copy, capture_output=True, text=True, timeout=timeout, check=False)
         except subprocess.TimeoutExpired:
-            return "caught", "tests timed out under the mutation"
+            return "broken", "tests hung under the mutation; a catch needs an assertion to fail, not a timeout"
         if result.returncode == 0:
             return "survived", "tests still pass with the rule disabled"
         if not re.search(r"^FAIL: ", result.stderr, re.M):

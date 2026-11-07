@@ -1,0 +1,10 @@
+{
+  "id": "prove-hang-is-not-a-catch",
+  "rule": "A hang under mutation is not counted as caught",
+  "file": "tools/prove_guards.py",
+  "find": "            return \"broken\", \"tests hung under the mutation; a catch needs an assertion to fail, not a timeout\"",
+  "replace": "            return \"caught\", \"tests hung under the mutation; a catch needs an assertion to fail, not a timeout\"",
+  "tests": [
+    "tools.tests.test_prove_guards.ProveGuardsTests.test_hang_under_mutation_is_not_a_catch"
+  ]
+}

@@ -39,13 +39,15 @@ The change claims these checks prove the goal:
 
 Run the project's own checks, then try hard to break each claim with real experiments: bypasses, malformed input,
 false positives on everyday use, concurrency, anything the checks do not cover. Run them; do not speculate.
+Each tool states its scope in a "Scope:" paragraph of its --help. Test against that scope first. Report a finding
+outside it only if you think the scope itself is wrong, and add "scope": "out" to that finding.
 Do not fix or push anything. Pass dangerous commands you test only as data (for example from a Python
 list) to the tool under test, never through a shell that could execute them.
 
 Report, most severe first, under 800 words. End with one line per claim: met / partly met / not met, and why.
 Then list every finding as JSON lines between these exact markers:
 {start}
-{{"severity": "blocker|should-fix|minor", "target": "path:line", "problem": "one sentence", "reproduction": "command run and its output"}}
+{{"severity": "blocker|should-fix|minor", "target": "path:line", "problem": "one sentence", "reproduction": "command run and its output", "scope": "in|out"}}
 {end}
 Write an empty block if you found nothing."""
 
@@ -64,11 +66,12 @@ def render(goal: dict, repo: str, branch: str, base: str, workdir: str) -> str:
 
 
 def parse(report: str) -> list[dict]:
-    match = re.search(re.escape(START) + r"(.*?)" + re.escape(END), report, re.S)
-    if not match:
+    # Markers count only on their own line, and the last block wins: prose may mention the markers.
+    blocks = re.findall(rf"^[ \t`]*{re.escape(START)}[ \t`]*$(.*?)^[ \t`]*{re.escape(END)}[ \t`]*$", report, re.S | re.M)
+    if not blocks:
         raise ValueError(f"report has no {START} ... {END} block")
     findings = []
-    for line in match.group(1).splitlines():
+    for line in blocks[-1].splitlines():
         line = line.strip().strip("`")
         if not line or line.startswith("{\"severity\": \"blocker|"):
             continue
@@ -97,6 +100,8 @@ def ingest(root: Path, report: str, review: str) -> list[str]:
             taken.add(ident)
             row = {"id": ident, "review": review, "date": date.today().isoformat(), **{
                 k: finding[k] for k in ("severity", "target", "problem", "reproduction")}, "status": "open", "tests": []}
+            if finding.get("scope") == "out":
+                row["scope"] = "out"
             out.write(json.dumps(row) + "\n")
             added.append(ident)
     return added

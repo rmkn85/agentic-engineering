@@ -1,0 +1,10 @@
+{
+  "id": "guard-interpreter-list-args",
+  "rule": "List-form subprocess arguments are joined and checked",
+  "file": "tools/guard_command.py",
+  "find": "            spans.append(\" \".join(shlex.quote(item[1:-1]) for item in re.findall(LITERAL, listed)))",
+  "replace": "            pass",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_interpreter_checks_only_process_calls"
+  ]
+}

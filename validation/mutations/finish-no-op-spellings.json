@@ -1,0 +1,10 @@
+{
+  "id": "finish-no-op-spellings",
+  "rule": "Common no-op recipes prove nothing",
+  "file": "tools/finish_check.py",
+  "find": "test\\s+[^-\\s$]\\S*|\\[\\s+[^-\\s$]\\S*\\s+\\]",
+  "replace": "NEVER",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_common_no_op_spellings_prove_nothing"
+  ]
+}

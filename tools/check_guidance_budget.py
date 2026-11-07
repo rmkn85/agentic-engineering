@@ -27,6 +27,7 @@ trial record pays for words_per_evidence words (default 150).
 from __future__ import annotations
 
 import argparse
+import ast
 import fnmatch
 import json
 import posixpath
@@ -111,6 +112,33 @@ def effective(current: dict, base: dict | None) -> dict:
 TEST_LINE = re.compile(r"^\s*(def test|async def test|assert\b|self\.assert)")
 
 
+ASSERT_LINE = re.compile(r"^\s*(assert\b|self\.assert|self\.fail|with self\.assertRaises|with pytest\.raises)")
+
+
+def asserting(node: ast.AST, helpers: set[str] = frozenset()) -> bool:
+    """A body that asserts, directly or through a helper defined in the same file."""
+    for child in ast.walk(node):
+        if isinstance(child, (ast.Assert, ast.Raise)):
+            return True
+        if isinstance(child, ast.Call):
+            func = child.func
+            name = func.attr if isinstance(func, ast.Attribute) else getattr(func, "id", "")
+            if name.startswith(("assert", "fail")) or name == "raises" or name in helpers:
+                return True
+    return False
+
+
+def asserting_tests(path: Path) -> set[str]:
+    """Names of test functions that check something; 'def test_x(): pass' pays for nothing."""
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError, ValueError):
+        return set()
+    functions = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+    helpers = {f.name for f in functions if not f.name.startswith("test") and asserting(f)}
+    return {f.name for f in functions if f.name.startswith("test") and asserting(f, helpers)}
+
+
 def substantive(root: Path, base: str, path: str) -> bool:
     """True when the change adds a test function or assertion, or non-empty trial data."""
     return evidence_units(root, base, path) > 0
@@ -127,8 +155,9 @@ def evidence_units(root: Path, base: str, path: str) -> int:
         file = root / path
         added = file.read_text(encoding="utf-8", errors="replace").splitlines() if file.is_file() else []
     if path.endswith(".py"):
-        functions = sum(1 for line in added if re.match(r"^\s*(async\s+)?def test", line))
-        return functions or (1 if any(TEST_LINE.match(line) for line in added) else 0)
+        names = {m.group(2) for line in added for m in [re.match(r"^\s*(async\s+)?def (test\w*)", line)] if m}
+        functions = len(names & asserting_tests(root / path))
+        return functions or (1 if any(ASSERT_LINE.match(line) for line in added) else 0)
     if path.endswith((".json", ".jsonl")):  # trial results and fixtures: real data, not notes
         text = "\n".join(added).strip()
         try:
@@ -190,7 +219,10 @@ def main(argv: list[str] | None = None) -> int:
                 failures.append(f"the budget config narrows what is measured: {', '.join(narrowed)}")
         units = sum(evidence_units(root, args.base, p) for p in changed_paths(root, args.base)
                     if matches(p, config["evidence"]))
-        allowance = units * config.get("words_per_evidence", WORDS_PER_EVIDENCE)
+        # The base config sets the price: raising words_per_evidence cannot pay for its own prose.
+        rate = min(current.get("words_per_evidence", WORDS_PER_EVIDENCE),
+                   (base or {}).get("words_per_evidence", WORDS_PER_EVIDENCE))
+        allowance = units * rate
         if after - before > allowance:
             failures.append(
                 f"runtime guidance grew by {after - before} words since {args.base}; {units} added test(s) or "

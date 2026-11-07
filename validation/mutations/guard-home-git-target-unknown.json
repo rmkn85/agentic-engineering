@@ -1,0 +1,10 @@
+{
+  "id": "guard-home-git-target-unknown",
+  "rule": "git -C ~ or $VAR targets never borrow the temp exemption",
+  "file": "tools/guard_command.py",
+  "find": "            unknown = unknown or workdir is None\n        if option in (\"--work-tree\", \"--git-dir\"):",
+  "replace": "        if option in (\"--work-tree\", \"--git-dir\"):",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_home_and_variable_git_targets_are_never_temporary"
+  ]
+}

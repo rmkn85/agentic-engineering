@@ -1,0 +1,10 @@
+{
+  "id": "guard-reset-hard",
+  "rule": "reset --hard is refused outside temporary clones",
+  "file": "tools/guard_command.py",
+  "find": "    elif sub == \"reset\" and \"--hard\" in rest:",
+  "replace": "    elif sub == \"reset\" and False:",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_refused_commands"
+  ]
+}

@@ -78,7 +78,7 @@ class GuidanceBudgetTests(unittest.TestCase):
 
     def test_prose_growth_with_a_changed_test_passes(self):
         self.write("docs/guide.md", "alpha beta gamma delta")
-        self.write("tools/tests/test_rule.py", "def test_rule(): pass")
+        self.write("tools/tests/test_rule.py", "def test_rule():\n    assert True\n")
         self.assertEqual(self.run_tool("--base", "HEAD").returncode, 0)
 
     def test_shrinking_prose_passes_without_evidence(self):
@@ -147,6 +147,23 @@ class GuidanceBudgetProportionTests(unittest.TestCase):
         self.write("docs/guide.md", "alpha beta " + "rule " * 100)
         self.write("tools/tests/test_rule.py", "def test_rule():\n    assert True\n")
         self.assertEqual(self.run_tool("--base", "HEAD").returncode, 0)
+
+    def test_test_functions_that_assert_nothing_pay_nothing(self):
+        self.write("docs/guide.md", "alpha beta " + "rule " * 100)
+        self.write("tools/tests/test_noop.py", "def test_noop():\n    pass\n")
+        self.assertEqual(self.run_tool("--base", "HEAD").returncode, 1)
+        self.write("tools/tests/test_noop.py", "def check(x):\n    assert x\n\ndef test_helper():\n    check(1)\n")
+        self.assertEqual(self.run_tool("--base", "HEAD").returncode, 0)
+
+    def test_raising_the_price_per_test_does_not_pay_for_prose(self):
+        priced = json.loads(json.dumps(CONFIG))
+        priced["words_per_evidence"] = 100000
+        self.config(priced)
+        self.write("docs/guide.md", "alpha beta " + "rule " * 2400)
+        self.write("tools/tests/test_rule.py", "def test_rule():\n    assert True\n")
+        result = self.run_tool("--base", "HEAD")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("pay for 150", result.stderr)
 
     def test_narrowing_what_is_measured_fails(self):
         narrowed = json.loads(json.dumps(CONFIG))
