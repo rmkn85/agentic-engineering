@@ -1,0 +1,30 @@
+diff --git a/replay/consumer.py b/replay/consumer.py
+index ad9e2af..fadd901 100644
+--- a/replay/consumer.py
++++ b/replay/consumer.py
+@@ -11,7 +11,7 @@ _responses = {}
+ def read_current(workspace):
+     workspace = Path(workspace)
+     manifest = json.loads((workspace / "current.json").read_text(encoding="utf-8"))
+-    key = (str(workspace.resolve()), manifest["version"])
++    key = (str(workspace.resolve()), manifest["version"], manifest["sha256"])
+     if key in _responses:
+         return _responses[key]
+     payload = (workspace / "installed" / manifest["sha256"] / "payload.txt").read_bytes()
+diff --git a/replay/install.py b/replay/install.py
+index c102bab..7b473e6 100644
+--- a/replay/install.py
++++ b/replay/install.py
+@@ -16,12 +16,6 @@ def install(package_dir, workspace):
+     workspace = Path(workspace)
+     manifest = _read_json(package_dir / "manifest.json")
+     pointer = workspace / "current.json"
+-    if pointer.exists():
+-        current = _read_json(pointer)
+-        # A version can be republished with different source bytes.
+-        if current["version"] == manifest["version"]:
+-            return current
+-
+     payload = (package_dir / "payload.txt").read_bytes()
+     if digest(payload) != manifest["sha256"]:
+         raise ValueError("package payload does not match manifest")

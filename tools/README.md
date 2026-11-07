@@ -21,6 +21,12 @@ Each run creates a small diagnostic bundle:
 ```
 
 The command prints one line containing status, timing/size metadata, and paths to the manifest/excerpt/full log. It does **not** paste the excerpt into model context by default.
+`PASS` and `FAIL` retain their existing meaning: zero or nonzero **process exit**.
+Both outputs explicitly declare `process-exit` scope and a substantive verdict of
+`unassessed`. A zero exit, successful log capture, or matching hash does not prove
+product acceptance. Use the native product's acceptance evidence for that decision;
+this wrapper does not infer a verdict from stdout text.
+
 The line and manifest also carry a SHA-256 receipt for the full log. The receipt identifies exact content; the bundle path identifies where that content is currently retained.
 
 On failure, inspect in this order:
@@ -39,6 +45,43 @@ python3 tools/observation-recall.py .agent-cache/logs/<run>/manifest.json --byte
 ```
 
 Line spans are `START:COUNT` with one-based lines; byte spans use a zero-based offset. Recall verifies the artifact hash before emitting output. The default output limit is 16 KiB; narrow the request or explicitly raise `--max-output-bytes` when more evidence is needed. Bundles are local transient state and are not a durable evidence store.
+
+For a machine-readable coverage receipt, add `--json`:
+
+```bash
+python3 tools/observation-recall.py .agent-cache/logs/<run>/manifest.json --find 'test_name' --max-matches 20 --json
+```
+
+JSON reports the verified SHA-256 observation identity, selection, returned byte
+count and line numbers or byte extent. `output.data` is base64 so arbitrary bytes
+and slices through multibyte characters remain exact. `--max-output-bytes` caps the
+decoded payload, not JSON/base64 overhead. Ordinary output bytes are unchanged.
+
+Coverage has independent meanings:
+
+- `selection` is complete when the requested range or search suffix is exhausted,
+  including reaching EOF; otherwise it is partial.
+- `artifact` is complete only when all original bytes are returned by a range.
+  Search results alone never claim whole-document coverage.
+- `search_complete` describes the searched suffix; `whole_artifact_search_complete`
+  requires a search from line 1 through EOF. These are `null` (unknown/not assessed)
+  for range retrieval. Absence on one page cannot establish global absence.
+- `substantive_verdict` remains `unassessed`: retrieval completeness is not acceptance.
+
+A partial page provides `continuation_argv`, arguments to pass to the same script.
+They retain limits, artifact selection and an expected hash, rejecting a changed
+observation even if its manifest was replaced. Find continuation starts at the
+first omitted match, preserving original line numbers. An exact match limit is
+complete only after searching to EOF without an extra match; finding one extra
+match establishes a partial result without scanning the remaining suffix. Hash
+verification still requires one full artifact read, independent of selection.
+
+In JSON mode, byte requests larger than the payload cap return a capped page with
+continuation; ordinary mode preserves its existing rejection of oversized requests.
+Line/search pages never split lines: a single line that exceeds the bounded read
+limit causes an error with byte-retrieval guidance. Invalid starts beyond EOF
+(one-past-end is allowed), unsafe artifact references, symlinks and hash mismatches
+are rejected. Receipts establish retained content identity, not source freshness.
 
 Environment controls:
 
@@ -72,6 +115,25 @@ python3 tools/codex-bench.py \
 ```
 
 Use separate `CODEX_HOME` directories or Codex profiles for baseline and experimental configurations. Do not change model/reasoning/task at the same time as the feature being benchmarked unless the experiment is explicitly about that combined system.
+
+`wall_seconds` remains worker-only for compatibility. `eval_wall_seconds` measures
+the chosen check; the measured `loop_wall_seconds` includes setup through evaluation
+completion (or worker completion without evaluation). It excludes retirement,
+reporting, prior task time and subsequent human acceptance/publication. The
+comparison labels these scopes separately and leaves a passing-evaluation loop
+unavailable without successful worker/evaluation evidence and valid measured
+timing. Passing an evaluation proves only the behavior that command checks.
+
+Worktree retirement is conservative: `--keep-worktree` retains it explicitly;
+changed HEAD, tracked/untracked/ignored state, hidden index flags, unique commits
+in the worktree's HEAD reflog, or failed cleanup retains it with a
+`worktree_lifecycle` reason in `metrics.json`. Only a clean, unchanged worktree is
+removed, without force. Retained source and evidence must be harvested and verified
+before using the native cleanup route; a failed task is not authority to delete
+its only recoverable work. This runner manages only its own created worktree,
+not shared caches or unrelated processes.
+It assumes the run's producers have stopped; it cannot restore data already
+deleted by a worker or commits whose reflog evidence was manually expired.
 
 Run artifacts are written under `.agent-bench/runs/` by default. The runner exposes that exact directory as `AGENT_RUN_ARTIFACTS` to the agent process and evaluation command. An authorized producer may write one `practice-feedback.json` there using the [existing practice lifecycle](../docs/evidence/practice-lifecycle.md) format. After evaluation, the runner validates it, checks referenced local artifact digests and retains `practice-summary.json`; `metrics.json` records `recorded`, `not_recorded` or `invalid` separately from native acceptance. No prompt is injected, model call added or sandbox permission widened; use the existing authorized evaluator if the agent cannot write the run directory. Missing feedback is not inferred use, zero cost or failure of the game.
 

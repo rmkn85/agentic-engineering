@@ -73,6 +73,20 @@ Prefer deterministic retrieval when practical:
 
 A model-generated summary can help navigation, but it is not a substitute for preserving the source.
 
+## Coverage belongs to the observation
+
+Retain selection/range, source identity, returned extent and known limits when
+retrieving bounded output. Distinguish complete coverage, known remaining results
+and unknown remaining coverage; expose continuation where supported. An exact
+limit can require another probe to determine whether more exists. A first page,
+file slice or capped search cannot establish global absence or complete authority.
+Follow a connector's pagination contract to the needed coverage; a local file
+receipt cannot prove remote pagination. Narrow a claim when complete retrieval is
+unavailable. Preserve ordinary byte output when adding optional receipt metadata.
+
+For claims that depend on execution, use the [delivery claim boundary](direct-delivery.md#scope-delivery-claims-independently);
+a process-only receipt cannot supply a missing native substantive verdict.
+
 ## Lifecycle and invalidation
 
 A stable reference is useful only while its identity is trustworthy. Record enough information to answer:
@@ -83,7 +97,7 @@ A stable reference is useful only while its identity is trustworthy. Record enou
 - can the exact source still be retrieved?
 - has a newer artifact superseded it?
 
-When a relevant input changes, mark the prior observation stale rather than silently presenting it as current.
+When a relevant input changes, mark the prior observation stale rather than silently presenting it as current. Mutable observations such as service availability, permissions and renderer capability also need observation time and the conditions requiring a new probe. A changed deployment, session, access profile or relevant dependency can invalidate them without a source edit. Probe the affected fact cheaply before making it a current blocker; do not impose blanket expiry times on immutable evidence or repeatedly reread unchanged sources.
 
 Hash verification proves retained bytes, not current applicability. Bind the
 existing run/handoff to the tested source/candidate and compare it with the

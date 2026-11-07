@@ -45,6 +45,27 @@ Recovery is bounded, observable and verification-gated. **Escalation is not task
 | Write/merge collision | Refresh authoritative state and serialize ownership | Semantic reconciliation is required |
 | Ambiguous regression | Preserve evidence; do not guess a repair | Immediately |
 
+## Classify the actual boundary
+
+Distinguish denied authority, a binding user/runtime resource ceiling, an external
+prerequisite, a product defect and a repairable internal tool limit. Inspect the
+current effective permissions and declared execution capabilities through the
+supported route. Sidebar labels, historical grants and an old session's failure
+cannot establish present access. A denial remains binding; do not try another
+surface to evade it. A missing propagated workspace capability calls for the
+owning host's supported repair, not unrelated project configuration changes.
+
+An internally selected timeout, file cap or broken evidence route can warrant a
+bounded repair when the task remains authorized. Preserve the real aggregate
+ceiling and reconcile uncertain effects first. Do not turn a repairable deadline
+into abandonment, or relabel a genuine user limit as an implementation defect.
+After a changed environment, one cheap discriminating capability probe may be
+useful; unchanged denials do not justify a retry loop.
+
+Preserve unfinished work and retire disposable resources through their existing
+owners independently of task closure; use [resource lifecycle](resource-lifecycle.md)
+when that decision is reached.
+
 ## Recovery budget
 
 Declare finite attempt, elapsed-time and resource limits, backoff, retry/duplicate-effect policy, post-recovery checks and conditions forbidding recovery. Propagate cancellation and remaining budgets across layers; do not multiply retries across callers. A timeout is not proof that a remote effect did not occur. Reconcile state before repeating an uncertain consequential operation.

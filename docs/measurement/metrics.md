@@ -21,6 +21,29 @@ Compare matched baseline and candidate conditions where feasible; describe mater
 
 Assertions, hashes, checksums, commits and agent activity support evidence and diagnosis; they receive no product-progress credit. Collect supporting activity and resource telemetry only when it can explain a decision, risk or comparison. Do not create a dashboard, standing review or parallel tracker solely for this scorecard.
 
+Separate a component timer from the observed feedback interval and from the
+authorization-to-acceptance interval. Record start/end events and included phases;
+include queueing, preparation, compilation, retries and required judgment when
+they fall inside that interval. Do not add overlapping phase times or relabel an
+unfinished attempt as a successful latency sample. Report unfinished age, failed
+attempts, human corrections and control overhead alongside accepted outcomes.
+
+The local benchmark's `wall_seconds` measures its worker invocation only.
+`eval_wall_seconds` measures the selected check; `loop_wall_seconds` spans setup
+through that check's completion (or worker completion when no check is supplied).
+This interval excludes work before invocation and subsequent human acceptance,
+publication and resource retirement. The comparison's passing-evaluation loop is
+available only for a successful worker and specified evaluation with valid timing;
+it does not prove that the check covers every product requirement. Legacy records
+without that measured interval remain unavailable, not a sum inferred from phases.
+
+For control changes, distinguish source installed, instructions received, behavior
+observed and outcome accepted. Count stale-evidence decisions, false completion,
+unnecessary owner rescue, avoidable repeats and preserved/retired resources only
+when the existing trace supports them. Shared account usage cannot be attributed
+to one worker without run-level evidence. Revert or scope a control whose overhead
+exceeds its demonstrated benefit under unchanged acceptance.
+
 Executive updates and worker returns use the existing task's facts: **Delivered** (accepted user capability, or explicitly none), **Measured improvement** (same relevant operation before and after, or unknown), **Remaining gap**, **Next action** (owner, expected effect and decisive observation), and **Evidence** (retrievable source/result links). Describe local checks, infrastructure repairs and experiments separately; do not put them under delivered user capability. A reduced or failed acceptance path delivers none of the required outcome. A valid finding can change the next action without closing delivery.
 
 ## Conditional resource and activity telemetry
