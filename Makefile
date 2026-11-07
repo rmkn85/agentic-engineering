@@ -15,7 +15,7 @@ guidance-delta:
 finish-check:
 	@python3 tools/finish_check.py
 hygiene:
-	@python3 tools/check_hygiene.py --strict --base $(or $(BASE),main)
+	@python3 tools/check_hygiene.py --strict $(if $(BASE),--base $(BASE),)
 contributor-trial:
 	@python3 tools/check-fresh.py --timeout 120 -- make check
 external-report:

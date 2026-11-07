@@ -101,42 +101,45 @@ class Bridge:
         scope = cache.digest({"provider": "context7", "namespace": self.args.namespace})
         root = Path(self.args.cache_dir)
         options = argparse.Namespace(cache_dir=str(root), command="lookup", request=None, max_age=self.args.max_age)
+        reply = None
         try:
             # Covers lookup -> producer -> record across independent bridge processes.
+            # Replies are sent only after the lock is released: a client may stop this
+            # process as soon as it reads the reply, which must not abandon the lock.
             with cache.gate_lock(root / "producers" / (scope + ".json")):
                 state = cache.run(options, request_value=request)
                 if state["status"] == "hit":
-                    self.send_tool({"jsonrpc": "2.0", "id": request_id, "result": state["response"]}, "hit", state)
-                    return
-                if self.args.cache_only or state["status"] == "blocked":
-                    self.send_tool(error_result(request_id, "Context7 producer suppressed by cache preflight: " + json.dumps(state)), "blocked", state)
-                    return
-                response_queue = queue.Queue()
-                key = json.dumps(request_id)
-                with self.pending_lock:
-                    self.pending[key] = response_queue
-                try:
-                    self.forward(message)
-                    response = response_queue.get(timeout=self.args.timeout)
-                except queue.Empty:
-                    self.child.terminate()  # prevent a late duplicate response for this ID
-                    raise ValueError("child response deadline exceeded; no automatic retry")
-                finally:
+                    reply = ({"jsonrpc": "2.0", "id": request_id, "result": state["response"]}, "hit", state)
+                elif self.args.cache_only or state["status"] == "blocked":
+                    reply = (error_result(request_id, "Context7 producer suppressed by cache preflight: " + json.dumps(state)), "blocked", state)
+                else:
+                    response_queue = queue.Queue()
+                    key = json.dumps(request_id)
                     with self.pending_lock:
-                        self.pending.pop(key, None)
-                if response is None:
-                    raise ValueError("child exited before completing call")
-                kind = classify(params["name"], response)
-                options.command = "record"
-                options.kind = kind
-                options.valid_for = self.args.valid_for if kind == "success" else None
-                options.retry_at = None  # Never infer metadata absent from actual tool result.
-                options.response = None
-                raw = response["result"] if "result" in response else response
-                recorded = cache.run(options, request_value=request, response_value=raw)
-                self.send_tool(response, "produced" if kind == "success" else "failure:" + kind, recorded)
+                        self.pending[key] = response_queue
+                    try:
+                        self.forward(message)
+                        response = response_queue.get(timeout=self.args.timeout)
+                    except queue.Empty:
+                        self.child.terminate()  # prevent a late duplicate response for this ID
+                        raise ValueError("child response deadline exceeded; no automatic retry")
+                    finally:
+                        with self.pending_lock:
+                            self.pending.pop(key, None)
+                    if response is None:
+                        raise ValueError("child exited before completing call")
+                    kind = classify(params["name"], response)
+                    options.command = "record"
+                    options.kind = kind
+                    options.valid_for = self.args.valid_for if kind == "success" else None
+                    options.retry_at = None  # Never infer metadata absent from actual tool result.
+                    options.response = None
+                    raw = response["result"] if "result" in response else response
+                    recorded = cache.run(options, request_value=request, response_value=raw)
+                    reply = (response, "produced" if kind == "success" else "failure:" + kind, recorded)
         except (OSError, ValueError, TypeError, KeyError) as error:
-            self.send_tool(error_result(request_id, "Context7 cache bridge stopped call: " + str(error)), "stopped")
+            reply = (error_result(request_id, "Context7 cache bridge stopped call: " + str(error)), "stopped")
+        self.send_tool(*reply)
 
     def run(self):
         try:

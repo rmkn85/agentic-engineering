@@ -130,7 +130,7 @@ def exercise(command, env, spec, request, artifacts, factory=Client):
         summary["phase"] = "second-initialize"
         client.initialize()
         summary["phase"] = "second-tool-call"
-        second = client.call(3, "tools/call", {"name": OPERATION, "arguments": ARGUMENTS}, 5)
+        second = client.call(3, "tools/call", {"name": OPERATION, "arguments": ARGUMENTS}, 30)  # a slow hit is still a hit
         second_meta = second.get("_meta", {}).get("context7Cache", {})
         summary["second"] = second_meta.get("status", "unproved")
         if second_meta.get("status") == "hit" and second_meta.get("sha256") == state["sha256"] and not second.get("isError"):

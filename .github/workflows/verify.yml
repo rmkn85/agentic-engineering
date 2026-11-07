@@ -20,5 +20,10 @@ jobs:
           fetch-depth: 2
       - name: Exercise native checks from cold and stale committed source
         run: make contributor-trial
-      - name: Refuse runtime prose growth that no mechanism enforces
-        run: make guidance-delta BASE=HEAD^1
+      - name: Refuse runtime prose growth that no test or trial checks
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then BASE_SHA=HEAD^1; fi
+          git fetch --no-tags --depth=1 origin "$BASE_SHA" 2>/dev/null || true
+          make guidance-delta BASE="$BASE_SHA"

@@ -38,15 +38,21 @@ class HygieneTests(unittest.TestCase):
         self.assertIn("clean", result.stdout)
 
     def test_merged_branch_and_extra_worktree(self):
-        self.git("branch", "done-topic")
+        self.git("checkout", "-q", "-b", "done-topic")
+        self.commit("feature.txt", "x")
+        self.git("checkout", "-q", "main")
+        self.git("merge", "-q", "--no-ff", "-m", "merge", "done-topic")
+        self.git("branch", "just-started")  # no commits of its own yet: not a leftover
         self.git("worktree", "add", "-q", str(Path(self.temp.name) / "wt"), "-b", "live")
         result = self.run_tool("--strict")
         self.assertEqual(result.returncode, 1)
         self.assertIn("merged branch not deleted: done-topic", result.stdout)
         self.assertIn("extra worktree", result.stdout)
+        self.assertNotIn("just-started", result.stdout)
 
     def test_dated_process_records_and_tracked_scratch(self):
         self.commit("docs/plans/2026-10-28-rollout.md", "x")
+        self.commit("docs/reviews/review-2026-11-01.md", "x")
         self.commit("handoff-20261101.md", "x")
         self.commit(".tmp/run/out.txt", "x")
         self.commit("build.log", "x")
@@ -60,10 +66,31 @@ class HygieneTests(unittest.TestCase):
         self.git("checkout", "-q", "-b", "topic")
         self.assertIn("clean", self.run_tool("--strict", "--base", "origin/main").stdout)
 
-    def test_dated_research_and_evidence_are_not_process_records(self):
+    def test_ordinary_dated_and_fixture_files_are_not_flagged(self):
         self.commit("references/research-2026-09/README.md", "x")
         self.commit("experiments/2026-09-20-trial.md", "x")
+        self.commit("db/migrate/20240101120000_add_status_to_users.rb", "x")
+        self.commit("docs/release-plan-2025-01-01.md", "x")
+        self.commit("tmp/.keep", "")
+        self.commit("test/fixtures/sample.log", "x")
         self.assertIn("clean", self.run_tool("--strict").stdout)
+
+
+class HygieneWithoutMainTests(unittest.TestCase):
+    def test_master_trunk_and_missing_base_do_not_crash(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            run = lambda *a: subprocess.run(["git", "-c", "user.email=t@example.invalid", "-c", "user.name=t", *a],
+                                            cwd=root, check=True, capture_output=True)
+            run("init", "-q", "-b", "master")
+            (root / "a.txt").write_text("x")
+            run("add", ".")
+            run("commit", "-qm", "a")
+            for args in ([], ["--base", "main"]):
+                result = subprocess.run([sys.executable, str(TOOL), "--root", temp, *args],
+                                        capture_output=True, text=True, check=False)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
 
 
 if __name__ == "__main__":

@@ -10,10 +10,10 @@ import shutil
 import sys
 import tempfile
 from datetime import datetime, timezone
+from pathlib import Path, PurePosixPath
 
 # Must equal project_work.TASK_SCHEMAS; tools/tests/test_project_work.py enforces it.
 TASK_SCHEMAS = ('task-record/v1', 'axioms-task/v1')
-from pathlib import Path, PurePosixPath
 
 SCHEMA = 'outcome-control/v1'
 CLAIMS = ('implemented', 'verified', 'integrated', 'available', 'accepted')
