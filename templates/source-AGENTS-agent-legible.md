@@ -13,6 +13,10 @@ Choose **one** focused skill from the task's structural scope:
 
 Use the **smallest structural scope that actually contains the task**. If a local task discovers a boundary-level problem, escalate once to the broader skill; do not stack every narrower skill underneath it.
 
-Do not make touched code harder for the next weak/fresh reader to model. Avoid expanding scope into unrelated cleanup.
+Build and review the simplest sufficient implementation; justify added surfaces
+against requirements and callers, preserving protected behavior. Use the
+[necessity and local cleanup guidance](../docs/code/agent-legible-code.md#choose-the-simplest-sufficient-implementation)
+without expanding scope into unrelated cleanup. Bind this route to the adopted
+local code guidance when copying the template.
 
 Load `docs/code/agent-legible-code.md` only when a decision needs rationale, counterexamples, or measurement guidance.
