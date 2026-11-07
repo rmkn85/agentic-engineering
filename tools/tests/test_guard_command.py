@@ -103,6 +103,48 @@ class GuardCommandTests(unittest.TestCase):
                         "git --work-tree /srv/repo reset --hard"):
             self.assertEqual(self.run_tool("--command", command, "--cwd", temp).returncode, 2, command)
 
+    def test_home_and_variable_git_targets_are_never_temporary(self):
+        temp = tempfile.mkdtemp()
+        self.addCleanup(os.rmdir, temp)
+        for command in ("git -C ~/repo reset --hard", "git -C $HOME/repo clean -fd",
+                        "git --git-dir=$REPO/.git reset --hard", "GIT_DIR=~/repo/.git git reset --hard"):
+            self.assertEqual(self.run_tool("--command", command, "--cwd", temp).returncode, 2, command)
+        self.assertEqual(self.run_tool("--command", "git -C sub reset --hard", "--cwd", temp).returncode, 0)
+
+    def assert_refused(self, commands):
+        for command in commands:
+            with self.subTest(command=command):
+                self.assertEqual(self.run_tool("--command", command, "--cwd", WORK).returncode, 2, command)
+
+    def assert_allowed(self, commands):
+        for command in commands:
+            with self.subTest(command=command):
+                result = self.run_tool("--command", command, "--cwd", WORK)
+                self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_redirects_do_not_hide_options(self):
+        self.assert_refused(["git push origin main --force>/dev/null", "git reset --hard>/dev/null",
+                             "git push -f 2>&1", "(git push -f)>log", "cat <(git reset --hard)",
+                             "git clean -fd&>/dev/null"])
+        self.assert_allowed(["git status >/dev/null 2>&1", "make check > log.txt", "sort < in.txt"])
+
+    def test_explicit_display_leaves_isolation(self):
+        self.assert_refused(["xvfb-run -a xwd -root -display :0", "xvfb-run -a import -display :0 -window root x.png",
+                             "xvfb-run -a xdotool --display=:0 key a"])
+        self.assert_allowed(["xvfb-run -a xwd -root -out shot.xwd"])
+
+    def test_interpreter_checks_only_process_calls(self):
+        self.assert_refused(["python3 -c \"import subprocess; subprocess.run(['git', 'push', '--force'])\"",
+                             "python3 -c \"import subprocess as s; s.call(['git','reset','--hard'])\"",
+                             "node -e \"require('child_process').execSync('git push -f')\"",
+                             "python3 -m mss"])
+        self.assert_allowed(["python3 -c \"print('rm -rf .git')\"", "python3 -m pip install mss",
+                             "python3 -m pytest -k mss"])
+
+    def test_more_discard_spellings_and_dry_runs(self):
+        self.assert_refused(["rm -rf .git*", "git -c clean.requireForce=false clean -dx"])
+        self.assert_allowed(["git push --dry-run --force", "git push -n -f origin main"])
+
     def test_hook_blocks_bash_ignores_other_tools_and_bad_events(self):
         bash = {"tool_name": "Bash", "tool_input": {"command": "git push --force"}, "cwd": WORK}
         result = self.run_tool("--hook", stdin=json.dumps(bash))

@@ -1,0 +1,10 @@
+{
+  "id": "allowlist-adapter-matches",
+  "rule": "The Claude adapter cannot drift from the host-neutral allowlist",
+  "file": "tools/allowlist.py",
+  "find": "    if current != claude(items):",
+  "replace": "    if False:",
+  "tests": [
+    "tools.tests.test_allowlist.AllowlistTests.test_drifted_claude_adapter_is_reported"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "agents-obligations-pinned",
+  "rule": "Dropping an AGENTS.md obligation fails a test",
+  "file": "AGENTS.md",
+  "find": "; reusing a worker still needs compliant configuration and authority.",
+  "replace": ".",
+  "tests": [
+    "tools.tests.test_agents_obligations.AgentsObligationTests.test_every_obligation_is_still_stated"
+  ]
+}

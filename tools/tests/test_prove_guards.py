@@ -77,6 +77,17 @@ class ProveGuardsTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("only errored", result.stdout)
 
+    def test_hang_under_mutation_is_not_a_catch(self):
+        self.mutation("m", ["test_good.T.test_bad_refused"])
+        path = self.root / "validation" / "mutations" / "m.json"
+        data = json.loads(path.read_text())
+        data["replace"] = "import time; time.sleep(30); return True"
+        path.write_text(json.dumps(data))
+        result = subprocess.run([sys.executable, str(TOOL), "--root", str(self.root), "--timeout", "3"],
+                                capture_output=True, text=True, check=False)
+        self.assertEqual(result.returncode, 1, result.stdout)
+        self.assertIn("hung", result.stdout)
+
     def test_original_repository_is_never_modified(self):
         self.mutation("m", ["test_good.T.test_bad_refused"])
         self.run_tool()

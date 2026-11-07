@@ -1,0 +1,10 @@
+{
+  "id": "budget-tests-must-assert",
+  "rule": "Test functions that assert nothing pay for no prose",
+  "file": "tools/check_guidance_budget.py",
+  "find": "        functions = len(names & asserting_tests(root / path))",
+  "replace": "        functions = len(names)",
+  "tests": [
+    "tools.tests.test_guidance_budget.GuidanceBudgetProportionTests.test_test_functions_that_assert_nothing_pay_nothing"
+  ]
+}

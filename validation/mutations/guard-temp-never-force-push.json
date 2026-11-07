@@ -2,8 +2,8 @@
   "id": "guard-temp-never-force-push",
   "rule": "Disposable clones may discard work but may never force-push",
   "file": "tools/guard_command.py",
-  "find": "            if discards and under_temp(",
-  "replace": "            if under_temp(",
+  "find": "            if discards and not ctx.get(\"git_unknown\") and under_temp(",
+  "replace": "            if not ctx.get(\"git_unknown\") and under_temp(",
   "tests": [
     "tools.tests.test_guard_command.GuardCommandTests.test_disposable_clones_in_temp_may_discard_but_never_force_push"
   ]

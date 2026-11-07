@@ -2,8 +2,6 @@
 
 Read this **default operating corpus**, then load deeper guidance only for the current decision.
 
-Do **not** recursively crawl the repository. `references/` is methodology research/provenance, not ordinary runtime context.
-
 Use the five [engineering personas](../../templates/contributor-core.md#engineering-personas) in assignments, handoffs and reports. Select the role from the current responsibility; ordinary service restoration is an Operator concern handled by engineering.
 
 ## Execution kernel
@@ -13,9 +11,9 @@ Use the five [engineering personas](../../templates/contributor-core.md#engineer
 3. **Treat context as a working set.** Load only relevant instructions, skills, sources and tools. After interruption or compression, recover authoritative state before consequential writes; missing knowledge is not permission to guess.
 4. **Use deterministic machinery for deterministic work.** Search, inventory, hashing, formatting, compilation, test execution, filtering, moving, and measurement usually do not need model reasoning.
 5. **Reuse valid work and ownership.** Cache semantic findings and deterministic artifacts until an input that can affect them changes. Do not reread or revalidate merely to demonstrate activity. Reuse compliant configuration and authority. Distinguish [ongoing orchestrators/epic owners, persistent steering reviewers and short execution workers](../local-codex/subagents.md#worker-lifetime-and-integration). An epic owner continues autonomously through accepted delivery; a planning estimate or checkpoint cannot become an invented token/time stop budget. Preserve cumulative observations and genuine limits.
-6. **Keep logs out of coordinator context.** Retain evidence on disk; workers/tools return status, decisions, and paths. Inspect only decision-critical excerpts; consumed logs burden later turns.
+6. **Keep logs out of coordinator context.** Retain evidence on disk; workers/tools return status, decisions, and paths. Inspect only decision-critical excerpts.
 7. **Construct, then challenge.** Connect [requirement, mechanism, independent check and result](../specifications/README.md#verify-the-requirement-not-the-implementations-story). Use [bounded resilience checks](../execution/bounded-recovery.md) on consequential assumptions: preserve protected behavior and useful service under supported faults. Tests do not supply the mechanism. Reuse valid evidence; reassess it when relevant inputs change.
-8. **Check whether usage fits the work.** At meaningful checkpoints use the [Codex usage API](../local-codex/subagents.md#usage-reasonableness-checkpoints) to compare depletion with rough expected work/pace and reset horizon. Investigate surprises, slow/stop when warranted, and obtain approval before materially accelerating spending beyond current explicit authorization. No fixed percentage or burn goal applies; missing measurements and shared-account attribution stay unknown. Retain consequential decisions and native evidence in the existing run record.
+8. **Check whether usage fits the work** at meaningful checkpoints with the host's [usage checks](../local-codex/subagents.md#usage-reasonableness-checkpoints). Investigate surprises, and obtain approval before materially accelerating spending beyond current explicit authorization.
 9. **Build and review the simplest sufficient code.** Justify added surfaces and layers by requirements, callers or trust boundaries; compare one simpler complete implementation before accepting the design. Preserve protected behavior and leave touched code cheap for a fresh weaker reader to model. Use the [code guidance](../code/agent-legible-code.md#choose-the-simplest-sufficient-implementation) for the decision, without a new review ceremony.
 
 Keep [permissions inside the sandbox](../adoption/native-command-bindings.md#sandbox-first-external-activities) where possible. Prepare and review a narrow maintained activity before external-effect approval/allowlisting; automatically reject ad-hoc command escalation through supported native policy instead of requesting equivalent access elsewhere.

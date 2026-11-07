@@ -1,0 +1,10 @@
+{
+  "id": "guard-rm-git",
+  "rule": "Deleting a repository's .git is refused",
+  "file": "tools/guard_command.py",
+  "find": "            if recursive and is_repo and not under_temp(",
+  "replace": "            if False and not under_temp(",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_refused_commands"
+  ]
+}

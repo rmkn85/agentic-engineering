@@ -48,6 +48,22 @@ class CheckFindingsTests(unittest.TestCase):
             self.ledger(row)
             self.assertEqual(self.run_tool().returncode, 1, row)
 
+    def test_fixed_findings_cite_test_methods_not_classes(self):
+        self.ledger({"id": "F1", "status": "fixed", "severity": "minor", "tests": ["tools.tests.test_x.XTests"]})
+        self.assertEqual(self.run_tool().returncode, 1)
+        self.ledger({"id": "F1", "status": "fixed", "severity": "minor",
+                     "tests": ["tools.tests.test_x.XTests.test_guarded"]})
+        self.assertEqual(self.run_tool().returncode, 0)
+
+    def test_fixed_blocker_needs_a_mutation_or_a_reason(self):
+        row = {"id": "F1", "status": "fixed", "tests": ["tools.tests.test_x.XTests.test_guarded"]}
+        self.ledger(row)
+        result = self.run_tool()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("needs a mutation proof", result.stderr)
+        self.ledger({**row, "note": "the fix deletes a code path, so there is nothing to mutate"})
+        self.assertEqual(self.run_tool().returncode, 0)
+
     def test_addressed_and_declined_need_a_note(self):
         for status in ("addressed", "declined"):
             self.ledger({"id": "F1", "status": status})

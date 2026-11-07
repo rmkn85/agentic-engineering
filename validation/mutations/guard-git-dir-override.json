@@ -2,7 +2,7 @@
   "id": "guard-git-dir-override",
   "rule": "GIT_DIR, --work-tree and pushd cannot borrow the temporary-directory exception",
   "file": "tools/guard_command.py",
-  "find": "    if ctx.get(\"git_dir_forced\") and ctx.get(\"git_dir\") and workdir == ctx.get(\"cwd\"):\n        workdir = ctx[\"git_dir\"]\n",
+  "find": "    if ctx.get(\"git_dir_forced\") and not unknown and workdir == ctx.get(\"cwd\"):\n        workdir = ctx.get(\"git_dir\")\n        unknown = workdir is None\n",
   "replace": "",
   "tests": [
     "tools.tests.test_guard_command.GuardCommandTests.test_disposable_clones_in_temp_may_discard_but_never_force_push"

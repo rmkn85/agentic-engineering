@@ -1,0 +1,10 @@
+{
+  "id": "guard-desktop-capture",
+  "rule": "Screen capture of the user's desktop is refused",
+  "file": "tools/guard_command.py",
+  "find": "        if name in CAPTURE_TOOLS or (name == \"import\" and \"root\" in args):",
+  "replace": "        if False:",
+  "tests": [
+    "tools.tests.test_guard_command.GuardCommandTests.test_refused_commands"
+  ]
+}

@@ -9,7 +9,8 @@ import unittest
 
 TOOL = Path(__file__).resolve().parents[1] / "finish_check.py"
 MAKEFILE = ("ok:\n\t@test -f Makefile\nbad:\n\t@false\nnoop:\n\t@true\nsay:\n\t@echo done\nhelp:\n\t@echo help\nloop:\n\t@python3 tools/finish_check.py\n"
-            "slow:\n\t@sleep {marker} & sleep {marker}\n")
+            "slow:\n\t@sleep {marker} & sleep {marker}\n"
+            "bintrue:\n\t@/bin/true\ncomment:\n\t@true # done\ntest1:\n\t@test 1\nfiletest:\n\t@test -f README\n")
 REFLECTION = {"first_divergence": "the deploy step needs credentials",
               "guidance_followed": "wrote the goal record first",
               "guidance_missing_or_misleading": "no deploy route is documented here"}
@@ -89,6 +90,50 @@ class FinishCheckTests(unittest.TestCase):
         for run in ("noop", "say"):
             self.goal({"id": "t", "check": "c", "run": run})
             self.assertIn("cannot fail", self.run_tool().stdout)
+
+    def test_common_no_op_spellings_prove_nothing(self):
+        for run in ("bintrue", "comment", "test1"):
+            self.goal({"id": "t", "check": "c", "run": run})
+            self.assertIn("cannot fail", self.run_tool().stdout, run)
+        self.goal({"id": "t", "check": "c", "run": "filetest"})
+        self.assertEqual(self.run_tool().returncode, 0)
+
+    def test_swapping_an_unmet_goal_needs_a_stated_reason(self):
+        self.goal({"id": "t", "check": "export tests pass", "run": "bad"}, text="Users can export a monthly report")
+        self.decision(self.hook())
+        self.goal({"id": "t", "check": "c", "run": "ok"}, text="Make a small edit")
+        for attempt in range(1, 4):
+            self.assertIn("goal changed", self.decision(self.hook()).get("reason", ""), attempt)
+        self.assertIn("NOT verified", self.decision(self.hook())["systemMessage"])
+
+    def test_a_reasoned_goal_change_is_allowed_and_recorded(self):
+        self.goal({"id": "t", "check": "export tests pass", "run": "bad"}, text="Users can export a monthly report")
+        self.decision(self.hook())
+        record = {"goal": "Make a small edit", "acceptance": [{"id": "t", "check": "c", "run": "ok"}],
+                  "supersedes": {"goal": "Users can export a monthly report",
+                                 "reason": "the owner moved export to the next release"}}
+        (self.root / ".agent" / "goal.json").write_text(json.dumps(record))
+        self.assertEqual(self.hook().stdout, "")
+        gap = json.loads(self.gaps()[-1].read_text())
+        self.assertEqual(gap["superseded_goal"]["goal"], "Users can export a monthly report")
+
+    def test_a_met_goal_may_be_followed_by_another(self):
+        self.goal({"id": "t", "check": "c", "run": "ok"}, text="first goal")
+        self.assertEqual(self.hook().stdout, "")
+        self.goal({"id": "t", "check": "c", "run": "ok"}, text="second goal")
+        self.assertEqual(self.hook().stdout, "")
+
+    def test_a_goal_blocked_on_its_only_machine_check_can_end_blocked(self):
+        item = {"id": "e2e", "check": "end-to-end run passes", "run": "bad", "status": "blocked",
+                "blocker": "the staging database is offline for maintenance"}
+        self.goal(item)
+        reason = self.decision(self.hook())["reason"]
+        self.assertIn("reflection.first_divergence", reason)
+        self.assertIn("goal.json", reason)
+        self.goal(item, reflection=REFLECTION)
+        self.assertEqual(self.hook().stdout, "")
+        self.assertEqual(json.loads(self.gaps()[-1].read_text())["status"], "blocked")
+        self.assertEqual(self.run_tool().returncode, 2)  # blocked is never reported as met
 
     def test_placeholder_blockers_and_reflection_do_not_end_the_session(self):
         self.goal({"id": "t", "check": "tests pass", "run": "ok"},
@@ -208,8 +253,12 @@ class FinishCheckTests(unittest.TestCase):
         self.goal({"id": "t", "check": "c", "run": "bad"}, text="first goal")
         for _ in range(4):
             self.hook()
-        self.goal({"id": "t", "check": "c", "run": "bad"}, text="second goal")
-        self.assertEqual(self.decision(self.hook()).get("decision"), "block")
+        record = {"goal": "second goal", "acceptance": [{"id": "t", "check": "c", "run": "bad"}],
+                  "supersedes": {"goal": "first goal", "reason": "the owner replaced the first goal"}}
+        (self.root / ".agent" / "goal.json").write_text(json.dumps(record))
+        decision = self.decision(self.hook())
+        self.assertEqual(decision.get("decision"), "block")
+        self.assertIn("(1/3)", decision["reason"])
 
     def test_hook_asks_once_for_a_goal_record_when_files_changed(self):
         subprocess.run(["git", "init", "-q"], cwd=self.root, check=True)

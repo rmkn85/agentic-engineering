@@ -1,0 +1,10 @@
+{
+  "id": "finish-goal-pinned",
+  "rule": "A session's unmet goal cannot be swapped without a stated reason",
+  "file": "tools/finish_check.py",
+  "find": "pinned[\"goal\"] != goal[\"goal\"] and not pinned.get(\"met\"):",
+  "replace": "pinned[\"goal\"] != goal[\"goal\"] and False:",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_swapping_an_unmet_goal_needs_a_stated_reason"
+  ]
+}

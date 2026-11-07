@@ -23,9 +23,20 @@ Rules:
 - Anything else is unmet. A goal needs at least one passing "run" item:
   manual items alone cannot prove it. Recipes that cannot fail (true, :,
   echo) prove nothing.
-- Ending with blocked items needs a "reflection" object in the record with
-  first_divergence, guidance_followed and guidance_missing_or_misleading,
+- An item with "run" whose target fails may be marked "status": "blocked"
+  with a "blocker" sentence. If every machine check is blocked, the goal can
+  only end as blocked, never as met.
+- Ending with blocked items needs a "reflection" object in the goal record
+  with first_divergence, guidance_followed and guidance_missing_or_misleading,
   each a real sentence.
+- The first goal a session records is pinned. Replacing it with a different
+  goal before it is met needs "supersedes": {"goal": "<the pinned goal text>",
+  "reason": "<why the goal changed>"}; the change is kept in the gap record.
+
+Scope: the gate stops a cooperative agent from finishing by mistake: no
+goal, a vacuous check, a silently narrowed goal, or a claim without a pointer.
+It runs machine checks; it cannot judge whether a manual item's evidence is
+true, and it does not resist an agent that deliberately forges records.
 
 Exit codes: 0 goal met (or no record, outside hook mode); 2 unmet, with a gap
 record written under .agent/gaps/; 1 invalid record.
@@ -53,7 +64,8 @@ STATUSES = {"pass", "blocked", "pending", "fail"}
 GAP_FIELDS = ("first_divergence", "guidance_followed", "guidance_missing_or_misleading")
 MAX_BLOCKS = 3
 NO_RECIPE = re.compile(r"Nothing to be done for|is up to date")
-CANNOT_FAIL = re.compile(r"^\s*(true|:|exit 0|echo(\s.*)?|printf(\s.*)?)\s*$")
+CANNOT_FAIL = re.compile(r"^\s*((/usr)?(/bin/)?true|:|exit 0|(/bin/)?echo(\s.*)?|printf(\s.*)?|"
+                         r"test\s+[^-\s$]\S*|\[\s+[^-\s$]\S*\s+\])?\s*(#.*)?$")
 URL = re.compile(r"https?://\S+")
 
 
@@ -122,7 +134,7 @@ def run_target(root: Path, target: str, timeout: int) -> tuple[str, str | None]:
             return "unmet", f"make {target} has no recipe, so it proves nothing"
         if "finish_check" in dry.stdout:
             return "unmet", f"make {target} calls the finish gate itself"
-        if all(CANNOT_FAIL.match(line) for line in dry.stdout.splitlines() if line.strip()):
+        if all(CANNOT_FAIL.match(line) for line in dry.stdout.splitlines()):
             return "unmet", f"make {target} only runs commands that cannot fail, so it proves nothing"
         proc = subprocess.Popen(make + [target], cwd=root, stdout=subprocess.DEVNULL,
                                 stderr=subprocess.DEVNULL, start_new_session=True)
@@ -147,6 +159,8 @@ def evaluate(goal: dict, root: Path, timeout: int) -> list[dict]:
             if run not in cache:
                 cache[run] = run_target(root, run, timeout)
             state, why = cache[run]
+            if state == "unmet" and item.get("status") == "blocked" and sentence(item.get("blocker")):
+                state, why = "blocked", f"{item['blocker']} ({why})"
         elif item.get("status") == "pass" and text(item.get("evidence")) and cites(root, item["evidence"]):
             state, why = "met", None
         elif item.get("status") == "pass":
@@ -158,12 +172,16 @@ def evaluate(goal: dict, root: Path, timeout: int) -> list[dict]:
         results.append({"id": item["id"], "check": item["check"], "state": state, "why": why})
     machine = [r for item, r in zip(goal["acceptance"], results) if item.get("run")]
     if not any(r["state"] == "met" for r in machine):
-        results.append({"id": "machine-check", "check": "at least one passing run check", "state": "unmet",
-                        "why": "no passing run check: manual items alone cannot prove the goal"})
+        # Blocked run checks can end the session as blocked, never as met.
+        state = "blocked" if machine and all(r["state"] == "blocked" for r in machine) else "unmet"
+        results.append({"id": "machine-check", "check": "at least one passing run check", "state": state,
+                        "why": "every run check is blocked" if state == "blocked"
+                        else "no passing run check: manual items alone cannot prove the goal"})
     return results
 
 
-def write_gap(root: Path, goal: dict, results: list[dict], ended: bool = False) -> Path:
+def write_gap(root: Path, goal: dict, results: list[dict], ended: bool = False,
+              superseded: dict | None = None) -> Path:
     gaps = root / ".agent" / "gaps"
     gaps.mkdir(parents=True, exist_ok=True)
     stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
@@ -176,6 +194,8 @@ def write_gap(root: Path, goal: dict, results: list[dict], ended: bool = False) 
         "session_ended_unmet": ended,
         "unmet": unmet,
     }
+    if superseded:
+        record["superseded_goal"] = superseded
     # Copied from the goal record's reflection; unknown stays null rather than invented.
     reflection = goal.get("reflection") if isinstance(goal.get("reflection"), dict) else {}
     record.update({field: reflection.get(field) if text(reflection.get(field)) else None for field in GAP_FIELDS})
@@ -229,7 +249,7 @@ def reflected(goal: dict) -> bool:
 
 
 def remember(root: Path, session: str, goal: dict | None = None) -> dict | None:
-    """Store this session's goal so deleting the record cannot end the session silently."""
+    """Pin this session's goal so deleting or swapping the record cannot end the session silently."""
     path = root / ".agent" / "finish-state.json"
     try:
         state = json.loads(path.read_text(encoding="utf-8"))
@@ -255,7 +275,7 @@ def hook(root: Path, goal_path: Path, event: dict, timeout: int) -> int:
     session = str(event.get("session_id") or "unknown")
     if not goal_path.exists():
         saved = remember(root, session)
-        if saved and text(saved.get("goal")):
+        if saved and text(saved.get("goal")) and not saved.get("met"):
             count = bump(root, session, "goal-removed")
             if count <= MAX_BLOCKS:
                 return block("The goal record was removed before the goal was met. Restore .agent/goal.json "
@@ -277,23 +297,42 @@ def hook(root: Path, goal_path: Path, event: dict, timeout: int) -> int:
             return block(f"Fix the goal record before finishing: {exc}")
         print(json.dumps({"systemMessage": f"finish-check: goal record still invalid ({exc}); session ended unchecked."}))
         return 0
-    remember(root, session, goal)
+    pinned = remember(root, session)
+    superseded = None
+    if pinned and text(pinned.get("goal")) and pinned["goal"] != goal["goal"] and not pinned.get("met"):
+        change = goal.get("supersedes")
+        if not (isinstance(change, dict) and change.get("goal") == pinned["goal"] and sentence(change.get("reason"))):
+            count = bump(root, session, "goal-swapped")
+            if count <= MAX_BLOCKS:
+                return block(f"The goal changed from {pinned['goal']!r} before it was met ({count}/{MAX_BLOCKS}). "
+                             "Restore it and finish, or add \"supersedes\": {\"goal\": <the old goal>, "
+                             "\"reason\": <why it changed>} to .agent/goal.json.")
+            gap = write_gap(root, pinned, [{"id": "goal-record", "check": "goal kept", "state": "unmet",
+                                            "why": f"goal replaced by {goal['goal']!r} without a reason"}],
+                            ended=True).relative_to(root)
+            print(json.dumps({"systemMessage": f"finish-check: session ended after its goal was replaced; "
+                                               f"original goal NOT verified. Gap record: {gap}"}))
+            return 0
+        superseded = {"goal": pinned["goal"], "reason": change["reason"]}
     results = evaluate(goal, root, timeout)
+    remember(root, session, dict(goal, met=all(r["state"] == "met" for r in results)))
     if all(r["state"] == "met" for r in results):
+        if superseded:
+            write_gap(root, goal, results, superseded=superseded)
         return 0
     key = "unmet:" + hashlib.sha256(goal["goal"].encode()).hexdigest()[:12]
     if all(r["state"] in ("met", "blocked") for r in results) and reflected(goal):
-        write_gap(root, goal, results)
+        write_gap(root, goal, results, superseded=superseded)
         return 0  # every remaining item names a real blocker and the process was reflected on
     if all(r["state"] in ("met", "blocked") for r in results):
         results = results + [{"id": "reflection", "check": "reflection filled", "state": "unmet",
                               "why": "fill reflection." + ", reflection.".join(GAP_FIELDS) + " in the goal record"}]
     count = bump(root, session, key)
     if count <= MAX_BLOCKS:
-        gap = write_gap(root, goal, results).relative_to(root)
+        write_gap(root, goal, results, superseded=superseded)
         return block(f"Goal not met ({count}/{MAX_BLOCKS}): {summary(results)}. Continue until each check "
-                     f"passes. If a real blocker prevents it, mark the item blocked with the blocker and fill "
-                     f"{', '.join(GAP_FIELDS)} in {gap}.")
+                     f"passes. If a real blocker prevents it, mark the item blocked with a blocker sentence and "
+                     f"fill reflection.{', reflection.'.join(GAP_FIELDS)} in {goal_path.name}.")
     gap = write_gap(root, goal, results, ended=True).relative_to(root)
     print(json.dumps({"systemMessage": f"finish-check: session ended with the goal NOT met: {summary(results)}. "
                                        f"Gap record: {gap}"}))

@@ -2,7 +2,7 @@
   "id": "finish-goal-removal",
   "rule": "Removing the goal record does not end the session silently",
   "file": "tools/finish_check.py",
-  "find": "        if saved and text(saved.get(\"goal\")):",
+  "find": "        if saved and text(saved.get(\"goal\")) and not saved.get(\"met\"):",
   "replace": "        if False:",
   "tests": [
     "tools.tests.test_finish_check.FinishCheckTests.test_removing_the_goal_record_does_not_end_the_session_silently"

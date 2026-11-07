@@ -2,7 +2,7 @@
   "id": "finish-recipe-can-fail",
   "rule": "A check whose recipe cannot fail proves nothing",
   "file": "tools/finish_check.py",
-  "find": "        if all(CANNOT_FAIL.match(line) for line in dry.stdout.splitlines() if line.strip()):",
+  "find": "        if all(CANNOT_FAIL.match(line) for line in dry.stdout.splitlines()):",
   "replace": "        if False:",
   "tests": [
     "tools.tests.test_finish_check.FinishCheckTests.test_recipes_that_cannot_fail_prove_nothing"

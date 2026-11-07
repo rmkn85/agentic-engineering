@@ -1,0 +1,10 @@
+{
+  "id": "finish-blocked-run-checks",
+  "rule": "A goal blocked on its only machine check can end blocked",
+  "file": "tools/finish_check.py",
+  "find": "            if state == \"unmet\" and item.get(\"status\") == \"blocked\" and sentence(item.get(\"blocker\")):",
+  "replace": "            if False:",
+  "tests": [
+    "tools.tests.test_finish_check.FinishCheckTests.test_a_goal_blocked_on_its_only_machine_check_can_end_blocked"
+  ]
+}

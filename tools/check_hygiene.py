@@ -18,13 +18,13 @@ import subprocess
 import sys
 from pathlib import Path
 
-DATED = re.compile(r"(19|20)\d{2}-?\d{2}-?\d{2}")
+DATED = re.compile(r"(19|20)\d{2}[-._]?\d{2}[-._]?\d{2}")
 PROCESS_WORD = r"(plans?|reviews?|handoffs?|status|retros?)"
-SCRATCH = re.compile(r"(^|/)(\.tmp|tmp|\.cache|\.agent-cache|node_modules|__pycache__)/|\.log$")
+SCRATCH = re.compile(r"(^|/)(\.tmp|tmp|scratch|\.cache|\.agent-cache|node_modules|__pycache__)/|\.(log|tmp)$")
 KEEP_FILES = {".keep", ".gitkeep"}
 
 
-DOCUMENT = re.compile(r"\.(md|markdown|txt|rst|adoc|org)$", re.I)
+DOCUMENT = re.compile(r"\.(md|markdown|txt|rst|adoc|org|json|ya?ml)$", re.I)
 
 
 def process_record(path: str) -> bool:

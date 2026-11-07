@@ -1,0 +1,10 @@
+{
+  "id": "hygiene-more-scratch",
+  "rule": "Tracked scratch directories and .tmp files are reported",
+  "file": "tools/check_hygiene.py",
+  "find": "|scratch|\\.cache",
+  "replace": "|\\.cache",
+  "tests": [
+    "tools.tests.test_check_hygiene.HygieneTests.test_more_scratch_and_dated_plan_spellings"
+  ]
+}
