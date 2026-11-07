@@ -8,3 +8,6 @@
 *.tmp
 .agent-bench/
 __pycache__/
+
+# Per-task goal records and gap records (local working state)
+.agent/

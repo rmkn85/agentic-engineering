@@ -20,3 +20,5 @@ jobs:
           fetch-depth: 2
       - name: Exercise native checks from cold and stale committed source
         run: make contributor-trial
+      - name: Refuse runtime prose growth that no mechanism enforces
+        run: make guidance-delta BASE=HEAD^1

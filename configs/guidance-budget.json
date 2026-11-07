@@ -1,0 +1,27 @@
+{
+  "default_reading": {
+    "files": [
+      "AGENTS.md",
+      "docs/agent-corpus/README.md"
+    ],
+    "max_words": 2240
+  },
+  "runtime": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "docs/*.md",
+    "skills/*.md",
+    "templates/*.md"
+  ],
+  "mechanism": [
+    "tools/*",
+    "schemas/*",
+    "configs/*",
+    "examples/*",
+    ".claude/*",
+    ".github/*",
+    "Makefile",
+    "experiments/*.json",
+    "experiments/fixtures/*"
+  ]
+}

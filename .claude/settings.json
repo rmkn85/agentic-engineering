@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/tools/finish_check.py\" --hook --root \"$CLAUDE_PROJECT_DIR\"",
+            "timeout": 600
+          }
+        ]
+      }
+    ]
+  }
+}
