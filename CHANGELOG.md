@@ -2,6 +2,32 @@
 
 ## Unreleased
 
+- Added optional authority-bound task controls, independent claim/scenario
+  evidence contracts, native transition gates, scoped capability receipts,
+  compare-and-swap reconciliation, feedback closure and semantic WIP admission.
+  Required controlled tasks fail closed through the existing project-work route.
+- Added selected-state observation, consistent task checkpoints, owned scratch
+  preserve/retire/restore and matched control evaluation under owner criteria.
+  Native CLI integration runs in `make check`; explicit negative cases cover
+  stale authority/evidence, denied capability and unsafe or stale state.
+- Indexed all nine research failure families against mechanisms, judgment and
+  primary-source provenance. Kept deeper rationale on demand and distinguished
+  experimental findings from hypotheses; no productivity gain is claimed.
+- Consolidated delivery-feasibility and preserved contribution histories. Kept
+  deliberate effort selection and the portable Medium baseline while adding
+  early route discovery and next-change responsibility.
+
+- Added scoped delivery claims, necessity checks, observation completeness and
+  invalidation, operational-entry proof, bounded recovery and resource-lifecycle
+  guidance through existing owners. The recurring root instructions are unchanged.
+- Made `quiet-run` explicitly process-only; added opt-in hash-bound JSON recall
+  coverage and continuation; separated benchmark worker/evaluation/observed-loop
+  timing and preserved worktrees containing recoverable state before retirement.
+- Added focused mechanism tests, primary-source research rationale and neutral
+  behavioral cases. A candidate-only supported-worker release repair passed
+  independent consumer acceptance; broad adherence and efficiency gains remain
+  unmeasured.
+
 - Made single capability authority explicit across entry points, adapters, jobs, compatibility and fallback paths. Module design and refactoring require native boundary checks that reject deliberate bypasses, alongside independent validation of the authority's coverage and calculations. This guidance does not establish conformance in adopting products.
 - Replaced undefined premium/allowlist terminology and the Medium-only ceiling with a dated explicit routing policy: Sol/Medium main coding, Luna/Medium focused workers and Luna/Low routine work; coordinator-justified Luna/High or Sol/Medium/High escalation; no Astra or above-High workers. Added native opt-in Codex defaults, reuse/role-override and no-installation cases, and the hosted Responses API same-model boundary. Treat 80/20 mixes as review heuristics rather than quotas, distinguish API prices from subscription usage, and preserve finite budgets and acceptance. This is an instruction/configuration update, not installed runtime enforcement or measured savings.
 - Replaced justified-inheritance exceptions with an explicit fail-closed worker dispatch contract covering launch, fork, resume and follow-up: non-premium model/effort allowlists, bounded context, finite assignment/aggregate budgets, no automatic budget resets and no premium-worker escalation. Updated the skill trigger and operating corpus, documented current native Codex defaults and their enforcement limits, and added proposed behavioral regression cases. Starter ceilings are policy choices, not measured optima; no runtime enforcement or cost saving is claimed.

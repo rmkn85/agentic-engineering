@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "outcome-gate/v1",
+  "title": "Native gate request",
+  "type": "object",
+  "properties": {
+    "authorityDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "actor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "enum": [
+        "admission",
+        "reduction",
+        "recovery"
+      ]
+    },
+    "paths": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*\\\\)[^/]+(?:/[^/]+)*$"
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "available",
+              "denied",
+              "unknown"
+            ]
+          },
+          "evidence": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*\\\\)[^/]+(?:/[^/]+)*$"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "required": [
+              "path",
+              "sha256"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "name",
+          "status",
+          "evidence"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "wipAfter": {
+      "type": "object",
+      "properties": {
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "claims": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "experiments": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "assumptions",
+        "changes",
+        "claims",
+        "experiments"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "authorityDigest",
+    "actor",
+    "purpose",
+    "paths",
+    "capabilities",
+    "wipAfter"
+  ],
+  "additionalProperties": false
+}

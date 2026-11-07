@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, json
+import argparse, json, math
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
@@ -22,9 +22,37 @@ def tok(m):
 
 
 def acceptance(m):
-    if m.get("codex_exit_code")!=0 or m.get("eval_exit_code") not in (None,0):
+    worker=m.get("codex_exit_code")
+    evaluation=m.get("eval_exit_code")
+    if (type(worker) is int and worker!=0) or (type(evaluation) is int and evaluation!=0):
         return "FAIL"
-    return "PASS" if m.get("eval_command") and m.get("eval_exit_code")==0 else "UNVERIFIED"
+    return "PASS" if (type(worker) is int and worker==0 and
+                      isinstance(m.get("eval_command"),str) and m["eval_command"].strip() and
+                      type(evaluation) is int and evaluation==0) else "UNVERIFIED"
+
+
+def duration(value):
+    if type(value) not in (int,float) or value<0:
+        return None
+    try:
+        return value if math.isfinite(value) else None
+    except OverflowError:
+        return None
+
+
+def timings(m):
+    """Never infer a measured loop from legacy worker/evaluation durations."""
+    worker=duration(m.get("wall_seconds"))
+    evaluation=duration(m.get("eval_wall_seconds"))
+    loop=duration(m.get("loop_wall_seconds"))
+    if (worker is None or evaluation is None or loop is None or
+            loop < worker + evaluation or acceptance(m)!="PASS"):
+        loop=None
+    return worker,evaluation,loop
+
+
+def seconds(value):
+    return f"{value:.1f}" if value is not None else "unavailable"
 
 
 def display(v): return str(v) if v is not None else "unavailable"
@@ -57,16 +85,17 @@ def main():
     ms=[load(p) for p in ns.metrics]
     price_col=" API-equivalent cost |" if prices[0] is not None else ""
     price_rule="---:|" if prices[0] is not None else ""
-    print(f"| label | accept | wall s | input | cached | cache % | output | reasoning | turns | commands | changed files | peak root input | compactions |{price_col}")
-    print(f"|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|{price_rule}")
+    print(f"| label | accept | worker s | input | cached | cache % | output | reasoning | turns | commands | changed files | peak root input | compactions |{price_col} eval s | passing-eval observed loop s |")
+    print(f"|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|{price_rule}---:|---:|")
     for m in ms:
         i,c,o,r=tok(m); ratio=f"{100*c/i:.1f}%" if i is not None and c is not None and i>0 else "unavailable"
         accept=acceptance(m)
+        worker,evaluation,loop=timings(m)
         q=m["counts"]; g=m["git"]
         root=m.get("root_responses") or {}
         peak=root.get("peak_input_tokens")
         compactions=root.get("compaction_count")
         price=estimate_cost((i,c,o,r),prices) if prices[0] is not None else None
         extra=f" {price:.4f} |" if price is not None else " unavailable |" if prices[0] is not None else ""
-        print(f"| {m['label']} | {accept} | {m['wall_seconds']:.1f} | {display(i)} | {display(c)} | {ratio} | {display(o)} | {display(r)} | {q['turns']} | {q['commands']} | {g['changed_files']} | {display(peak)} | {display(compactions)} |{extra}")
+        print(f"| {m['label']} | {accept} | {seconds(worker)} | {display(i)} | {display(c)} | {ratio} | {display(o)} | {display(r)} | {q['turns']} | {q['commands']} | {g['changed_files']} | {display(peak)} | {display(compactions)} |{extra} {seconds(evaluation)} | {seconds(loop)} |")
 if __name__=="__main__": main()

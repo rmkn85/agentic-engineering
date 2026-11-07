@@ -79,6 +79,13 @@ For discipline/enforcement rules, use pressure scenarios that create realistic c
 
 See [`experiments/instruction-context-adherence.md`](../../experiments/instruction-context-adherence.md).
 
+A running worker does not automatically receive edits to its instruction files.
+Use [active-context migration](../adoption/standards-migration.md#5-deliver-instructions-to-the-actual-agents):
+refresh the affected context through supported controls and verify a representative
+normal-stack decision. Copy parity or a worker's acknowledgment proves neither
+loading nor behavioral adoption. Keep independent product work moving when a
+host/model trial is unavailable, and report that proof boundary explicitly.
+
 ## Benchmark dimensions
 
 For a representative task, change one meaningful layer at a time when the tradeoff is uncertain:

@@ -17,10 +17,12 @@ Document deterministic commands and the cheapest useful validation sequence.
 - Before finalizing, re-check the requested outcome against actual state and evidence. Continue necessary authorized work rather than listing executable next steps; stop only when complete or genuinely blocked, without expanding into optional work.
 - Prefer deterministic tools for deterministic transformations.
 - Keep tool output concise; inspect full logs only when needed.
-- Record important assumptions and invalidations.
+- Record important assumptions and invalidations; preserve retrieval limits and refresh mutable facts when relevant conditions change.
 - Run appropriate verification through available authorized routes; diagnose relevant failures, repair and reverify before declaring completion.
 
 ## Local overrides
 Document project-specific constraints here rather than modifying shared engineering guidance.
 
 For source-code subtrees, prefer a small scoped/nested instruction such as [`source-AGENTS-agent-legible.md`](source-AGENTS-agent-legible.md) instead of adding code-writing detail to every repository-wide agent turn.
+
+For multi-component delivery or resource retirement, route to the relevant local copy of the [direct-delivery method](../docs/execution/direct-delivery.md) or [resource lifecycle](../docs/execution/resource-lifecycle.md). Keep procedures on demand and adapt these links when adopting the template.

@@ -1,40 +1,52 @@
 # Agentic Engineering continuation
 
-The portable contributor core now defines five engineering personas and selects
-them by the responsibility exercised in the current request. The operating corpus
-links that definition. Ordinary service restoration is an Operator concern handled
-by engineering; role labels confer no permissions or new approval gates. Adopt
-through existing local snapshots while preserving project rules. Wording and
-instruction-route checks establish the published definition; sustained agent
-adherence remains observable during ordinary work. `make check` passed all 199
-native tool tests with one skip; whitespace and role-attribution examples were
-reviewed against the agreed responsibilities.
+The long-running delivery update is ready for native adoption through the
+[outcome-control contract](../adoption/outcome-controls.md). Root `AGENTS.md`
+remains unchanged; the operating corpus adds one on-demand route. Deeper
+management and coding-agent research stays in the [rationale](../../references/outcome-evidence-control-2026-11.md)
+and [primary-source map](../../references/outcome-control-source-map.md), which
+cover all nine failure families and distinguish findings from hypotheses.
 
-Integrated product work follows `docs/execution/direct-delivery.md`. The current
-refinement prioritizes common user journeys and the next connected deliverable,
-ties enabling work to concrete outcome gaps, and keeps process support compact.
-The 80/20 and nested 70/30 ratios are qualitative judgment guides; full acceptance
-and binding safety/permission conditions remain intact. Existing task fields
-carry the outcome, scenario, deliverable, implementation/interfaces and finish.
+The optional task extension binds authorization, source, conditions, edit rights,
+claim applicability and owner-declared WIP limits. Required controlled tasks fail
+closed in the existing project-work validator. Claims have independent native
+evidence and prerequisites. Gates cover start/resume, write, integration and
+completion; a compare-and-swap reference writer reconciles the existing task
+without changing authority or erasing history. Feedback decisions retain expected
+and observed effect, and pending effects block another substantial admission.
+Recovery begins with a truthful reopened task, not a stale-evidence bypass.
 
-The detailed method stays in direct delivery. Steering, efficient-execution and
-the portable contributor core point to it or supply a compact local fallback.
-Context uses an enduring core, current outcome/progress/next action and relevant
-evidence retrieved on demand. Reports lead with usable capability. Existing
-ownership, routing, bounded recovery and completion boundaries remain binding.
-No new task schema, ledger, quota checker or qualification stage was introduced.
+Runtime controls supply current scoped filesystem observations, selected-state
+monitoring, consistent task checkpoints and verified owned scratch retirement and
+restore. Evaluation compares matched accepted outcomes under explicit owner
+criteria, retaining failures, unfinished work and unknown measurements. The
+producer/owner trust boundary is explicit: JSON does not authenticate authority,
+discover undeclared consumers or supply human judgment. Install controls in the
+actual native writer and CI path; merely copying files cannot enforce them.
 
-Shared machine boundaries now have an on-demand practice in
-`docs/interfaces/machine-contracts.md`, linked from specification, interface and
-newcomer routes and summarized in the portable contributor core. Adopt it
-incrementally through the existing semantic owner and local release/acceptance
-routes. Independent consumer and provider work can use contract examples and
-mocks; provider integration and product acceptance remain separate evidence.
+`tools/make control-*` exposes strict parameterized command routes.
+`make check` passed 289 tests with one optional browser skip and 28 native
+integration checks. `make contributor-trial` is the committed-source cold/stale
+acceptance route. Independent review identified and corrected exact JSON
+condition binding, missing-telemetry semantics, numeric/boolean observation
+comparison and mixed unknown/failed evaluation criteria; follow-up review found
+no concrete blocker. See [trial evidence and limits](../../experiments/outcome-evidence-control.md).
 
-Validation: `make check` ran 199 native tool tests successfully with one skip;
-the changed guidance received wording, privacy and whitespace review. These
-checks establish tool/navigation compatibility, not agent adherence or delivery
-savings. The next useful evidence is application during authorized integrated
-delivery: observe whether the selected work closes the common journey gap while
-preserving required contrasts and boundaries. Shared publication does not
-authorize editing unrelated consumer workspaces or personal settings.
+A bounded Luna Medium worker also followed the fixture's normal instruction and
+native command route: it rejected stale completion, reconciled/reopened claims,
+passed the recovery gate, repaired actual source and reached independent consumer
+acceptance. This and the earlier release repair are candidate-only observations.
+No causal productivity improvement, automatic real-host installation, sustained
+adherence, power-loss recovery or product/experiential acceptance is claimed.
+
+The consolidated delivery-feasibility work preserves early executable-route
+discovery and next-observable-change responsibility. Portable effort remains a
+deliberate choice with the existing Medium baseline; no personal host configuration
+was changed. Earlier observation-recall, benchmark-preservation, machine-contract,
+direct-delivery and engineering-persona guidance remains in its owning documents.
+
+Adopting owners should use their next authorized delivery, preserve local rules,
+record received instructions and actual native bindings, and keep product,
+operational and human acceptance open until independently supported. Retire or
+revise controls whose measured total cost exceeds their benefit; do not create a
+parallel backlog or universal quota policy.

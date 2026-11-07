@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "outcome-evidence/v1",
+  "title": "Hashed owner-specific evidence envelope",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "outcome-evidence/v1"
+    },
+    "claim": {
+      "enum": [
+        "implemented",
+        "verified",
+        "integrated",
+        "available",
+        "accepted"
+      ]
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authorityDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sourceDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "conditions": {
+      "type": "object"
+    },
+    "class": {
+      "enum": [
+        "mechanical",
+        "expert",
+        "human"
+      ]
+    },
+    "producer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "enum": [
+        "passed",
+        "failed",
+        "unknown"
+      ]
+    },
+    "native": {
+      "type": "object",
+      "properties": {
+        "completed": {
+          "type": "boolean"
+        },
+        "pass": {
+          "type": "boolean"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "candidateDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "loadedDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "completed",
+        "pass",
+        "errors",
+        "candidateDigest"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema",
+    "claim",
+    "scenario",
+    "authorityDigest",
+    "sourceDigest",
+    "conditions",
+    "class",
+    "producer",
+    "reviewer",
+    "observedAt",
+    "status",
+    "native"
+  ],
+  "additionalProperties": false
+}

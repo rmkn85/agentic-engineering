@@ -1,0 +1,7 @@
+{
+  "status": "running",
+  "remaining": 8,
+  "candidate": "candidate-a",
+  "observedAt": "2026-11-07T00:00:00Z",
+  "exhaustion": false
+}

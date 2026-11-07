@@ -19,6 +19,13 @@ The [frontier schema](../../schemas/axioms-frontier-v1.schema.json) requires `sc
 
 Python 3.9+ and its standard library are sufficient. Vendor the reviewed **exact** `tools/project_work.py` file and retain its upstream commit in the adopter's existing provenance record. There is no sibling repository, package manager, server build or network dependency.
 
+For the optional [outcome-control extension](outcome-controls.md), also vendor
+`tools/outcome_control.py` from the same reviewed revision beside it. Required
+controlled tasks fail validation if that helper or their control extension is
+missing. Legacy tasks without this policy retain the single-file route. The
+reference compare-and-swap writer is a separate explicit activity; the generic
+project view still never rewrites task/frontier records.
+
 ```sh
 python3 tools/project_work.py --root . validate
 python3 tools/project_work.py --root . build

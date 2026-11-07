@@ -1,4 +1,4 @@
-# Opt-in native Codex routing preset. Policy: 2026-11-01; source audit: 2026-10-04.
+# Opt-in native Codex routing preset. Policy: 2026-11-07; source audit: 2026-10-04.
 # EXAMPLE to merge, not an installer. Preserve permissions and unrelated settings.
 # A saved app selection is not a dispatch plan; these defaults do not choose
 # the executor, model/effort or number of workers for the next outcome.
@@ -35,6 +35,12 @@ expose_spawn_agent_model_overrides = true
 # Preserve an existing intentional mode hint when merging. It changes delegation
 # policy independently of model/effort defaults and should not be silently erased.
 multi_agent_mode_hint_text = """
+Keep root responsibility for framing, sequencing, integration and acceptance
+separate from bounded worker execution. Select effort for the actual remaining
+judgment under current owner limits; a settled worker plan does not end steering.
+Before dependent fan-out, identify the next observable delivery change and the
+actual execution/approval route. Resolve unavailable required capabilities,
+preserve working state and continue genuinely independent required work.
 Delegate when context isolation, specialized attention, continuity or parallel
 progress outweighs coordination cost. Use deterministic tools for mechanical
 work and keep tightly coupled judgment local. Select the executor and useful
@@ -82,7 +88,8 @@ acceptance/integration or a genuine stop/handoff. Isolate concurrent writers in
 owned worktrees; coordinate shared boundaries and integration, not each next
 step. Use PRs where repository policy requires them. Preserve
 source/data/evidence before clearing owned scratch; retain valid shared caches.
-Prepare sandboxed work first. External effects use reviewed parameterized native
+Check execution feasibility early; prepare in the sandbox before external effects.
+External effects use reviewed parameterized native
 activities with narrow approval/allowlisting; reject ad-hoc inline escalation.
 Select model, reasoning_effort and fork_turns explicitly at launch. Follow the
 owner's scoped co-developer authorization, including model/effort, concurrency

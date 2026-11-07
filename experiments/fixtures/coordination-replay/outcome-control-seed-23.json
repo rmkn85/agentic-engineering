@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "observed_on": "2026-11-07",
+  "fixture": "coordination-replay",
+  "seed": 23,
+  "executor": {
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "route": "supported worker; explicitly loaded corpus"
+  },
+  "guidance_sha256": {
+    "AGENTS.md": "1854bfbc370e42ff907f2bed6058aad902bf1a5a256a70e6711b5e94f767960f",
+    "docs/agent-corpus/README.md": "5072c708ca4d1723a97b9ce1698ffb574438b4b2dfdfaca5b607c9235cfd3651"
+  },
+  "patch": "outcome-control-seed-23.patch",
+  "patch_sha256": "4382693f3e8dcd4aecdd2d2cdd0d8dd6bb17c1f3075c058d91bcfab5d9edd752",
+  "baseline": {
+    "public_tests": 2,
+    "public_verdict": "pass",
+    "independent_verdict": "fail: installed_sha256 does not match selected source"
+  },
+  "candidate": {
+    "public_tests": 2,
+    "public_verdict": "pass",
+    "independent_verdict": "pass",
+    "checked": [
+      "source/package/install/consumer identity",
+      "repeat publication",
+      "corrupt-package live-state preservation"
+    ]
+  },
+  "attribution": "candidate-only observation; no causal improvement claim",
+  "tokens": null,
+  "authorization_to_acceptance_seconds": null,
+  "remaining": [
+    "automatic normal-host loading",
+    "deeper procedure adherence",
+    "paired baseline comparison",
+    "real workspace adoption",
+    "experiential acceptance"
+  ]
+}

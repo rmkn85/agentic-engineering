@@ -1,0 +1,17 @@
+{
+  "now": "2026-01-03T00:00:00Z",
+  "policy": {
+    "minimum_matched_pairs": 2,
+    "desired_leadtime_reduction_fraction": 0.15,
+    "desired_rescue_reduction_fraction": 0.5,
+    "max_escaped_defect_increase": 0,
+    "max_control_overhead_fraction": 0.2,
+    "intentional_differences": []
+  },
+  "observations": [
+    {"pair_id":"sample-1","arm":"baseline","acceptance":"same reviewed outcome","taskclass":"small change","model":"model-x","harness":"harness-v1","conditions":"condition-set-a","outcome":"accepted","authorized_at":"2026-01-01T00:00:00Z","accepted_at":"2026-01-01T00:20:00Z","feedback_at":"2026-01-01T00:10:00Z","edit_at":"2026-01-01T00:05:00Z","rescue":2,"rework":1,"escaped_defects":0,"active_seconds":900,"control_seconds":0,"model_usage":null},
+    {"pair_id":"sample-1","arm":"candidate","acceptance":"same reviewed outcome","taskclass":"small change","model":"model-x","harness":"harness-v1","conditions":"condition-set-a","outcome":"accepted","authorized_at":"2026-01-01T00:00:00Z","accepted_at":"2026-01-01T00:15:00Z","feedback_at":"2026-01-01T00:08:00Z","edit_at":"2026-01-01T00:04:00Z","rescue":1,"rework":0,"escaped_defects":0,"active_seconds":780,"control_seconds":60,"model_usage":null},
+    {"pair_id":"sample-2","arm":"baseline","acceptance":"same reviewed outcome","taskclass":"small change","model":"model-x","harness":"harness-v1","conditions":"condition-set-a","outcome":"accepted","authorized_at":"2026-01-02T00:00:00Z","accepted_at":"2026-01-02T00:30:00Z","feedback_at":"2026-01-02T00:16:00Z","edit_at":"2026-01-02T00:06:00Z","rescue":2,"rework":1,"escaped_defects":0,"active_seconds":1380,"control_seconds":0,"model_usage":null},
+    {"pair_id":"sample-2","arm":"candidate","acceptance":"same reviewed outcome","taskclass":"small change","model":"model-x","harness":"harness-v1","conditions":"condition-set-a","outcome":"accepted","authorized_at":"2026-01-02T00:00:00Z","accepted_at":"2026-01-02T00:22:00Z","feedback_at":"2026-01-02T00:11:00Z","edit_at":"2026-01-02T00:05:00Z","rescue":1,"rework":0,"escaped_defects":0,"active_seconds":1260,"control_seconds":120,"model_usage":null}
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "scope": "/tmp/owned-scratch",
+  "owned": true,
+  "authorization": "unknown",
+  "authorizationRevision": "owner-revision-1"
+}

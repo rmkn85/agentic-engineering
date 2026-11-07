@@ -11,7 +11,7 @@ Choose the cheapest reliable intervention: remove unnecessary work; fix an exist
 
 Apply the [specification contract](../../docs/specifications/README.md) and [technical-language rules](../../docs/specifications/technical-language.md) to the guidance itself. Preserve requirement strength, actors, conditions, units and exceptions during wording changes. Separate changed behavior from editorial cleanup and connect material obligations to a preserving mechanism and independent check. Do not claim standard conformance from a summary.
 
-Define applicability by process capability, not incident history. Include the motivating case, a contrasting case that should not trigger the intervention, possible regressions and rollback. Exercise actual behavior where available. File presence, generated-document equality and a worker's success report are not sufficient proof.
+Define applicability by process capability, not incident history. Include the motivating case, a contrasting case that should not trigger the intervention, possible regressions and rollback. Exercise actual behavior where available. File presence, generated-document equality and a worker's success report are not sufficient proof. Use the [active-context migration trial](../../docs/adoption/standards-migration.md#5-deliver-instructions-to-the-actual-agents) to establish what the actual worker received and did through its normal entry; distinguish receipt, adoption and effect.
 
 Generalize reusable mechanisms with neutral examples. Keep private incidents, project decisions, internal links and identifying environment data with their owner. Preserve substantive rationale separately from the compact operating procedure.
 

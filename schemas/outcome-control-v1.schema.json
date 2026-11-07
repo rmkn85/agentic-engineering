@@ -1,0 +1,588 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "outcome-control/v1",
+  "title": "Task outcome control extension",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "outcome-control/v1"
+    },
+    "authorization": {
+      "type": "object",
+      "properties": {
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nonGoals": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "invariants": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "decisionRights": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "editScope": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*\\\\)[^/]+(?:/[^/]+)*$"
+          }
+        },
+        "deniedScope": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*\\\\)[^/]+(?:/[^/]+)*$"
+          }
+        },
+        "requiredCapabilities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "scope": {
+                "type": "string",
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*\\\\)[^/]+(?:/[^/]+)*$"
+              },
+              "producer": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "name",
+              "scope",
+              "producer"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "claims": {
+          "type": "object",
+          "properties": {
+            "implemented": {
+              "$ref": "#/$defs/claimRule"
+            },
+            "verified": {
+              "$ref": "#/$defs/claimRule"
+            },
+            "integrated": {
+              "$ref": "#/$defs/claimRule"
+            },
+            "available": {
+              "$ref": "#/$defs/claimRule"
+            },
+            "accepted": {
+              "$ref": "#/$defs/claimRule"
+            }
+          },
+          "required": [
+            "implemented",
+            "verified",
+            "integrated",
+            "available",
+            "accepted"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "revision",
+        "owner",
+        "nonGoals",
+        "invariants",
+        "decisionRights",
+        "editScope",
+        "deniedScope",
+        "requiredCapabilities",
+        "claims"
+      ],
+      "additionalProperties": false
+    },
+    "assignment": {
+      "type": "object",
+      "properties": {
+        "authorityDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "sourceDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "conditionsDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "actor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rights": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "authorityDigest",
+        "sourceDigest",
+        "conditionsDigest",
+        "actor",
+        "rights"
+      ],
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/fileReference"
+      },
+      "minItems": 1
+    },
+    "conditions": {
+      "type": "object"
+    },
+    "claims": {
+      "type": "object",
+      "properties": {
+        "implemented": {
+          "$ref": "#/$defs/claimState"
+        },
+        "verified": {
+          "$ref": "#/$defs/claimState"
+        },
+        "integrated": {
+          "$ref": "#/$defs/claimState"
+        },
+        "available": {
+          "$ref": "#/$defs/claimState"
+        },
+        "accepted": {
+          "$ref": "#/$defs/claimState"
+        }
+      },
+      "required": [
+        "implemented",
+        "verified",
+        "integrated",
+        "available",
+        "accepted"
+      ],
+      "additionalProperties": false
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "authorityDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "sourceDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "conditionsDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "trigger": {
+            "enum": [
+              "result",
+              "goal",
+              "capability",
+              "repeated-failure",
+              "resume",
+              "completion"
+            ]
+          },
+          "constraint": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1
+          },
+          "expected": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reconsider": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/fileReference"
+            }
+          },
+          "effect": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "decisionId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "observed": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "matchesExpected": {
+                    "type": "boolean"
+                  },
+                  "followUp": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "evidence": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/fileReference"
+                    },
+                    "minItems": 1
+                  }
+                },
+                "required": [
+                  "decisionId",
+                  "observed",
+                  "matchesExpected",
+                  "followUp",
+                  "evidence"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "state": {
+            "enum": [
+              "continuation",
+              "blocked",
+              "stopped",
+              "complete"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "owner",
+          "authorityDigest",
+          "sourceDigest",
+          "conditionsDigest",
+          "trigger",
+          "constraint",
+          "action",
+          "expected",
+          "reconsider",
+          "evidence",
+          "effect",
+          "state"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "wip": {
+      "type": "object",
+      "properties": {
+        "limits": {
+          "type": "object",
+          "properties": {
+            "assumptions": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "changes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "claims": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "experiments": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "items": {
+          "type": "object",
+          "properties": {
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "changes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "claims": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "experiments": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "assumptions",
+            "changes",
+            "claims",
+            "experiments"
+          ],
+          "additionalProperties": false
+        },
+        "exceptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "owner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "category": {
+                "enum": [
+                  "assumptions",
+                  "changes",
+                  "claims",
+                  "experiments"
+                ]
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "expiresAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "owner",
+              "category",
+              "limit",
+              "expiresAt",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "history": {
+          "type": "array",
+          "items": {}
+        },
+        "overheadSeconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "limits",
+        "items",
+        "exceptions",
+        "history",
+        "overheadSeconds"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema",
+    "authorization",
+    "assignment",
+    "source",
+    "conditions",
+    "claims",
+    "decisions",
+    "wip"
+  ],
+  "additionalProperties": false,
+  "description": "Opt-in control extension in the existing canonical task. The Python validator additionally checks file bytes, authority, identities, prerequisites, freshness and state.",
+  "$defs": {
+    "fileReference": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*\\\\)[^/]+(?:/[^/]+)*$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "claimRule": {
+      "type": "object",
+      "properties": {
+        "applicable": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scenario": {
+          "type": "string",
+          "minLength": 1
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "implemented",
+              "verified",
+              "integrated",
+              "available",
+              "accepted"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "classes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "mechanical",
+              "expert",
+              "human"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "producers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "reviewers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "loadedRequired": {
+          "type": "boolean"
+        },
+        "maxAgeSeconds": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "applicable",
+        "reason",
+        "scenario",
+        "prerequisites",
+        "classes",
+        "producers",
+        "reviewers",
+        "loadedRequired"
+      ],
+      "additionalProperties": false
+    },
+    "claimState": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "enum": [
+            "open",
+            "satisfied",
+            "not-applicable"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fileReference"
+          }
+        }
+      },
+      "required": [
+        "state",
+        "evidence"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

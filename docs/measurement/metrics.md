@@ -1,5 +1,9 @@
 # Efficiency metrics
 
+Use the [control-evaluation helper](control-evaluation.md) for an explicit
+owner-defined adoption comparison; it preserves missing and unmatched evidence
+instead of inferring savings or promoting a successful subset.
+
 The governing comparison is **same required outcome, lower total resource use**.
 
 Do not optimize a single metric in isolation. A task that uses 30% fewer tokens but fails acceptance is not an efficiency improvement.
@@ -20,6 +24,29 @@ Before optimizing a leaf operation, establish a plausible ceiling on improvement
 Compare matched baseline and candidate conditions where feasible; describe material differences and label a single observation as such. Do not invent percentiles or costs. Link retries to the original operation and retain the age of unfinished work. If using first-valid product-result rate as a supporting metric, state its numerator, denominator and validity criteria; exclude unfinished operations from successful results while showing them separately. If measuring time to first valid product result, state its boundaries and population as well. Keep failed and cancelled attempts visible.
 
 Assertions, hashes, checksums, commits and agent activity support evidence and diagnosis; they receive no product-progress credit. Collect supporting activity and resource telemetry only when it can explain a decision, risk or comparison. Do not create a dashboard, standing review or parallel tracker solely for this scorecard.
+
+Separate a component timer from the observed feedback interval and from the
+authorization-to-acceptance interval. Record start/end events and included phases;
+include queueing, preparation, compilation, retries and required judgment when
+they fall inside that interval. Do not add overlapping phase times or relabel an
+unfinished attempt as a successful latency sample. Report unfinished age, failed
+attempts, human corrections and control overhead alongside accepted outcomes.
+
+The local benchmark's `wall_seconds` measures its worker invocation only.
+`eval_wall_seconds` measures the selected check; `loop_wall_seconds` spans setup
+through that check's completion (or worker completion when no check is supplied).
+This interval excludes work before invocation and subsequent human acceptance,
+publication and resource retirement. The comparison's passing-evaluation loop is
+available only for a successful worker and specified evaluation with valid timing;
+it does not prove that the check covers every product requirement. Legacy records
+without that measured interval remain unavailable, not a sum inferred from phases.
+
+For control changes, distinguish source installed, instructions received, behavior
+observed and outcome accepted. Count stale-evidence decisions, false completion,
+unnecessary owner rescue, avoidable repeats and preserved/retired resources only
+when the existing trace supports them. Shared account usage cannot be attributed
+to one worker without run-level evidence. Revert or scope a control whose overhead
+exceeds its demonstrated benefit under unchanged acceptance.
 
 Executive updates and worker returns use the existing task's facts: **Delivered** (accepted user capability, or explicitly none), **Measured improvement** (same relevant operation before and after, or unknown), **Remaining gap**, **Next action** (owner, expected effect and decisive observation), and **Evidence** (retrievable source/result links). Describe local checks, infrastructure repairs and experiments separately; do not put them under delivered user capability. A reduced or failed acceptance path delivers none of the required outcome. A valid finding can change the next action without closing delivery.
 
