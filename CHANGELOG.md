@@ -19,7 +19,7 @@
 
 - Added scoped delivery claims, necessity checks, observation completeness and
   invalidation, operational-entry proof, bounded recovery and resource-lifecycle
-  guidance through existing owners. The recurring root instructions are unchanged.
+  guidance through existing owners. These outcome procedures remain on demand.
 - Made `quiet-run` explicitly process-only; added opt-in hash-bound JSON recall
   coverage and continuation; separated benchmark worker/evaluation/observed-loop
   timing and preserved worktrees containing recoverable state before retirement.

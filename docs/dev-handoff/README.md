@@ -1,8 +1,9 @@
 # Agentic Engineering continuation
 
 The long-running delivery update is ready for native adoption through the
-[outcome-control contract](../adoption/outcome-controls.md). Root `AGENTS.md`
-remains unchanged; the operating corpus adds one on-demand route. Deeper
+[outcome-control contract](../adoption/outcome-controls.md). The controls add no
+always-loaded checklist; the consolidated feasibility work refines one existing
+root invariant, and the operating corpus adds one on-demand route. Deeper
 management and coding-agent research stays in the [rationale](../../references/outcome-evidence-control-2026-11.md)
 and [primary-source map](../../references/outcome-control-source-map.md), which
 cover all nine failure families and distinguish findings from hypotheses.
