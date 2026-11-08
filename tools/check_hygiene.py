@@ -2,7 +2,8 @@
 """Report repository state that agents leave behind instead of cleaning up.
 
 - merged branches that were never deleted (local branches fully merged into BASE)
-- extra worktrees still registered
+- extra worktrees older than a day, or more of them than the cap (default 3);
+  a younger worktree within the cap is active parallel work
 - dated plan, review, handoff or status trees (one current handoff is enough;
   history lives in Git)
 - tracked scratch, cache or log files
@@ -16,7 +17,11 @@ import argparse
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
+
+MAX_WORKTREE_HOURS = 24  # land the branch and remove its worktree the same day
+MAX_WORKTREES = 3        # DORA: three or fewer active branches
 
 DATED = re.compile(r"(19|20)\d{2}[-._]?\d{2}[-._]?\d{2}")
 PROCESS_WORD = r"(plans?|reviews?|handoffs?|status|retros?)"
@@ -65,7 +70,19 @@ def git(root: Path, *args: str) -> list[str]:
     return [line for line in out.splitlines() if line.strip()]
 
 
-def findings(root: Path, base: str | None) -> list[str]:
+def worktree_age_hours(path: Path) -> float | None:
+    """Hours since Git created the linked worktree (mtime of its admin 'commondir' file)."""
+    try:
+        admin = Path((path / ".git").read_text().split("gitdir:", 1)[1].strip())
+        if not admin.is_absolute():
+            admin = (path / admin).resolve()
+        return (time.time() - (admin / "commondir").stat().st_mtime) / 3600
+    except (OSError, IndexError):
+        return None  # missing or unreadable worktree: git worktree prune reports it
+
+
+def findings(root: Path, base: str | None, max_hours: float = MAX_WORKTREE_HOURS,
+             max_worktrees: int = MAX_WORKTREES) -> list[str]:
     found = []
     base = base or default_base(root)
     if base and not exists(root, base):
@@ -83,8 +100,15 @@ def findings(root: Path, base: str | None) -> list[str]:
             found.append(f"merged branch not deleted: {branch} (git branch -d {branch})")
     worktrees = [line.split(" ", 1)[1] for line in git(root, "worktree", "list", "--porcelain")
                  if line.startswith("worktree ")]
-    for extra in worktrees[1:]:
-        found.append(f"extra worktree still registered: {extra} (harvest, then git worktree remove)")
+    extras = worktrees[1:]
+    if len(extras) > max_worktrees:
+        found.append(f"{len(extras)} extra worktrees exceed the cap of {max_worktrees}: "
+                     + ", ".join(extras) + " (land or remove before starting more)")
+    for extra in extras:
+        hours = worktree_age_hours(Path(extra))
+        if hours is not None and hours > max_hours:
+            found.append(f"extra worktree {extra} is {hours:.0f}h old, over {max_hours:g}h "
+                         "(land it on the trunk the same day, harvest, then git worktree remove)")
     for path in git(root, "ls-files"):
         if process_record(path):
             found.append(f"dated process record: {path} (keep one current handoff; history is in Git)")
@@ -98,8 +122,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", default=".")
     parser.add_argument("--base", help="trunk to compare branches with (default: origin HEAD, main, master)")
     parser.add_argument("--strict", action="store_true")
+    parser.add_argument("--max-worktree-hours", type=float, default=MAX_WORKTREE_HOURS)
+    parser.add_argument("--max-worktrees", type=int, default=MAX_WORKTREES)
     args = parser.parse_args(argv)
-    found = findings(Path(args.root).resolve(), args.base)
+    found = findings(Path(args.root).resolve(), args.base, args.max_worktree_hours, args.max_worktrees)
     for line in found:
         print(f"hygiene: {line}")
     if not found:

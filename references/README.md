@@ -21,6 +21,7 @@ The operational docs should therefore contain the **current decision rule**. Thi
 - [`outcome-control-source-map.md`](outcome-control-source-map.md) — verified primary-source findings, study limits, provenance corrections and unresolved citations for the outcome-control design.
 
 - [`necessity-before-method-2026-11.md`](necessity-before-method-2026-11.md) — why kernel item 7 asks whether something is needed before how to build it: ordered requirement challenge, deletion, simplification and optimization, with a preservation guard; sources and evidence status.
+- [`trunk-based-agent-worktrees-2026-11.md`](trunk-based-agent-worktrees-2026-11.md) — why worktrees are created only for colliding concurrent writers, land the same day and are capped at three: DORA, Fowler, trunkbaseddevelopment.com, Google and agent-host sources with evidence status.
 
 - [`reasoning-effort-2026-11.md`](reasoning-effort-2026-11.md) — effort economics, prompt-induced alternative exploration, evidence limits, and the rationale for uncertainty-based routing with proportional sampling.
 
