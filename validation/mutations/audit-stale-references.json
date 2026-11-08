@@ -2,7 +2,7 @@
   "id": "audit-stale-references",
   "rule": "Links to missing files in instructions are reported",
   "file": "tools/work_audit.py",
-  "find": "            if not (root / rel).parent.joinpath(target).exists():",
+  "find": "            if not base.joinpath(path.lstrip(\"/\")).exists():",
   "replace": "            if False:",
   "tests": [
     "tools.tests.test_work_audit.WorkAuditTests.test_links_to_missing_files_in_instructions_are_reported"
