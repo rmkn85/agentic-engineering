@@ -307,6 +307,15 @@ class WorkAuditTests(unittest.TestCase):
         self.assertIn("allowlist", self.kinds(report))
         self.assertTrue(any("invalid ignore rule" in note for note in report["notes"]))
 
+    def test_direction_findings_cannot_be_silenced(self):
+        for n in range(6):
+            self.commit(f"docs/n{n}.md", "x\n", f"docs: record checkpoint {n}")
+        self.write(".agent/audit.json", json.dumps({"ignore": [
+            {"kind": "loop", "reason": "we prefer documenting things first here"}]}))
+        report = self.report()
+        self.assertIn("loop", self.kinds(report))
+        self.assertTrue(any("invalid ignore rule" in note for note in report["notes"]))
+
     def test_handoff_that_grew_into_a_history_is_reported(self):
         self.commit("docs/dev-handoff/README.md", "current\n", "docs: handoff")
         self.commit("docs/dev-handoff/2026-11-01.md", "older\n", "docs: handoff history")

@@ -1,0 +1,10 @@
+{
+  "id": "audit-direction-not-ignorable",
+  "rule": "Ignore rules cannot silence direction, knowledge or flow findings",
+  "file": "tools/work_audit.py",
+  "find": "        if (isinstance(rule, dict) and rule.get(\"kind\") in IGNORABLE and isinstance(rule.get(\"path\", \"*\"), str)",
+  "replace": "        if (isinstance(rule, dict) and rule.get(\"kind\") in ORDER and isinstance(rule.get(\"path\", \"*\"), str)",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_direction_findings_cannot_be_silenced"
+  ]
+}

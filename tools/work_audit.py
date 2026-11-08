@@ -692,7 +692,11 @@ AREAS = (direction, evidence, knowledge, guidance, flow, harness, code)
 ORDER = ["goal", "loop", "repeat", "tasks", "unfinished", "vacuous-tests", "cannot-fail", "handoff",
          "stale-references", "instructions", "instruction-growth", "entry", "wip", "hygiene", "large-files",
          "allowlist", "todo-notes", "size"]
-NEVER_FOCUS = {"todo-notes", "size"}  # advisory: acted on when a task touches the code, never a task by themselves
+NEVER_FOCUS = {"todo-notes", "size"}
+# Per-file judgements that can be wrong in a given repository. Direction, knowledge and flow findings are
+# counted facts about history and state; an ignore rule cannot silence them.
+IGNORABLE = {"unfinished", "todo-notes", "vacuous-tests", "cannot-fail", "stale-references", "size", "large-files",
+             "allowlist"}  # advisory: acted on when a task touches the code, never a task by themselves
 AREA = {kind: area for area, kinds in (
     ("direction", ("goal", "loop", "repeat", "tasks")),
     ("evidence", ("unfinished", "vacuous-tests", "cannot-fail", "todo-notes")),
@@ -718,11 +722,12 @@ def ignore_rules(cfg: dict) -> list[dict]:
     """Verified false positives recorded in .agent/audit.json: {"kind", "path" (glob), "reason"}."""
     rules = []
     for rule in cfg.get("ignore", []) if isinstance(cfg.get("ignore"), list) else []:
-        if (isinstance(rule, dict) and rule.get("kind") in ORDER and isinstance(rule.get("path", "*"), str)
+        if (isinstance(rule, dict) and rule.get("kind") in IGNORABLE and isinstance(rule.get("path", "*"), str)
                 and len(re.findall(r"[A-Za-z]{2,}", str(rule.get("reason", "")))) >= 3):
             rules.append(rule)
         else:
-            NOTES.append(f"ignored invalid ignore rule {rule!r}: it needs a known kind and a reason of three words")
+            NOTES.append(f"ignored invalid ignore rule {rule!r}: it needs a reason of three words and one of "
+                         f"these kinds: {', '.join(sorted(IGNORABLE))}")
     return rules
 
 
