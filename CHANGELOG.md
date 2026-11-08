@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Work is ranked: keep running systems up, then make failures explain
+  themselves, then deliver new results (AGENTS.md step 2). Direct delivery's
+  70/30 feature bias now yields to that order. A step-4 sentence duplicating
+  kernel item 5 was removed to pay for it.
+
 - Kernel item 7 now asks whether something is needed before how to build it:
   question the requirement, try deletion or reuse, simplify, then optimize,
   naming where any removed ability is preserved. Removed duplicated runtime

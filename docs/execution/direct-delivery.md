@@ -42,8 +42,9 @@ qualitative guide: concentrate on common scenarios while covering less common
 scenarios where requirements or consequences make them necessary. Within that
 focus, use **70/30** to favor features and use cases over the enabling work that
 makes them possible. These nested ratios express judgment, not time allocations,
-quotas, task counts or acceptance exemptions. A consequential boundary can warrant
-immediate work; complete required scope even when its proportions differ.
+quotas, task counts or acceptance exemptions. Keeping systems up and
+failures self-explaining comes first; complete required scope
+even when its proportions differ.
 
 Keep coordination, plan upkeep and CI/merge/deployment boilerplate in the smallest
 supporting corner. Run the required delivery operations as part of finishing the
