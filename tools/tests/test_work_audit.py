@@ -106,7 +106,8 @@ class WorkAuditTests(unittest.TestCase):
                     "PATTERN = 'TODO|FIXME'\nSAMPLE = \"raise NotImplementedError\"\n", "feat: lint")
         self.commit("src/lint.js", "const PATTERN = \"TODO|FIXME\";\n", "feat: lint js")
         finding = self.finding(self.report(), "unfinished")
-        self.assertIn("2 unfinished markers", finding["problem"])
+        self.assertIn("2 stubs or skipped tests", finding["problem"])
+        self.assertNotIn("todo-notes", self.kinds(self.report()))  # marker words inside strings are data
         self.assertIn("src/pay.py", finding["problem"] + finding["action"])
 
     def test_a_loop_with_unfinished_code_names_the_target_and_says_to_continue(self):
@@ -275,6 +276,36 @@ class WorkAuditTests(unittest.TestCase):
         self.assertTrue(report["findings"])
         self.assertTrue(all(f["area"] in ("direction", "evidence", "knowledge", "instructions", "flow", "harness",
                                           "code") for f in report["findings"]))
+
+    def test_validator_style_tests_are_real_tests(self):
+        self.commit("tests/test_contract.py", "from src.app import run\n\ndef test_contract_validates():\n"
+                    "    run()\n\ndef test_placeholder():\n    pass\n", "test: contract")
+        problem = self.finding(self.report(), "vacuous-tests")["problem"]
+        self.assertIn("test_placeholder", problem)
+        self.assertNotIn("test_contract_validates", problem)
+
+    def test_interfaces_vendored_code_and_notes_do_not_become_the_focus(self):
+        self.commit("src/base.py", "class Store:\n    def save(self, item):\n        raise NotImplementedError\n",
+                    "feat: store interface")
+        self.commit("vendor/lib/x.py", "def f():\n    raise NotImplementedError\n", "chore: vendor")
+        self.commit("src/notes.py", "def g():\n    return 1  # TODO: cache this\n", "feat: g")
+        self.commit("configs/allowed-activities.json", "{}\n", "chore: allowlist")
+        report = self.report()
+        self.assertNotIn("unfinished", self.kinds(report))
+        self.assertIn("src/notes.py", self.finding(report, "todo-notes")["problem"])
+        self.assertTrue(report["focus"].startswith("No waste signal"), report["focus"])
+        self.commit("src/pay.py", "def pay():\n    raise NotImplementedError\n", "feat: pay stub")
+        self.assertIn("src/pay.py:2", self.finding(self.report(), "unfinished")["action"])
+
+    def test_verified_false_positives_can_be_recorded_with_a_reason(self):
+        self.commit("src/pay.py", "def pay():\n    raise NotImplementedError\n", "feat: pay stub")
+        self.commit(".agent/audit.json", json.dumps({"ignore": [
+            {"kind": "unfinished", "path": "src/pay.py", "reason": "payment is intentionally disabled in this edition"},
+            {"kind": "allowlist", "reason": "too short"}]}), "chore: audit config")
+        report = self.report()
+        self.assertNotIn("unfinished", self.kinds(report))
+        self.assertIn("allowlist", self.kinds(report))
+        self.assertTrue(any("invalid ignore rule" in note for note in report["notes"]))
 
     def test_handoff_that_grew_into_a_history_is_reported(self):
         self.commit("docs/dev-handoff/README.md", "current\n", "docs: handoff")

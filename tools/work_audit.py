@@ -64,9 +64,13 @@ PROCESS = re.compile(r"(^|/)(\.github|\.gitlab|\.circleci|\.claude|\.cursor|\.co
                      r"AGENTS[^/]*\.md|CLAUDE\.md|GEMINI\.md)$", re.I)
 TESTS = re.compile(r"(^|/)(tests?|__tests__|spec|fixtures?|testdata)(/|$)|(^|/)(test_[^/]*|[^/]*_test\.\w+|"
                    r"[^/]*\.(test|spec)\.\w+)$", re.I)
-UNFINISHED = re.compile(r"\b(TODO|FIXME|XXX|HACK)\b|NotImplementedError|not implemented|unimplemented!|todo!\(|"
-                        r"@unittest\.skip\(|pytest\.mark\.(skip|xfail)\b(?!if)|\b(it|describe|test)\.skip\(|@Disabled\b|"
-                        r"\bt\.Skip\(", re.I)
+STUB = re.compile(r"\bNotImplementedError\b|unimplemented!|todo!\(|"
+                  r"@unittest\.skip\(|pytest\.mark\.(skip|xfail)\b(?!if)|\b(it|describe|test)\.skip\(|@Disabled\b|"
+                  r"\bt\.Skip\(")
+NOTE = re.compile(r"\b(TODO|FIXME|XXX|HACK)\b|\bnot implemented\b", re.I)
+UNFINISHED = re.compile(STUB.pattern + "|" + NOTE.pattern, re.I)
+VENDORED = re.compile(r"(^|/)(vendor|vendored|third[_-]party|external|extern|node_modules|\.venv|venv|"
+                      r"site-packages|dist|build|generated|gen|__generated__)(/|$)|\.min\.(js|css)$|_pb2\.py$", re.I)
 HANDOFF = re.compile(r"(handoff|hand-off|continuation|dev-handoff)", re.I)
 CODE = re.compile(r"\.(py|js|jsx|ts|tsx|go|rs|java|kt|cs|cpp|cc|c|h|hpp|rb|php|swift|scala|gd|lua|sh)$", re.I)
 INSTRUCTION_FILE = re.compile(
@@ -119,7 +123,7 @@ def kind(path: str, product: list[str]) -> str:
         return "test"
     if PROCESS.search(path):
         return "process"
-    if RECORDS.search(path):
+    if RECORDS.search(path) and not CODE.search(path):  # code is never a record, whatever its name
         return "records"
     return "product"
 
@@ -190,10 +194,27 @@ def python_code_lines(text: str) -> dict[int, str] | None:
     return {number: line for number, line in enumerate(lines, 1)}
 
 
-def unfinished(root: Path, files: list[str], product: list[str]) -> list[tuple[str, int, str]]:
+def interface_lines(text: str) -> set[int]:
+    """Lines of Python methods whose only job is to be overridden: raising NotImplementedError there is design."""
+    import ast
+    try:
+        tree = ast.parse(text)
+    except (SyntaxError, ValueError):
+        return set()
+    lines: set[int] = set()
+    for node in statements(tree):
+        if isinstance(node, ast.ClassDef):
+            for item in node.body:
+                if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    lines.update(range(item.lineno, (getattr(item, "end_lineno", item.lineno) or item.lineno) + 1))
+    return lines
+
+
+def unfinished(root: Path, files: list[str], product: list[str]) -> list[tuple[str, int, str, str]]:
+    """(path, line, text, strength): "stub" for code that cannot work yet or skipped tests, "note" for comments."""
     found = []
     for rel in files:
-        if not CODE.search(rel) or kind(rel, product) not in ("product", "test"):
+        if not CODE.search(rel) or kind(rel, product) not in ("product", "test") or VENDORED.search(rel):
             continue
         try:
             text = (root / rel).read_text(encoding="utf-8", errors="replace")
@@ -202,13 +223,19 @@ def unfinished(root: Path, files: list[str], product: list[str]) -> list[tuple[s
         if "\x00" in text or not UNFINISHED.search(text):  # binary, or nothing to find: skip the tokenizer
             continue
         lines, without_strings = text.splitlines(), python_code_lines(text) if rel.endswith(".py") else None
+        methods = interface_lines(text) if rel.endswith(".py") and "NotImplementedError" in text else set()
         for number, line in enumerate(lines, 1):
             if without_strings is not None:
                 line = without_strings.get(number, "")
             code = re.sub(r"\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'", "", line)  # text inside quotes is data
-            abstract = any("abstractmethod" in previous for previous in lines[max(0, number - 4):number - 1])
-            if UNFINISHED.search(code) and not abstract and not re.search(r"UNFINISHED|re\.compile", line):
-                found.append((rel, number, line.strip()[:100]))
+            if re.search(r"UNFINISHED|STUB|NOTE|re\.compile", line):
+                continue
+            if STUB.search(code):
+                if "NotImplementedError" in code and number in methods:
+                    continue  # base-class method meant to be overridden
+                found.append((rel, number, line.strip()[:100], "stub"))
+            elif NOTE.search(code):
+                found.append((rel, number, line.strip()[:100], "note"))
     return found
 
 
@@ -250,7 +277,7 @@ def size(root: Path, files: list[str], product: list[str]) -> list[tuple[str, in
     import ast
     found = []
     for rel in files:
-        if not CODE.search(rel) or kind(rel, product) != "product":
+        if not CODE.search(rel) or kind(rel, product) != "product" or VENDORED.search(rel):
             continue
         try:
             text = (root / rel).read_text(encoding="utf-8", errors="replace")
@@ -367,7 +394,7 @@ def vacuous_tests(root: Path, files: list[str]) -> list[str]:
     import ast
     found = []
     for rel in files:
-        if not (rel.endswith(".py") and TESTS.search(rel)):
+        if not (rel.endswith(".py") and TESTS.search(rel)) or VENDORED.search(rel):
             continue
         try:
             tree = ast.parse((root / rel).read_text(encoding="utf-8", errors="replace"))
@@ -375,20 +402,19 @@ def vacuous_tests(root: Path, files: list[str]) -> list[str]:
             continue
         functions = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
 
-        def asserts(node, helpers=frozenset()):
+        def exercises(node):
+            # A test that calls code can fail: a validator that raises, a smoke run. Only a test that
+            # calls nothing and asserts nothing cannot fail.
             for child in ast.walk(node):
                 if isinstance(child, (ast.Assert, ast.Raise)):
                     return True
                 if isinstance(child, ast.Call):
                     func = child.func
                     name = func.attr if isinstance(func, ast.Attribute) else getattr(func, "id", "")
-                    if name.startswith(("assert", "fail", "expect", "check", "verify")) or name in helpers \
-                            or name in ("raises", "warns"):
+                    if name not in ("print", "len", "str", "repr", "dict", "list", "set", "tuple"):
                         return True
             return False
-        helpers = {f.name for f in functions if not f.name.startswith("test") and asserts(f)}
-        found += [f"{rel}:{f.lineno} {f.name}" for f in functions
-                  if f.name.startswith("test") and not asserts(f, helpers)]
+        found += [f"{rel}:{f.lineno} {f.name}" for f in functions if f.name.startswith("test") and not exercises(f)]
     return found
 
 
@@ -540,20 +566,28 @@ def direction(ctx: dict) -> list[dict]:
 
 def evidence(ctx: dict) -> list[dict]:
     """Do the checks prove what they claim?"""
-    found, gaps = [], ctx["gaps"]
+    found, gaps, notes = [], ctx["gaps"], ctx["notes"]
     if gaps:
-        top = Counter(rel for rel, _, _ in gaps).most_common(5)
+        top = Counter(rel for rel, *_ in gaps).most_common(5)
         first = gaps[0]
-        found.append(finding("unfinished", f"{len(gaps)} unfinished markers in code; most in "
+        found.append(finding("unfinished", f"{len(gaps)} stubs or skipped tests in code; most in "
                              + ", ".join(f"{rel} ({n})" for rel, n in top),
                              f"Finish or delete the incomplete code, starting with {first[0]}:{first[1]} "
                              f"({first[2]}). A skipped test is unfinished work, not a pass."))
-    empty = vacuous_tests(ctx["root"], ctx["files"])
+    if notes:
+        top = Counter(rel for rel, *_ in notes).most_common(5)
+        found.append(finding("todo-notes", f"{len(notes)} TODO/FIXME notes in code; most in "
+                             + ", ".join(f"{rel} ({n})" for rel, n in top),
+                             "When a task touches one of these, finish the note or turn it into a task in the "
+                             "task list and delete it. Notes alone are not a reason to start work."))
+    rules = ctx["rules"]
+    empty = [e for e in vacuous_tests(ctx["root"], ctx["files"]) if not ignored(rules, "vacuous-tests", e.split(":")[0])]
     if empty:
-        found.append(finding("vacuous-tests", f"{len(empty)} tests assert nothing, e.g. " + ", ".join(empty[:3]),
-                             "Give each of these tests an assertion that fails when the behaviour breaks, or "
-                             "delete it. A test that cannot fail proves nothing."))
-    soft = cannot_fail(ctx["root"], ctx["files"])
+        found.append(finding("vacuous-tests", f"{len(empty)} tests call no code and assert nothing, e.g. "
+                             + ", ".join(empty[:3]),
+                             "Give each of these tests a call and an assertion that fail when the behaviour "
+                             "breaks, or delete it. A test that cannot fail proves nothing."))
+    soft = [c for c in cannot_fail(ctx["root"], ctx["files"]) if not ignored(rules, "cannot-fail", c.split(":")[0])]
     if soft:
         found.append(finding("cannot-fail", f"{len(soft)} build or CI checks cannot fail, e.g. " + "; ".join(soft[:3]),
                              "Let these checks fail when they find a problem, or delete them. Report a known "
@@ -572,7 +606,8 @@ def knowledge(ctx: dict) -> list[dict]:
                              f"Rewrite {keep} as the one current handoff under {HANDOFF_WORDS} words (goal, last "
                              f"proven state, next action){extra}; history is in Git. Replace that file at each "
                              "checkpoint instead of adding a new one."))
-    broken = broken_references(ctx["root"], ctx["files"])
+    broken = [b for b in broken_references(ctx["root"], ctx["files"])
+              if not ignored(ctx["rules"], "stale-references", b.split(" -> ")[0])]
     if broken:
         found.append(finding("stale-references", f"{len(broken)} links in instructions or handoffs point at "
                              "missing files, e.g. " + "; ".join(broken[:3]),
@@ -644,7 +679,7 @@ def harness(ctx: dict) -> list[dict]:
 
 def code(ctx: dict) -> list[dict]:
     """Can the next change be made safely?"""
-    large = size(ctx["root"], ctx["files"], ctx["product"])
+    large = [z for z in size(ctx["root"], ctx["files"], ctx["product"]) if not ignored(ctx["rules"], "size", z[0].split(":")[0])]
     if not large:
         return []
     return [finding("size", f"{len(large)} oversized product files or functions; largest "
@@ -656,9 +691,11 @@ def code(ctx: dict) -> list[dict]:
 AREAS = (direction, evidence, knowledge, guidance, flow, harness, code)
 ORDER = ["goal", "loop", "repeat", "tasks", "unfinished", "vacuous-tests", "cannot-fail", "handoff",
          "stale-references", "instructions", "instruction-growth", "entry", "wip", "hygiene", "large-files",
-         "allowlist", "size"]
+         "allowlist", "todo-notes", "size"]
+NEVER_FOCUS = {"todo-notes", "size"}  # advisory: acted on when a task touches the code, never a task by themselves
 AREA = {kind: area for area, kinds in (
-    ("direction", ("goal", "loop", "repeat", "tasks")), ("evidence", ("unfinished", "vacuous-tests", "cannot-fail")),
+    ("direction", ("goal", "loop", "repeat", "tasks")),
+    ("evidence", ("unfinished", "vacuous-tests", "cannot-fail", "todo-notes")),
     ("knowledge", ("handoff", "stale-references")), ("instructions", ("instructions", "instruction-growth", "entry")),
     ("flow", ("wip", "hygiene", "large-files")), ("harness", ("allowlist",)), ("code", ("size",))) for kind in kinds}
 
@@ -667,24 +704,47 @@ def choose_focus(found: list[dict], gaps: list) -> str:
     kinds = [f["kind"] for f in found]
     if gaps and kinds[:1] in (["loop"], ["repeat"]):
         # A loop with known unfinished code: name the target, so any model can act on it.
-        rel, number, text = gaps[0]
+        rel, number, text, _ = gaps[0]
         return (f"This is the next task: finish {rel}:{number} ({text}) and prove it with a check, in this "
                 "session. If a records-only task blocks it, close that in one short commit, then continue here; "
                 "the records task does not end the session.")
-    if found and found[0]["kind"] != "size":
+    if found and found[0]["kind"] not in NEVER_FOCUS:
         return found[0]["action"]
     return ("No waste signal found. Take the highest-priority ready task, change product behaviour, and prove it "
             "with a check.")
+
+
+def ignore_rules(cfg: dict) -> list[dict]:
+    """Verified false positives recorded in .agent/audit.json: {"kind", "path" (glob), "reason"}."""
+    rules = []
+    for rule in cfg.get("ignore", []) if isinstance(cfg.get("ignore"), list) else []:
+        if (isinstance(rule, dict) and rule.get("kind") in ORDER and isinstance(rule.get("path", "*"), str)
+                and len(re.findall(r"[A-Za-z]{2,}", str(rule.get("reason", "")))) >= 3):
+            rules.append(rule)
+        else:
+            NOTES.append(f"ignored invalid ignore rule {rule!r}: it needs a known kind and a reason of three words")
+    return rules
+
+
+def ignored(rules: list[dict], kind_name: str, path: str) -> bool:
+    return any(r["kind"] == kind_name and fnmatch.fnmatch(path, r.get("path", "*")) for r in rules)
 
 
 def audit(root: Path, count: int) -> dict:
     NOTES.clear()
     cfg = config(root)
     product = [p for p in cfg.get("product", []) if isinstance(p, str)]
+    rules = ignore_rules(cfg)
     files = tracked(root)
-    ctx = {"root": root, "cfg": cfg, "product": product, "count": count, "files": files,
-           "commits": commit_mix(root, count, product), "gaps": unfinished(root, files, product)}
-    found = sorted((f for area in AREAS for f in area(ctx)), key=lambda f: ORDER.index(f["kind"]))
+    marks = [m for m in unfinished(root, files, product)
+             if not ignored(rules, "unfinished" if m[3] == "stub" else "todo-notes", m[0])]
+    ctx = {"root": root, "cfg": cfg, "product": product, "count": count, "files": files, "rules": rules,
+           "commits": commit_mix(root, count, product),
+           "gaps": [m for m in marks if m[3] == "stub"], "notes": [m for m in marks if m[3] == "note"]}
+    found = [f for area in AREAS for f in area(ctx) if not ignored(rules, f["kind"], "*")]
+    found.sort(key=lambda f: ORDER.index(f["kind"]))
+    if rules:
+        NOTES.append(f"{len(rules)} verified false positives skipped (.agent/audit.json ignore)")
     mix = Counter(c["kind"] for c in ctx["commits"])
     return {"root": str(root), "commits": len(ctx["commits"]), "mix": dict(mix),
             "focus": choose_focus(found, ctx["gaps"]), "findings": found, "notes": list(NOTES)}

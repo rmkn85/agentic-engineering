@@ -2,7 +2,7 @@
   "id": "audit-size-never-focus",
   "rule": "Oversized code is reported but never the focus",
   "file": "tools/work_audit.py",
-  "find": "    if found and found[0][\"kind\"] != \"size\":",
+  "find": "    if found and found[0][\"kind\"] not in NEVER_FOCUS:",
   "replace": "    if found:",
   "tests": [
     "tools.tests.test_work_audit.WorkAuditTests.test_oversized_code_is_reported_but_never_the_focus"

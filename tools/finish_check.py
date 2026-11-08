@@ -152,12 +152,13 @@ def run_target(root: Path, target: str, timeout: int) -> tuple[str, str | None]:
 
 
 def ignore_agent_dir(root: Path) -> None:
-    """.agent/ holds session state; it ignores itself so no repository needs a .gitignore change."""
+    """.agent/ holds session state; it ignores itself (except audit.json) so no repository needs a .gitignore change."""
     folder = root / ".agent"
     folder.mkdir(parents=True, exist_ok=True)
     marker = folder / ".gitignore"
-    if not marker.exists():
-        marker.write_text("*\n", encoding="utf-8")
+    content = "*\n!.gitignore\n!audit.json\n"  # session state stays local; the shared audit config is committed
+    if not marker.exists() or marker.read_text(encoding="utf-8") == "*\n":
+        marker.write_text(content, encoding="utf-8")
 
 
 def record_status(root: Path, goal: dict, results: list[dict]) -> None:

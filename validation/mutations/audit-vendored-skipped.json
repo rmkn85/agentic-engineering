@@ -1,0 +1,10 @@
+{
+  "id": "audit-vendored-skipped",
+  "rule": "Vendored and generated code is not audited",
+  "file": "tools/work_audit.py",
+  "find": "        if not CODE.search(rel) or kind(rel, product) not in (\"product\", \"test\") or VENDORED.search(rel):",
+  "replace": "        if not CODE.search(rel) or kind(rel, product) not in (\"product\", \"test\"):",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_interfaces_vendored_code_and_notes_do_not_become_the_focus"
+  ]
+}
