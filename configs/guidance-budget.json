@@ -7,7 +7,7 @@
       ".github/copilot-instructions.md",
       "docs/agent-corpus/README.md"
     ],
-    "max_words": 2556
+    "max_words": 2547
   },
   "runtime": [
     "AGENTS.md",

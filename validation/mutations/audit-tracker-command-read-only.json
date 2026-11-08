@@ -1,0 +1,10 @@
+{
+  "id": "audit-tracker-command-read-only",
+  "rule": "A repository cannot make the audit run arbitrary commands",
+  "file": "tools/work_audit.py",
+  "find": "    return bool(allowed) and command[1] in allowed",
+  "replace": "    return True",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_a_repository_cannot_make_the_audit_run_arbitrary_commands"
+  ]
+}

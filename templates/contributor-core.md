@@ -1,49 +1,75 @@
 # Shared contributor core
 
-Apply this to the same authorized task; product rules, task ownership, branch policy and acceptance remain local. The repository entry binds native commands. This local copy requires no upstream checkout or live download.
+Apply this to the task you were given. Product rules, task ownership, branch
+policy and acceptance stay local; the repository entry names its commands.
+This copy needs no upstream checkout.
+
+## Every task, in this order
+
+1. **Focus.** Run the repository's work audit (`work_audit.py`) and do its FOCUS
+   line first, unless the user names a different task. It reads the
+   repository's history, so every agent gets the same answer.
+2. **Goal.** Take the user outcome from the task. Write it and the checks that
+   prove it in the goal record. A ready task is eligible, not automatically the
+   priority: pick the one that closes the largest gap in a user journey.
+3. **Change behaviour.** Progress is changed behaviour that a check proves.
+   Complete the next missing connection through its existing owner and public
+   contract. Keep enabling work tied to that result; records, handoffs and
+   process changes support it and stay a small share of commits.
+4. **Build the simplest sufficient code.** Compare one simpler complete
+   implementation and use it unless a required case fails. Route every caller
+   through the single owner of the behaviour; do not copy its policy.
+5. **Prove it at the real boundary.** Test the changed behaviour with a case that
+   would fail without the change. A green pipeline, a push or a skipped test is
+   not acceptance. Diagnose, repair and re-check failures before finishing.
+6. **Finish.** Compare the request with actual state. Do the remaining work you
+   can do now; "next steps" are only for work you cannot do. Stop incomplete only
+   at a named external blocker, and say what is missing.
+
+## When stuck
+
+Do not repeat a step that failed: name what it failed to achieve and change the
+approach. Classify a missing prerequisite once and use its supported route.
+Recover from the smallest diagnostic artefact, make the smallest repair, and
+resume the original delivery. At checkpoints of long work, use the
+`steering-delivery` skill, or this fallback: compare progress and cost with the
+goal, choose the next action, and check its effect next time.
+
+## Hard limits
+
+- Preserve other writers' uncommitted and unmerged work: never force-push,
+  reset or switch their checkout.
+- Never hunt for credentials or widen permissions to get past a sandbox; use
+  the allowlisted activities and ask for anything else.
+- Never claim completion, approval or acceptance that did not happen.
+
+## Handoff
+
+Keep one current handoff under 800 words: goal, last proven state, next action.
+Replace it; history is in Git and the task tracker. When your work writes to an
+area the audit flags (task list, handoff, instructions), leave that area within
+its limits in the same commit.
 
 ## Engineering personas
 
-Use these five role names in assignments, handoffs and reports:
+Use these role names in assignments, handoffs and reports:
 
 | Persona | Responsibility |
 | --- | --- |
 | System Architect | Architecture, system boundaries and technical design decisions. |
 | Product Manager | Product direction, intended behavior, priorities and acceptance expectations. |
-| Operator | Uses the delivered system and handles operational actions such as service restarts, market refreshes, storage and networking through established controls. |
-| Component Epic Owner | Owns a component's backlog and end-to-end delivery in its dedicated engineering chat. |
-| Software Engineer | Implements, tests, publishes, deploys and repairs within the assigned scope and authority. |
+| Operator | Uses the delivered system and handles operational actions through established controls. |
+| Component Epic Owner | Owns a component's backlog and end-to-end delivery. |
+| Software Engineer | Implements, tests, publishes, deploys and repairs within the assigned scope. |
 
-Choose the persona from the responsibility exercised in the current request. A person may act in several roles. Use the agreed role rather than a personal name or an invented substitute; when the role is unclear, describe the request without attributing one. Persona labels describe responsibility and do not grant permissions or create approvals.
+Choose the persona from the responsibility in the current request. Labels
+describe responsibility; they grant no permission and create no approval.
+Restoring a delivered capability is an Operator concern handled by its
+engineering owner. Escalate only real architecture or product-direction
+decisions.
 
-Restoring an already designed and delivered capability is an Operator concern handled by the responsible engineering owner. Escalate only an actual architecture decision to the System Architect or a product-direction decision to the Product Manager. For example: “The Operator reports that the established portal is unavailable; restore service and verify persistent availability.” Coordination is an engineering assignment, not an additional persona or approval layer. Preserve domain roles such as trader and technical identities such as authentication subjects when those are the actual topic.
+## Share improvements
 
-## Execution principles
-
-**Finish connected user journeys.** Use the locally available direct-delivery method or this compact fallback: favor common scenarios and features, complete the next missing connection through the existing owner or published contract, resolve concrete blockers and resume delivery, then run relevant checks and demonstrate the published consumer. Each owner advances its own implementation, verification and recovery using declared interfaces and artifacts; coordinate cross-owner decisions and integration rather than each ordinary step. When composition from source is needed, declare that mode and its source identities and consumer boundary. Keep enabling work tied to that result and process support compact. Use existing task fields for the outcome, representative scenario, next connected deliverable, existing implementation/interfaces and observable finish. Give desired actions and precise invariants, preserving binding safety and permissions. Lead reports with usable capability.
-
-**Start from evidence.** Read the current entry and smallest relevant task record. Verify repository, branch, actual source identity, owned changes and remote freshness. A cached ref is not synchronization. Preserve dirty/untracked work and other writers; never force, reset or silently switch their checkout. Read back ambiguous writes before retrying.
-
-**Work backward from the purpose.** Before selecting tasks or replanning, recover the controlling user outcome, proven capabilities and remaining gap from existing authoritative records. Choose the next action because it advances that gap; a ready task is eligible, not automatically the priority. Explicit user priorities remain controlling; a proposed solution needs a demonstrated problem and necessity. Retrieve agreed architecture and the owning implementation before a workaround, preserving valid qualification and distinguishing provider proof, consumer adoption and outcome acceptance. Before ranking research or tools, establish the design decision and evidence needed; retrieval, text fitting and presentation tooling do not replace synthesis or content judgment. Resolve questions from existing sources or authorized experiments; ask only for missing preferences, choices outside delegated discretion or required authorization. Retain uncertainty and blocked gates while continuing justified experiments and independent authorized work. Keep orientation in the existing task/handoff, without new forms or approval ceremony.
-
-**Let ordinary tools do ordinary work.** Use the existing source bootstrap, selected locked environment, native checks and CI/publisher. Keep source acquisition, dependencies, small fixtures, private data, device access and production startup separate. Do not repair a sandbox with privileges or hunt credentials. Classify a missing prerequisite once and use the existing authorized route.
-
-**Spend context on the change.** Keep a small enduring core, current outcome/progress/next action, and task-specific evidence retrieved when relevant. Use targeted search, the touched contract and decisive diagnostics. Reuse unchanged evidence. Keep full evidence durable and open detail when it changes the decision. Choose the cheapest adequate available executor without duplicating its work.
-
-**Recover from the receipt.** The owner reads the compact execution/diagnostic receipt, retrieves only decisive evidence, makes the smallest authorized repair, verifies the affected behavior, and resumes the original delivery. Separate queue wait from execution and unavailable measurement from zero. Keep routine recovery with its owner; escalate unresolved decisions or permission boundaries while continuing independent authorized work.
-
-**Use the capability's single authority.** Every functionality path must use the public contract of the authority that owns that behavior. Trace the authority before fixing a caller. Entry points, adapters, jobs, compatibility paths and fallbacks must delegate decisions and state changes; they must not reproduce policy, select a result independently or reinterpret a refusal. Enforce the boundary through types, restricted dependencies and native architecture checks, with a regression that attempts a bypass. Independently verify the authority's meaning, input coverage and calculations; centralizing a mistake does not make it correct.
-
-**Build and review the simplest sufficient code.** Justify added public interfaces, abstractions, layers and repeated checks by an actual requirement, supported caller or trust boundary. Compare one plausible simpler complete implementation; use it unless a required case fails. Preserve precision, provenance, missingness, compatibility and supported failure behavior. Keep the judgment in the existing task/review, with local code guidance for detail; green checks alone do not establish necessity.
-
-**Publish shared machine boundaries.** Reuse the semantic owner's contract and schema; define observable behavior and examples before implementation. Publish immutable revisions and test compatibility, including strict readers. Distinguish contract maturity, implementation support and availability; mock success does not establish provider or integrated acceptance. Retire supported revisions with evidence of consumer adoption.
-
-**Prove the actual boundary.** Test the changed behavior, including a discriminating failure case. Multi-repository work needs exact source pins and installed-consumer proof. Rendered, replay, physical-device and production evidence are different. Public delivery needs an allowlisted artifact and verified served identity. A queued/skipped job or successful push is not acceptance. Relevant failures trigger diagnosis, repair and re-verification, not a final handoff.
-
-**Own completion.** Before every final response, compare the current request with actual state and evidence. If necessary authorized work remains possible, do it instead of listing next steps or waiting for another prompt. Newly discovered required work belongs to this task; optional improvements do not. Stop incomplete only at a concrete external blocker or actual execution limit, after completing independent unblocked work. Preserve explicit planning-only, no-deploy, stop and approval boundaries; report unresolved work honestly.
-
-**Steer at checkpoints.** For substantial iterative work, use the locally available `steering-delivery` skill or this compact fallback: compare the latest evidence and investment with the current outcome and previous decision, revise and execute the justified in-scope next action, reconcile affected workers, and check the effect next time. Do not automatically repeat a failed approach or ask the user for an ordinary engineering decision. Preserve acceptance, authority and cumulative limits; a forecast update is not more spending permission. Keep concise rationale and linked follow-up in existing tasks or coherent commit messages, never source/configuration. Coalesce unchanged events; do not create recursive reviews or log-only commits.
-
-**Checkpoint recoverably.** Commit coherent authorized changes, verify remote publication, and update the existing task/handoff with source identity, actual checks and unresolved state when needed. An unfinished checkpoint records the next action and then execution continues while possible; it is not a completion boundary. Scope implemented, verified, integrated, available and accepted claims independently where applicable; process exit alone is not substantive completion. Never manufacture approval, completion or automatic continuation after termination.
-
-**Share improvements, not private history.** Generalize a recurring failure into the smallest tested script/config/rule/procedure. Adopt by process needs, not by which project was burned. Keep domain decisions and private evidence local; promote anonymized mechanisms upstream. Review snapshot updates and intentional local adaptations rather than fetching latest policy on every task.
+Turn a recurring failure into the smallest tested script, configuration or
+rule, and offer it upstream without private detail. Adopt upstream changes by
+reviewing the difference, not by fetching the latest text on every task.

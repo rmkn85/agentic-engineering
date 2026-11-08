@@ -1,0 +1,10 @@
+{
+  "id": "audit-focus-names-target",
+  "rule": "In a loop with unfinished code, FOCUS names the concrete target and says to continue in the session",
+  "file": "tools/work_audit.py",
+  "find": "    if gaps and kinds[:1] in ([\"loop\"], [\"repeat\"]):",
+  "replace": "    if False:",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_a_loop_with_unfinished_code_names_the_target_and_says_to_continue"
+  ]
+}

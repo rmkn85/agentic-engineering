@@ -1,0 +1,10 @@
+{
+  "id": "audit-instruction-growth",
+  "rule": "Instruction growth within the window is reported",
+  "file": "tools/work_audit.py",
+  "find": "    if before and after - before > GROWTH_WORDS:",
+  "replace": "    if False:",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_instruction_growth_within_the_window_is_reported"
+  ]
+}

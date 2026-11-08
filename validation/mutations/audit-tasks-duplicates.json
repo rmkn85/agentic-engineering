@@ -1,0 +1,10 @@
+{
+  "id": "audit-tasks-duplicates",
+  "rule": "Duplicate open tasks are reported",
+  "file": "tools/work_audit.py",
+  "find": "                 f\"{', '.join(ids[1:])} as duplicate)\" for ids in titles.values() if len(ids) > 1]",
+  "replace": "                 f\"{', '.join(ids[1:])} as duplicate)\" for ids in titles.values() if False]",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_inconsistent_task_list_is_reported_and_comes_before_handoff"
+  ]
+}

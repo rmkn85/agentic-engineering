@@ -1,0 +1,10 @@
+{
+  "id": "audit-loop-clears-after-product",
+  "rule": "A recent product commit clears the loop finding",
+  "file": "tools/work_audit.py",
+  "find": "        if share > SUPPORT_SHARE and not recent_product:",
+  "replace": "        if share > SUPPORT_SHARE:",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_a_recent_product_commit_ends_the_loop_finding"
+  ]
+}

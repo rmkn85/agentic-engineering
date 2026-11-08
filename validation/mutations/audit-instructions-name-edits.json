@@ -1,0 +1,10 @@
+{
+  "id": "audit-instructions-name-edits",
+  "rule": "The instructions finding names the files to edit",
+  "file": "tools/work_audit.py",
+  "find": "        copies = sorted({p for _, where in repeated for p in where if p != source})",
+  "replace": "        copies = []",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_scattered_and_repeated_instructions_are_reported"
+  ]
+}

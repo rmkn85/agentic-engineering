@@ -1,0 +1,10 @@
+{
+  "id": "audit-met-goal-not-open",
+  "rule": "A goal the finish gate found met is not reported as open",
+  "file": "tools/work_audit.py",
+  "find": "                and status.stat().st_mtime >= path.stat().st_mtime):\n            return None",
+  "replace": "                and status.stat().st_mtime >= path.stat().st_mtime):\n            pass",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_a_goal_the_finish_gate_found_met_is_not_open"
+  ]
+}

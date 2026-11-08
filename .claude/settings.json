@@ -14,6 +14,7 @@
       "Bash(python3 tools/check_findings.py:*)",
       "Bash(python3 tools/check_guidance_budget.py:*)",
       "Bash(python3 tools/prove_guards.py:*)",
+      "Bash(python3 tools/work_audit.py:*)",
       "Bash(python3 tools/blind_review.py prompt:*)",
       "Bash(python3 -m unittest:*)",
       "Bash(git status:*)",
