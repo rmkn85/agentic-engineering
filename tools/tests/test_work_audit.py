@@ -240,6 +240,20 @@ class WorkAuditTests(unittest.TestCase):
         self.commit("Makefile", "lint:\n\truff check . --exit-zero\n", "build: lint")
         self.assertIn("Makefile:2", self.finding(self.report(), "cannot-fail")["problem"])
 
+    def test_evidence_retention_steps_may_tolerate_their_own_failure(self):
+        upload = ("steps:\n  - run: pytest -q\n  - name: Retain pytest reports\n    if: always()\n"
+                  "    continue-on-error: true\n    uses: actions/upload-artifact@v4\n    with:\n      name: reports\n")
+        self.commit(".github/workflows/ci.yml", upload, "ci: keep reports")
+        self.assertNotIn("cannot-fail", self.kinds(self.report()))
+        diagnostics = ("steps:\n  - name: Retain diagnostics\n    id: diagnostics\n    if: always()\n"
+                       "    continue-on-error: true\n    run: python3 tools/collect.py\n")
+        self.commit(".github/workflows/ci.yml", diagnostics, "ci: keep diagnostics")
+        self.assertNotIn("cannot-fail", self.kinds(self.report()))
+        soft_tests = ("steps:\n  - name: Retain test evidence\n    if: always()\n"
+                      "    continue-on-error: true\n    run: pytest -q\n")
+        self.commit(".github/workflows/ci.yml", soft_tests, "ci: soft tests")
+        self.assertIn("ci.yml:4", self.finding(self.report(), "cannot-fail")["problem"])
+
     def test_links_to_missing_files_in_instructions_are_reported(self):
         self.commit("docs/guide.md", "guide\n", "docs: guide")
         self.commit("AGENTS.md", "See [guide](docs/guide.md) and [old](docs/removed.md).\n", "chore: entry")
@@ -296,6 +310,14 @@ class WorkAuditTests(unittest.TestCase):
         self.assertTrue(report["focus"].startswith("No waste signal"), report["focus"])
         self.commit("src/pay.py", "def pay():\n    raise NotImplementedError\n", "feat: pay stub")
         self.assertIn("src/pay.py:2", self.finding(self.report(), "unfinished")["action"])
+
+    def test_exceptions_named_in_an_except_clause_are_not_stubs(self):
+        self.commit("src/read.py", "import zipfile\n\ndef read(raw):\n    try:\n        return zipfile.ZipFile(raw)\n"
+                    "    except (\n        zipfile.BadZipFile,\n        NotImplementedError,\n    ) as error:\n"
+                    "        raise ValueError('bad') from error\n", "feat: read archives")
+        self.assertNotIn("unfinished", self.kinds(self.report()))
+        self.commit("src/write.py", "def write(raw):\n    raise NotImplementedError\n", "feat: write stub")
+        self.assertIn("src/write.py:2", self.finding(self.report(), "unfinished")["action"])
 
     def test_verified_false_positives_can_be_recorded_with_a_reason(self):
         self.commit("src/pay.py", "def pay():\n    raise NotImplementedError\n", "feat: pay stub")

@@ -1,0 +1,10 @@
+{
+  "id": "audit-soft-checks-stay-reported",
+  "rule": "A retention-named step that runs a check command is still reported when it cannot fail",
+  "file": "tools/work_audit.py",
+  "find": "    if CHECK_COMMAND.search(commands):\n        return False\n",
+  "replace": "",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_evidence_retention_steps_may_tolerate_their_own_failure"
+  ]
+}

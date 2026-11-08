@@ -1,0 +1,10 @@
+{
+  "id": "audit-except-clauses-not-stubs",
+  "rule": "NotImplementedError named in an except clause is handled, not unfinished",
+  "file": "tools/work_audit.py",
+  "find": "                if \"NotImplementedError\" in code and number in handled:",
+  "replace": "                if False:",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_exceptions_named_in_an_except_clause_are_not_stubs"
+  ]
+}

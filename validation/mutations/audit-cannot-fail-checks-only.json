@@ -2,8 +2,8 @@
   "id": "audit-cannot-fail-checks-only",
   "rule": "Only check commands that cannot fail are reported",
   "file": "tools/work_audit.py",
-  "find": "                      CANNOT_FAIL.search(line) and CHECK_COMMAND.search(line)))]",
-  "replace": "                      CANNOT_FAIL.search(line)))]",
+  "find": "                      or (CANNOT_FAIL.search(line) and CHECK_COMMAND.search(line)))]",
+  "replace": "                      or CANNOT_FAIL.search(line))]",
   "tests": [
     "tools.tests.test_work_audit.WorkAuditTests.test_checks_that_cannot_fail_are_reported_but_tolerated_setup_is_not"
   ]

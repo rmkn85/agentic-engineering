@@ -91,6 +91,8 @@ CHECK_COMMAND = re.compile(r"\b(pytest|unittest|make (check|test|lint)|npm (run 
                            r"ruff|flake8|mypy|eslint|tsc|phpunit|rspec|jest|vitest|godot\b.*--test)", re.I)
 CANNOT_FAIL = re.compile(r"\|\|\s*(true|:|exit 0)\s*($|[;)#])", re.I)
 ALWAYS_SOFT = re.compile(r"continue-on-error:\s*true|--exit-zero", re.I)
+RETAIN_UPLOAD = re.compile(r"\buses:\s*actions/upload-artifact@", re.I)
+RETAIN_NAME = re.compile(r"\b(name|id):.*\b(retain|preserve|upload|diagnostics?|evidence|reports?)\b", re.I)
 ALLOWLISTS = ("configs/allowed-activities.json", ".claude/settings.json", ".codex/rules", ".gemini/policies",
               ".cursor/sandbox-policies")
 FILE_LINES = 1000        # a product file this long is hard to change safely
@@ -210,6 +212,17 @@ def interface_lines(text: str) -> set[int]:
     return lines
 
 
+def except_lines(text: str) -> set[int]:
+    """Lines of `except` clause types: naming NotImplementedError there handles it, it is not a stub."""
+    import ast
+    try:
+        tree = ast.parse(text)
+    except (SyntaxError, ValueError):
+        return set()
+    return {n for node in ast.walk(tree) if isinstance(node, ast.ExceptHandler) and node.type is not None
+            for n in range(node.type.lineno, (getattr(node.type, "end_lineno", None) or node.type.lineno) + 1)}
+
+
 def unfinished(root: Path, files: list[str], product: list[str]) -> list[tuple[str, int, str, str]]:
     """(path, line, text, strength): "stub" for code that cannot work yet or skipped tests, "note" for comments."""
     found = []
@@ -224,6 +237,7 @@ def unfinished(root: Path, files: list[str], product: list[str]) -> list[tuple[s
             continue
         lines, without_strings = text.splitlines(), python_code_lines(text) if rel.endswith(".py") else None
         methods = interface_lines(text) if rel.endswith(".py") and "NotImplementedError" in text else set()
+        handled = except_lines(text) if rel.endswith(".py") and "NotImplementedError" in text else set()
         for number, line in enumerate(lines, 1):
             if without_strings is not None:
                 line = without_strings.get(number, "")
@@ -233,6 +247,8 @@ def unfinished(root: Path, files: list[str], product: list[str]) -> list[tuple[s
             if STUB.search(code):
                 if "NotImplementedError" in code and number in methods:
                     continue  # base-class method meant to be overridden
+                if "NotImplementedError" in code and number in handled:
+                    continue  # an except clause that handles the error
                 found.append((rel, number, line.strip()[:100], "stub"))
             elif NOTE.search(code):
                 found.append((rel, number, line.strip()[:100], "note"))
@@ -418,6 +434,30 @@ def vacuous_tests(root: Path, files: list[str]) -> list[str]:
     return found
 
 
+def yaml_step(lines: list[str], index: int) -> str:
+    """The `- ` list item (a CI step) that contains lines[index], as text."""
+    indent = len(lines[index]) - len(lines[index].lstrip())
+    start = index
+    while start > 0 and not (lines[start].lstrip().startswith("- ")
+                             and len(lines[start]) - len(lines[start].lstrip()) < indent):
+        start -= 1
+    level = len(lines[start]) - len(lines[start].lstrip())
+    end = index + 1
+    while end < len(lines) and (not lines[end].strip() or len(lines[end]) - len(lines[end].lstrip()) > level):
+        end += 1
+    return "\n".join(lines[start:end])
+
+
+def retains_evidence(step: str) -> bool:
+    """An upload or diagnostics step that runs after the checks: its own failure does not hide theirs."""
+    if RETAIN_UPLOAD.search(step):
+        return True
+    commands = "\n".join(line for line in step.splitlines() if not re.match(r"\s*(- )?(name|id):", line))
+    if CHECK_COMMAND.search(commands):
+        return False
+    return bool(re.search(r"\bif:.*\b(always|failure)\(\)", step) and RETAIN_NAME.search(step))
+
+
 def cannot_fail(root: Path, files: list[str]) -> list[str]:
     """CI and build steps written so that a failure still passes."""
     found = []
@@ -428,9 +468,11 @@ def cannot_fail(root: Path, files: list[str]) -> list[str]:
             lines = (root / rel).read_text(encoding="utf-8", errors="replace").splitlines()
         except OSError:
             continue
+        workflow = rel.endswith((".yml", ".yaml"))
         found += [f"{rel}:{n} {line.strip()[:70]}" for n, line in enumerate(lines, 1)
-                  if not line.lstrip().startswith("#") and (ALWAYS_SOFT.search(line) or (
-                      CANNOT_FAIL.search(line) and CHECK_COMMAND.search(line)))]
+                  if not line.lstrip().startswith("#") and (
+                      (ALWAYS_SOFT.search(line) and not (workflow and retains_evidence(yaml_step(lines, n - 1))))
+                      or (CANNOT_FAIL.search(line) and CHECK_COMMAND.search(line)))]
     return found
 
 
