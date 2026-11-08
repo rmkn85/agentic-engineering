@@ -151,10 +151,19 @@ def run_target(root: Path, target: str, timeout: int) -> tuple[str, str | None]:
     return ("met", None) if code == 0 else ("unmet", f"make {target} exited {code}")
 
 
+def ignore_agent_dir(root: Path) -> None:
+    """.agent/ holds session state; it ignores itself so no repository needs a .gitignore change."""
+    folder = root / ".agent"
+    folder.mkdir(parents=True, exist_ok=True)
+    marker = folder / ".gitignore"
+    if not marker.exists():
+        marker.write_text("*\n", encoding="utf-8")
+
+
 def record_status(root: Path, goal: dict, results: list[dict]) -> None:
     """Leave the last verdict where other tools (work_audit.py) can read it without re-running checks."""
     path = root / ".agent" / "goal-status.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
+    ignore_agent_dir(root)
     met = all(r["state"] == "met" for r in results)
     path.write_text(json.dumps({"goal": goal["goal"], "met": met}) + "\n", encoding="utf-8")
 

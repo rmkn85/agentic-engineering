@@ -57,6 +57,7 @@ class FinishCheckTests(unittest.TestCase):
         result = self.run_tool()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(self.gaps(), [])
+        self.assertEqual((self.root / ".agent" / ".gitignore").read_text(), "*\n")
         status = json.loads((self.root / ".agent" / "goal-status.json").read_text())
         self.assertEqual(status, {"goal": "Users can export a report", "met": True})
 

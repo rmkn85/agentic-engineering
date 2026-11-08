@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -138,6 +139,26 @@ class WorkAuditTests(unittest.TestCase):
         self.assertIn("Rewrite docs/dev-handoff/README.md", handoff)
         self.assertIn("delete docs/dev-handoff/old.md", handoff)
 
+    def test_odd_task_shapes_do_not_crash_or_split(self):
+        self.commit("backlog.json", json.dumps({"tasks": [
+            {"id": "A", "status": "done", "title": "a"},
+            {"id": "B", "status": "blocked", "blocked_by": "A", "title": "b"},
+            {"id": "C", "status": "open", "blocked_by": 7, "title": "c"},
+            {"id": "D", "status": "open", "dependencies": "A", "title": "d"},
+        ]}), "chore: backlog")
+        problem = self.finding(self.report(), "tasks")["problem"]
+        self.assertIn("B is blocked only by finished A", problem)
+        self.assertIn("C depends on missing 7", problem)
+
+    def test_abstract_methods_and_site_root_links_are_not_findings(self):
+        self.commit("src/base.py", "import abc\n\nclass Base(abc.ABC):\n    @abc.abstractmethod\n"
+                    "    def run(self):\n        raise NotImplementedError\n", "feat: base")
+        self.commit("docs/my guide.md", "x\n", "docs: guide")
+        self.commit("AGENTS.md", "See [g](/docs/my%20guide.md) and [h](docs/my%20guide.md).\n", "chore: entry")
+        kinds = self.kinds(self.report())
+        self.assertNotIn("unfinished", kinds)
+        self.assertNotIn("stale-references", kinds)
+
     def test_beads_issues_are_read(self):
         rows = [{"id": "bd-1", "title": "a", "status": "closed"},
                 {"id": "bd-2", "title": "b", "status": "blocked",
@@ -149,9 +170,34 @@ class WorkAuditTests(unittest.TestCase):
     def test_tasks_can_come_from_a_configured_tracker_command(self):
         rows = [{"id": "bd-7", "title": "x", "status": "done"},
                 {"id": "bd-8", "title": "y", "status": "blocked", "blocked_by": ["bd-7"]}]
-        self.write("tracker.py", "import json\nfor r in %r:\n    print(json.dumps(r))\n" % rows)
-        self.write(".agent/audit.json", json.dumps({"tasks_command": [sys.executable, "tracker.py"]}))
-        self.assertIn("bd-8 is blocked only by finished bd-7", self.finding(self.report(), "tasks")["problem"])
+        bin_dir = self.root / ".fakebin"
+        bin_dir.mkdir()
+        (bin_dir / "bd").write_text("#!%s\nimport json\nfor r in %r:\n    print(json.dumps(r))\n" % (sys.executable, rows))
+        (bin_dir / "bd").chmod(0o755)
+        self.write(".agent/audit.json", json.dumps({"tasks_command": ["bd", "list", "--json"]}))
+        env = dict(os.environ, PATH=f"{bin_dir}{os.pathsep}{os.environ['PATH']}")
+        result = subprocess.run([sys.executable, str(TOOL), "--root", str(self.root), "--json"],
+                                capture_output=True, text=True, check=True, env=env)
+        problem = self.finding(json.loads(result.stdout), "tasks")["problem"]
+        self.assertIn("bd-8 is blocked only by finished bd-7", problem)
+
+    def test_a_repository_cannot_make_the_audit_run_arbitrary_commands(self):
+        self.write(".agent/audit.json", json.dumps(
+            {"tasks_command": [sys.executable, "-c", "open('PWNED', 'w').write('x')"]}))
+        report = self.report()
+        self.assertFalse((self.root / "PWNED").exists())
+        self.assertIn("ignored tasks_command", " ".join(report["notes"]))
+        self.write(".agent/audit.json", json.dumps({"tasks_command": ["bd", "delete", "bd-1"]}))
+        self.assertIn("ignored tasks_command", " ".join(self.report()["notes"]))
+
+    def test_code_named_handoff_is_never_a_handoff_to_delete(self):
+        self.commit("src/handoff.py", "def handoff():\n    return 1\n", "feat: handoff api")
+        self.commit("tests/test_handoff.py", "def test_handoff():\n    assert True\n", "test: handoff")
+        self.commit("docs/dev-handoff/README.md", "current\n", "docs: handoff")
+        self.commit("docs/dev-handoff/old.md", "old\n", "docs: old handoff")
+        action = self.finding(self.report(), "handoff")["action"]
+        self.assertNotIn("handoff.py", action)
+        self.assertIn("delete docs/dev-handoff/old.md", action)
 
     def test_scattered_and_repeated_instructions_are_reported(self):
         rule = "Always run the full verification suite before you publish any change to the shared branch."

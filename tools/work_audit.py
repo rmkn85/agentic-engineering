@@ -25,8 +25,10 @@ with the action that fixes it. Findings follow where agent work breaks
 
 Tasks are read from .beads/issues.jsonl, backlog.json or tasks.json, the file
 named in .agent/audit.json ({"tasks": "path/to/tasks.json"}), or the output of
-a read-only tracker command named there ({"tasks_command": ["bd", "list",
-"--json"]}) that prints JSON or JSON lines.
+a tracker query named there ({"tasks_command": ["bd", "list", "--json"]}). The
+audit runs only known read-only tracker queries (bd list, ready, show, export);
+it ignores any other command, because a repository could otherwise make this
+read-only audit execute code.
 
 Each session does the FOCUS line, so the list is worked through over time.
 Cleanup commits count as records or process: when they start to dominate,
@@ -74,6 +76,7 @@ INSTRUCTION_FILE = re.compile(
     r"clinerules|codex/prompts)/.*\.(md|mdc|txt)$", re.I)
 INSTRUCTION_FILES = 8    # more instruction files than this means agents read scattered, competing text
 DUPLICATES = 5           # sentences repeated across instruction files before it is a finding
+READ_ONLY_TRACKERS = {"bd": {"list", "ready", "show", "export"}}
 CLOSED = {"done", "closed", "completed", "complete", "resolved", "cancelled", "canceled", "wontfix", "merged",
           "duplicate", "superseded", "obsolete"}
 STALE_DAYS = 14          # an in-progress claim older than this is stale
@@ -196,12 +199,15 @@ def unfinished(root: Path, files: list[str], product: list[str]) -> list[tuple[s
             text = (root / rel).read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
+        if "\x00" in text or not UNFINISHED.search(text):  # binary, or nothing to find: skip the tokenizer
+            continue
         lines, without_strings = text.splitlines(), python_code_lines(text) if rel.endswith(".py") else None
         for number, line in enumerate(lines, 1):
             if without_strings is not None:
                 line = without_strings.get(number, "")
             code = re.sub(r"\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'", "", line)  # text inside quotes is data
-            if UNFINISHED.search(code) and not re.search(r"UNFINISHED|re\.compile", line):
+            abstract = any("abstractmethod" in previous for previous in lines[max(0, number - 4):number - 1])
+            if UNFINISHED.search(code) and not abstract and not re.search(r"UNFINISHED|re\.compile", line):
                 found.append((rel, number, line.strip()[:100]))
     return found
 
@@ -229,6 +235,16 @@ def instructions(root: Path, files: list[str]) -> tuple[list[str], int, list[tup
     return chosen, total, sorted(repeated, key=lambda r: -len(r[1]))
 
 
+def statements(tree):
+    """Statement nodes only: functions live in bodies, so expressions need not be walked."""
+    stack = list(getattr(tree, "body", []))
+    while stack:
+        node = stack.pop()
+        yield node
+        for field in ("body", "orelse", "finalbody", "handlers", "cases"):
+            stack.extend(getattr(node, field, None) or [])
+
+
 def size(root: Path, files: list[str], product: list[str]) -> list[tuple[str, int, str]]:
     """Product code files and Python functions too large to change safely: (path, lines, what)."""
     import ast
@@ -248,7 +264,7 @@ def size(root: Path, files: list[str], product: list[str]) -> list[tuple[str, in
                 tree = ast.parse(text)
             except (SyntaxError, ValueError):
                 continue
-            for node in ast.walk(tree):
+            for node in statements(tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     length = (getattr(node, "end_lineno", node.lineno) or node.lineno) - node.lineno + 1
                     if length > FUNCTION_LINES:
@@ -256,11 +272,25 @@ def size(root: Path, files: list[str], product: list[str]) -> list[tuple[str, in
     return sorted(found, key=lambda f: -f[1])
 
 
+NOTES: list[str] = []
+
+
+def read_only_tracker(command) -> bool:
+    """A configured tracker command runs only if it is a known read-only query; repositories are untrusted."""
+    if not (isinstance(command, list) and len(command) >= 2 and all(isinstance(part, str) for part in command)):
+        return False
+    allowed = READ_ONLY_TRACKERS.get(Path(command[0]).name if "/" not in command[0] else "")
+    return bool(allowed) and command[1] in allowed
+
+
 def load_tasks(root: Path, cfg: dict) -> list[dict]:
     """Tasks from a configured command or file, Beads issues.jsonl, or a backlog/tasks JSON file."""
     sources = []
     command = cfg.get("tasks_command")
-    if isinstance(command, list) and command and all(isinstance(part, str) for part in command):
+    if command is not None and not read_only_tracker(command):
+        NOTES.append(f"ignored tasks_command {command!r}: only read-only tracker queries run "
+                     f"({', '.join(f'{k} {sorted(v)}' for k, v in READ_ONLY_TRACKERS.items())})")
+    elif command:
         try:
             result = subprocess.run(command, cwd=root, capture_output=True, text=True, timeout=60, check=False)
             sources.append(result.stdout if result.returncode == 0 else "")
@@ -282,8 +312,10 @@ def load_tasks(root: Path, cfg: dict) -> list[dict]:
         for row in rows if isinstance(rows, list) else []:
             if not isinstance(row, dict) or "id" not in row:
                 continue
-            deps = list(row.get("blocked_by") or [])
-            for dep in row.get("dependencies") or []:
+            raw = row.get("blocked_by") or []
+            deps = [raw] if isinstance(raw, (str, int)) else list(raw) if isinstance(raw, list) else []
+            dependencies = row.get("dependencies")
+            for dep in dependencies if isinstance(dependencies, list) else []:
                 if isinstance(dep, dict) and dep.get("type", "blocks") in ("blocks", "blocked-by", "blocked_by"):
                     deps.append(dep.get("depends_on_id") or dep.get("id"))
                 elif isinstance(dep, str):
@@ -387,7 +419,10 @@ def broken_references(root: Path, files: list[str]) -> list[str]:
         except OSError:
             continue
         for target in re.findall(r"\]\(([^)#\s:]+)(?:#[^)]*)?\)", text):
-            if not (root / rel).parent.joinpath(target).exists():
+            from urllib.parse import unquote
+            path = unquote(target)
+            base = root if path.startswith("/") else (root / rel).parent
+            if not base.joinpath(path.lstrip("/")).exists():
                 found.append(f"{rel} -> {target}")
     return found
 
@@ -425,14 +460,14 @@ def large_files(root: Path, files: list[str]) -> list[tuple[str, int]]:
 
 
 def handoff_files(files: list[str]) -> list[str]:
-    """Handoff files, the one to keep first (a README, else the shortest path)."""
-    chosen = [p for p in files if HANDOFF.search(p)]
+    """Handoff documents, the one to keep first (a README, else the shortest path). Code is never a handoff."""
+    chosen = [p for p in files if HANDOFF.search(p) and re.search(r"\.(md|markdown|txt|rst|adoc)$", p, re.I)]
     return sorted(chosen, key=lambda p: (not p.lower().endswith("readme.md"), len(p), p))
 
 
 def handoffs(root: Path, files: list[str]) -> tuple[int, int]:
     chosen = handoff_files(files)
-    return len(chosen), sum(words(root / p) for p in chosen if p.endswith((".md", ".txt", ".rst")))
+    return len(chosen), sum(words(root / p) for p in chosen)
 
 
 def goal_open(root: Path) -> str | None:
@@ -643,6 +678,7 @@ def choose_focus(found: list[dict], gaps: list) -> str:
 
 
 def audit(root: Path, count: int) -> dict:
+    NOTES.clear()
     cfg = config(root)
     product = [p for p in cfg.get("product", []) if isinstance(p, str)]
     files = tracked(root)
@@ -651,7 +687,7 @@ def audit(root: Path, count: int) -> dict:
     found = sorted((f for area in AREAS for f in area(ctx)), key=lambda f: ORDER.index(f["kind"]))
     mix = Counter(c["kind"] for c in ctx["commits"])
     return {"root": str(root), "commits": len(ctx["commits"]), "mix": dict(mix),
-            "focus": choose_focus(found, ctx["gaps"]), "findings": found}
+            "focus": choose_focus(found, ctx["gaps"]), "findings": found, "notes": list(NOTES)}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -668,6 +704,8 @@ def main(argv: list[str] | None = None) -> int:
         mix = ", ".join(f"{k} {v}" for k, v in sorted(report["mix"].items())) or "no history"
         print(f"work-audit: last {report['commits']} commits: {mix}")
         print(f"FOCUS: {report['focus']}")
+        for note in report["notes"]:
+            print(f"note: {note}")
         for number, finding in enumerate(report["findings"], 1):
             print(f"{number}. [{finding['area']}/{finding['kind']}] {finding['problem']}\n   -> {finding['action']}")
     return 1 if args.strict and report["findings"] else 0

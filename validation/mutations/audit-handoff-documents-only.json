@@ -1,0 +1,10 @@
+{
+  "id": "audit-handoff-documents-only",
+  "rule": "Code named handoff is never a handoff to delete",
+  "file": "tools/work_audit.py",
+  "find": "    chosen = [p for p in files if HANDOFF.search(p) and re.search(r\"\\.(md|markdown|txt|rst|adoc)$\", p, re.I)]",
+  "replace": "    chosen = [p for p in files if HANDOFF.search(p)]",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_code_named_handoff_is_never_a_handoff_to_delete"
+  ]
+}
