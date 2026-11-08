@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Kernel item 7 now asks whether something is needed before how to build it:
+  question the requirement, try deletion or reuse, simplify, then optimize,
+  naming where any removed ability is preserved. Removed duplicated runtime
+  sentences so the default reading stays under budget; rationale in
+  `references/necessity-before-method-2026-11.md`.
+
 - Added optional authority-bound task controls, independent claim/scenario
   evidence contracts, native transition gates, scoped capability receipts,
   compare-and-swap reconciliation, feedback closure and semantic WIP admission.

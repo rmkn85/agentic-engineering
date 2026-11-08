@@ -20,6 +20,8 @@ The operational docs should therefore contain the **current decision rule**. Thi
 - [`outcome-evidence-control-2026-11.md`](outcome-evidence-control-2026-11.md) — human engineering management and coding-agent evidence behind scoped delivery claims, complete observations, bounded recovery and preservation before retirement; hypotheses and revision criteria.
 - [`outcome-control-source-map.md`](outcome-control-source-map.md) — verified primary-source findings, study limits, provenance corrections and unresolved citations for the outcome-control design.
 
+- [`necessity-before-method-2026-11.md`](necessity-before-method-2026-11.md) — why kernel item 7 asks whether something is needed before how to build it: ordered requirement challenge, deletion, simplification and optimization, with a preservation guard; sources and evidence status.
+
 - [`reasoning-effort-2026-11.md`](reasoning-effort-2026-11.md) — effort economics, prompt-induced alternative exploration, evidence limits, and the rationale for uncertainty-based routing with proportional sampling.
 
 - [`context-and-instruction-engineering-2026-09.md`](context-and-instruction-engineering-2026-09.md) — research behind the current instruction/context design, including OpenAI, Anthropic/Claude Code, Cursor, GitHub Copilot, LangChain, Promptfoo, DSPy, ACE, long-context research, BMAD, and Superpowers.

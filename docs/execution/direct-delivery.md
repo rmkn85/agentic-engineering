@@ -36,8 +36,8 @@ it should not become an archive the next agent must reread.
 
 Choose work by its contribution to the controlling user outcome and explicit
 priorities. A ready task is eligible work, not automatically the next priority.
-A proposed solution is a hypothesis: establish the problem and why that mechanism
-is necessary before delegating its construction. Use **80/20** as a
+Establish that a proposed mechanism is needed before delegating its construction
+([kernel 7](../agent-corpus/README.md#execution-kernel)). Use **80/20** as a
 qualitative guide: concentrate on common scenarios while covering less common
 scenarios where requirements or consequences make them necessary. Within that
 focus, use **70/30** to favor features and use cases over the enabling work that
