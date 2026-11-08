@@ -1,0 +1,10 @@
+{
+  "id": "audit-interfaces-not-unfinished",
+  "rule": "Base-class methods that raise NotImplementedError are not unfinished",
+  "file": "tools/work_audit.py",
+  "find": "                if \"NotImplementedError\" in code and number in methods:",
+  "replace": "                if False:",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_interfaces_vendored_code_and_notes_do_not_become_the_focus"
+  ]
+}

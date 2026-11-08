@@ -2,7 +2,7 @@
   "id": "audit-vacuous-tests",
   "rule": "Tests that assert nothing are reported",
   "file": "tools/work_audit.py",
-  "find": "        found += [f\"{rel}:{f.lineno} {f.name}\" for f in functions\n                  if f.name.startswith(\"test\") and not asserts(f, helpers)]",
+  "find": "        found += [f\"{rel}:{f.lineno} {f.name}\" for f in functions if f.name.startswith(\"test\") and not exercises(f)]",
   "replace": "        found += []",
   "tests": [
     "tools.tests.test_work_audit.WorkAuditTests.test_tests_that_assert_nothing_are_reported"

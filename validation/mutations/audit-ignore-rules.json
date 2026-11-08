@@ -1,0 +1,10 @@
+{
+  "id": "audit-ignore-rules",
+  "rule": "Verified false positives with a reason are skipped",
+  "file": "tools/work_audit.py",
+  "find": "    return any(r[\"kind\"] == kind_name and fnmatch.fnmatch(path, r.get(\"path\", \"*\")) for r in rules)",
+  "replace": "    return False",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_verified_false_positives_can_be_recorded_with_a_reason"
+  ]
+}

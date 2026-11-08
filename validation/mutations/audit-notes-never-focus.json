@@ -1,0 +1,10 @@
+{
+  "id": "audit-notes-never-focus",
+  "rule": "TODO notes are advisory and never the focus",
+  "file": "tools/work_audit.py",
+  "find": "NEVER_FOCUS = {\"todo-notes\", \"size\"}",
+  "replace": "NEVER_FOCUS = {\"size\"}",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_interfaces_vendored_code_and_notes_do_not_become_the_focus"
+  ]
+}

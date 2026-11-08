@@ -1,0 +1,10 @@
+{
+  "id": "audit-calls-are-tests",
+  "rule": "A test that calls code is not vacuous",
+  "file": "tools/work_audit.py",
+  "find": "                    if name not in (\"print\", \"len\", \"str\", \"repr\", \"dict\", \"list\", \"set\", \"tuple\"):",
+  "replace": "                    if name.startswith(\"assert\"):",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_validator_style_tests_are_real_tests"
+  ]
+}
