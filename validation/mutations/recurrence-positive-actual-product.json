@@ -1,0 +1,10 @@
+{
+  "id": "recurrence-positive-actual-product",
+  "file": "validation/trials/recurrence/fixture.py",
+  "find": "[('incomplete', BROKEN), ('repaired', None)]",
+  "replace": "[('incomplete', BROKEN), ('repaired', REPAIRED)]",
+  "tests": [
+    "tools.tests.test_native_trial.NativeTrialTests.test_recurrence_oracle_accepts_actual_iterator_product_and_rejects_broken"
+  ],
+  "rule": "Positive control preserves independently accepted worker implementation unchanged"
+}

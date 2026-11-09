@@ -24,7 +24,8 @@ def build(destination, corpus, scenario):
     subprocess.run(['git', 'init', '-q'], cwd=root, check=True, capture_output=True)
     shutil.copytree(corpus, root / '.agentic-engineering')
     write(root, '.gitignore', '__pycache__/\n*.pyc\n')
-    write(root, 'AGENTS.md', '# Project instructions\n\nRead `.agentic-engineering/AGENTS.md` and its normal operating corpus. Paths in that shared corpus are relative to `.agentic-engineering/`; project source, goal records and requirements are relative to this repository.\n\nThis repository owns a compact order-summary utility. `REQUEST.md` owns delivery requirements. Native routes: `make check`, `make finish-check`, `make audit`. The finish route runs `python3 .agentic-engineering/tools/finish_check.py --root .`; audit runs `python3 .agentic-engineering/tools/work_audit.py --root .`. Use these bindings when the shared instructions name tools paths.\n')
+    write(root, 'AGENTS.md', '# Project instructions\n\nRead `.agentic-engineering/AGENTS.md` and its normal operating corpus. Paths in that shared corpus are relative to `.agentic-engineering/`; project source, goal records, requirements, task records and `HANDOFF.md` are owned here. The embedded corpus is a shared dependency; do not put project records there.\n\nThis repository owns a compact order-summary utility. `REQUEST.md` owns delivery requirements. Native routes: `make check`, `make finish-check`, `make audit`. The finish route runs `python3 .agentic-engineering/tools/finish_check.py --root .`; audit runs `python3 .agentic-engineering/tools/work_audit.py --root .`. Use these bindings when the shared instructions name tools paths.\n')
+    write(root, '.agent/audit.json', json.dumps({'external_scopes': ['.agentic-engineering']}, indent=2) + '\n')
     hooks = corpus / '.codex/hooks.json'
     if hooks.exists():
         write(root, '.codex/hooks.json', hooks.read_text().replace('/tools/agent_hooks.py', '/.agentic-engineering/tools/agent_hooks.py').replace('python3 tools/agent_hooks.py', 'python3 .agentic-engineering/tools/agent_hooks.py'))
@@ -72,10 +73,12 @@ assert m.total(rows)==10
     if not healthy:
         with tempfile.TemporaryDirectory(prefix='recurrence-consumer-') as temporary:
             observations = {}
-            for label, product in [('incomplete', BROKEN), ('repaired', REPAIRED)]:
+            for label, product in [('incomplete', BROKEN), ('repaired', None)]:
                 probe = Path(temporary) / label
                 shutil.copytree(root, probe, ignore=shutil.ignore_patterns('__pycache__'))
-                write(probe, 'summary.py', product)
+                # Positive control preserves the independently checked worker product.
+                if product is not None:
+                    write(probe, 'summary.py', product)
                 for route in ('check', 'finish-check'):
                     outcome = subprocess.run(['make', '--no-print-directory', route], cwd=probe, capture_output=True, text=True)
                     observations[label + '_' + route] = outcome.returncode

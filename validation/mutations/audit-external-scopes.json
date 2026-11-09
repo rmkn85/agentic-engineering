@@ -1,0 +1,10 @@
+{
+  "id": "audit-external-scopes",
+  "file": "tools/work_audit.py",
+  "find": "files = project_files(tracked(root), cfg)",
+  "replace": "files = tracked(root)",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_dependency_handoff_is_outside_project_rewrite_scope"
+  ],
+  "rule": "Project rewrite findings exclude declared dependency trees"
+}

@@ -138,7 +138,7 @@ class WorkAuditTests(unittest.TestCase):
         self.assertIn("not owner decisions", finding["action"])
         handoff = self.finding(report, "handoff")["action"]
         self.assertIn("Rewrite docs/dev-handoff/README.md", handoff)
-        self.assertIn("delete docs/dev-handoff/old.md", handoff)
+        self.assertIn("review overlapping records in docs/dev-handoff/old.md", handoff)
 
     def test_odd_task_shapes_do_not_crash_or_split(self):
         self.commit("backlog.json", json.dumps({"tasks": [
@@ -198,7 +198,25 @@ class WorkAuditTests(unittest.TestCase):
         self.commit("docs/dev-handoff/old.md", "old\n", "docs: old handoff")
         action = self.finding(self.report(), "handoff")["action"]
         self.assertNotIn("handoff.py", action)
-        self.assertIn("delete docs/dev-handoff/old.md", action)
+        self.assertIn("review overlapping records in docs/dev-handoff/old.md", action)
+
+    def test_dependency_handoff_is_outside_project_rewrite_scope(self):
+        self.commit("HANDOFF.md", "current " * 801, "docs: local handoff")
+        shared = "shared/methodology"
+        self.commit(f"{shared}/docs/dev-handoff/README.md", "dependency continuation\n", "docs: shared corpus")
+        self.commit(f"{shared}/docs/dev-handoff/old.md", "retained\n", "docs: shared history")
+        self.commit(f"{shared}/docs/handoffs/2026-01-01.md", "retained\n", "docs: dated shared history")
+        self.commit(f"{shared}/module.py", "raise NotImplementedError\n", "chore: dependency stub")
+        self.commit(".agent/audit.json", json.dumps({"external_scopes": [shared]}), "chore: declare owner scope")
+        report = self.report()
+        action = self.finding(report, "handoff")["action"]
+        self.assertIn("Rewrite HANDOFF.md", action)
+        self.assertNotIn(shared, json.dumps(report["findings"]))
+        self.assertNotIn("delete HANDOFF.md", action)
+        # Root-relative ownership does not disable explicit maintenance of the dependency.
+        nested = subprocess.run([sys.executable, str(TOOL), "--root", str(self.root / shared), "--json"],
+                                capture_output=True, text=True, check=True)
+        self.assertIn("Rewrite docs/dev-handoff/README.md", self.finding(json.loads(nested.stdout), "handoff")["action"])
 
     def test_scattered_and_repeated_instructions_are_reported(self):
         rule = "Always run the full verification suite before you publish any change to the shared branch."
