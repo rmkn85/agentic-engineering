@@ -1,0 +1,10 @@
+{
+  "id": "goal-disappearing-input",
+  "rule": "A disappeared declared input returns unmet rather than a crash",
+  "file": "tools/finish_check.py",
+  "find": "    except ContractError as exc:\n        results.append({'id': 'inputs-unavailable'",
+  "replace": "    except TypeError as exc:\n        results.append({'id': 'inputs-unavailable'",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_disappearing_declared_input_during_acceptance_is_unmet_not_crash"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "goal-trigger-no-execution",
+  "rule": "Startup triggers record obligations without executing acceptance",
+  "file": "tools/finish_check.py",
+  "find": "        print(json.dumps({\"trigger\": args.trigger, \"recorded\": True}))\n        return 0\n    if args.inspect:",
+  "replace": "        print(json.dumps({\"trigger\": args.trigger, \"recorded\": True}))\n    if args.inspect:",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_trigger_records_obligation_without_running_acceptance"
+  ]
+}

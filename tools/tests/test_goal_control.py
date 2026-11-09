@@ -206,3 +206,29 @@ class GoalControls(unittest.TestCase):
         control.require_correction(self.root, 'repetition', 'new repeated failure observed')
         self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'unverified')
         self.assertEqual(work_audit.goal_open(self.root), self.goal['goal'])
+
+    def test_trigger_records_obligation_without_running_acceptance(self):
+        (self.root / 'Makefile').write_text('ok:\n\t@touch acceptance-ran\n')
+        for trigger in ('stale-evidence', 'repetition', 'methodology'):
+            proc = subprocess.run([sys.executable, gate.__file__, '--root', str(self.root),
+                                   '--trigger', trigger], capture_output=True, text=True, check=False)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertEqual(json.loads(proc.stdout), {'trigger': trigger, 'recorded': True})
+            self.assertFalse((self.root / 'acceptance-ran').exists())
+            self.assertFalse((self.root / '.agent/goal-status.json').exists())
+        state = control.read(self.root / '.agent/reflection-state.json')
+        self.assertEqual({o['trigger'] for o in state['obligations']},
+                         {'stale-evidence', 'repetition', 'methodology'})
+
+    def test_disappearing_declared_input_during_acceptance_is_unmet_not_crash(self):
+        self.goal['inputs'] = ['source']
+        self.save()
+        (self.root / 'Makefile').write_text('ok:\n\t@rm source\n')
+        proc = subprocess.run([sys.executable, gate.__file__, '--root', str(self.root)],
+                              capture_output=True, text=True, check=False)
+        self.assertEqual(proc.returncode, 2, proc.stdout + proc.stderr)
+        self.assertNotIn('Traceback', proc.stderr)
+        self.assertIn('inputs-unavailable', proc.stdout)
+        receipt = control.read(self.root / '.agent/goal-status.json')
+        self.assertFalse(receipt['met'])
+        self.assertTrue(any(r['id'] == 'inputs-unavailable' for r in receipt['results']))

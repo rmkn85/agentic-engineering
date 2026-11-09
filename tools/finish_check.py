@@ -248,7 +248,13 @@ def evaluate(goal: dict, root: Path, timeout: int) -> list[dict]:
         results.append({"id": "machine-check", "check": "at least one passing run check", "state": state,
                         "why": "every run check is blocked" if state == "blocked"
                         else "no passing run check: manual items alone cannot prove the goal"})
-    after = snapshot(root, goal)
+    try:
+        after = snapshot(root, goal)
+    except ContractError as exc:
+        results.append({'id': 'inputs-unavailable', 'check': 'validation inputs remain available',
+                        'state': 'unmet', 'why': str(exc)})
+        require_correction(root, 'failed-acceptance', str(exc))
+        return Evaluation(results, evaluated_contract, before)
     if any(r["state"] == "unmet" for r in results):
         require_correction(root, "failed-acceptance", summary(results) + ": " + digest(after))
     try:
@@ -445,6 +451,8 @@ def main(argv: list[str] | None = None) -> int:
     goal_path = root / args.goal
     if args.trigger:
         require_correction(root, args.trigger, "startup detected " + args.trigger)
+        print(json.dumps({"trigger": args.trigger, "recorded": True}))
+        return 0
     if args.inspect:
         try:
             state, reason = receipt_state(root, load_goal(goal_path))
