@@ -1,0 +1,32 @@
+{
+  "base": "4cdeefd11dd415512d691f4bf5a6197132141123",
+  "failure_evidence": "validation/reviews/reflection-failure-evidence.md",
+  "files": {
+    "validation/trials/recurrence/interpretation.md": "3a0c9cd28ce69d9fe201128b7cf690f21e1d2abb22d5f44cfe39e471f6050a7d",
+    "validation/trials/recurrence/native-v2/healthy-overhead.json": "68b9d95508f83fcd271f945b15bd9c0d8d0a61b2d1f68173d891016a926b2a2a",
+    "validation/trials/recurrence/native-v2/index.json": "5b6d9a6dc2069645fde62af0c86d264a604e0215d8c9f9ea8ba6aadd66681816",
+    "validation/trials/recurrence/native-v2/p01-baseline.json": "6b9c634ecb205c107056a0f060be3863a2c876d3c997e49f232e474697228e00",
+    "validation/trials/recurrence/native-v2/p01-candidate.json": "26087c527d845c52bfe2812434c8c70e5b47838fd86c6f380608969426a9b9b8",
+    "validation/trials/recurrence/native-v2/p02-baseline.json": "90416af1f6090eeefbf32939ea38c54a4843db294cd8d7266ab7c1700d7711a2",
+    "validation/trials/recurrence/native-v2/p02-candidate.json": "a2261e0aa9704b2f5575eb4d064ece5d96558905710bd6ecf8149784d5776417",
+    "validation/trials/recurrence/native-v2/p03-baseline.json": "ccdb222ff819c47d98fcc4fe7ef092b8adb9d10f45ed3e203ec8d56162f48413",
+    "validation/trials/recurrence/native-v2/p03-candidate.json": "201383fc6bca4ad55df6746a48efbf889f8ef563add532b3575e97fe52545268",
+    "validation/trials/recurrence/native-v2/p04-baseline.json": "72b7853f4874e697a26993dcd8cc52d08afc0bc3a8397fa5ec58268a56c6e998",
+    "validation/trials/recurrence/native-v2/p04-candidate.json": "7992256791795d9233c2d3819ff3203b6de50bd3949faa9c223295df2c448922"
+  },
+  "framing": "validation/reviews/reflection-frame.json",
+  "input_hashes": {
+    "failure_evidence": "649436ba12a1db9b198a9555fa318f0146f77c9e8ddeadd92076c7d8561a7ddb",
+    "framing": "a87fc8c4495a42ae811275c29324c41b5513cb8a28d08b503f7582905b7f63e7",
+    "request": "4b0e1d8898c4714c6d2b60a5a0696c6cc36cce70806b329559029a5388a37e2e"
+  },
+  "report": {
+    "path": "validation/reviews/recurrence-v2/report.md",
+    "sha256": "ffc02028630691f59ab5f83c83ee581ec0c74423ce7f7b59ab562d7baa43e631"
+  },
+  "request": "validation/reviews/reflection-request.md",
+  "reviewed_commit": "8093943da71bf193672bfa3150602614aca7c184",
+  "schema": "methodology-review/v1",
+  "scope": "Public evidence accurately retains v2 behavioral failure; not acceptance of source8093943 for delivery",
+  "verdict": "accepted"
+}

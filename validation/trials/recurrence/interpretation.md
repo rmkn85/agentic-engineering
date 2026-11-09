@@ -1,7 +1,7 @@
 # Recurrence experiment status
 
 Status on 2026-11-09: **native sandbox execution works; the first matched pair
-exposed two defects and corrected trials are pending**.
+exposed two defects; corrected trials exposed a healthy-task overhead defect**.
 The original CLI 0.156.1 attempt could not initialize its read-only native state.
 That historical failure remains in `native-smoke.json`. The follow-up
 `native-recovery.json` retains three materially different calibration attempts.
@@ -64,7 +64,14 @@ iterator coverage. Independent reproduction isolated both causes; see the
 The original failed candidate remains failed. It is not evidence of comparative
 superiority or of a candidate product regression. The reusable audit ownership
 boundary and evaluator positive control were corrected at `8093943`; independently
-reviewed, newly frozen runs are in progress. The remaining three original pairs were not launched. Automatic truthful
+reviewed, newly frozen runs completed. All eight passed their product and integrity
+assertions, but final independent review found the healthy candidate was forced
+to write an unnecessary reflection form after an ordinary passing edit. The
+frozen healthy scorer did not check this requirement. See the [retained v2
+results](native-v2/index.json) and [healthy-overhead evidence](native-v2/healthy-overhead.json).
+This remains a failed behavioral criterion despite the green product scores.
+A stale-only checked refresh and a healthy-overhead scoring guard are being
+implemented before another frozen comparison. The remaining three original pairs were not launched. Automatic truthful
 completion remains unknown and requires separate semantic review.
 
 Deterministic regression tests exercise contract retention, stale evidence,
