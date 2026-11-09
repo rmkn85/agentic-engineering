@@ -1,0 +1,34 @@
+{
+  "base": "4cdeefd11dd415512d691f4bf5a6197132141123",
+  "failure_evidence": "validation/reviews/reflection-failure-evidence.md",
+  "files": {
+    "docs/agent-corpus/README.md": "450af69ff45bf9463b320a9bfd1939b254469c02d11f2648067e27e2925c2cb5",
+    "tools/README.md": "8aa2b40acf863f66f3defea8e00fd1a2184de0f8b291469efd664b0a661804d5",
+    "tools/native_trial.py": "c7094cd4ba7f7f6d25591495e031bb20255e97f5efe85a39a7ffdc860d306984",
+    "tools/reflection_activity.py": "60323fcb933fb1a77cc4a0e1e1237757426de9aca40456a49333f22f5ffdb4be",
+    "tools/tests/test_native_trial.py": "535b526fb64b467ce55eb75a9c45c257c14c8e5bfd7d5652ea1f060716de7f31",
+    "tools/tests/test_reflection_activity.py": "5541f1aa62a7a8a21ef574a99fa373b33fe7d7161c4827daa820b504f4d14f63",
+    "validation/findings.jsonl": "00b80df76e7896b02e18f206b15b424ccf9cb371e9d9092fc667515f182c4307",
+    "validation/mutations/native-trial-preflight-attempt-binding.json": "201aebce6cc69815d4a7bfb399ad962f3ad5f13fd29c6b1fae029ccba7dd890b",
+    "validation/mutations/native-trial-sandbox-failure-gate.json": "b7e1f42bced9687ec6b9bb8cf87ddd72155bc1d8e2d22dbddeb9933598e7d306",
+    "validation/mutations/native-trial-smoke-readiness-separation.json": "648982bd7f0e847f258a8f448c1e7dd8b89e7a6f979e36e6716579854a1b3a12",
+    "validation/reviews/reflection-request.md": "4b0e1d8898c4714c6d2b60a5a0696c6cc36cce70806b329559029a5388a37e2e",
+    "validation/trials/recurrence/interpretation.md": "9471e9bf5a4fc680cddc219b9c8af66b2e4bb6478dfc07050e59c41fccdb6bd6",
+    "validation/trials/recurrence/native-recovery.json": "be261bcf595b961a034d36afb015f10a88e12f01c3158b50fc909a6723bb2d51"
+  },
+  "framing": "validation/reviews/reflection-frame.json",
+  "input_hashes": {
+    "failure_evidence": "649436ba12a1db9b198a9555fa318f0146f77c9e8ddeadd92076c7d8561a7ddb",
+    "framing": "a87fc8c4495a42ae811275c29324c41b5513cb8a28d08b503f7582905b7f63e7",
+    "request": "4b0e1d8898c4714c6d2b60a5a0696c6cc36cce70806b329559029a5388a37e2e"
+  },
+  "report": {
+    "path": "validation/reviews/native-readiness/final-focused-verdict.md",
+    "sha256": "c6a61bbd36eb22d328c277c3950fd5194404aea5cdecd0b66bcdc236f0762a01"
+  },
+  "request": "validation/reviews/reflection-request.md",
+  "reviewed_commit": "30f46614dbe8ba6a7da0ba31137056f4601a7575",
+  "schema": "methodology-review/v1",
+  "scope": "Focused independent readiness correction and public evidence review; actual native recurrence and merge acceptance remain unproven",
+  "verdict": "accepted"
+}
