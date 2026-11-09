@@ -85,6 +85,48 @@ class CheckFindingsTests(unittest.TestCase):
         self.assertEqual(self.run_tool().returncode, 0)
         self.assertEqual(self.run_tool("--strict").returncode, 1)
 
+    def test_integration_rejects_open_findings_at_every_severity(self):
+        for severity in ("blocker", "should-fix", "minor"):
+            self.ledger({"id": "F1", "status": "open", "severity": severity, "note": "will consider this later"})
+            self.assertEqual(self.run_tool().returncode, 0)
+            result = self.run_tool("--integration")
+            self.assertEqual(result.returncode, 1, severity)
+            self.assertIn("needs a disposition", result.stderr)
+            self.ledger({"id": "F1", "status": "declined", "severity": severity,
+                         "note": "Retained behavior is required by the compatibility contract"})
+            self.assertEqual(self.run_tool("--integration").returncode, 0)
+
+    def test_reopen_preserves_decision_and_proof_history(self):
+        original = {**BASE, "id": "F1", "status": "fixed", "note": "original proof and decision rationale",
+                    "tests": ["tools.tests.test_x.XTests.test_guarded"], "mutation": "m1"}
+        self.ledger(original)
+        evidence = self.root / "recurrence.txt"
+        evidence.write_text("The original missing-row defect recurred in a new export.")
+        result = self.run_tool("--reopen", "F1", "--evidence", str(evidence),
+                               "--reason", "The prior assumption fails for multiline exports")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        row = json.loads((self.root / "validation/findings.jsonl").read_text())
+        self.assertEqual(row["status"], "open")
+        self.assertEqual(len(row["history"]), 1)
+        self.assertEqual(row["history"][0]["previous"], original)
+        for key in ("note", "tests", "mutation"):
+            self.assertEqual(row[key], original[key])
+        self.assertEqual(row["history"][0]["evidence"]["path"], "recurrence.txt")
+        self.assertEqual(len(row["history"][0]["evidence"]["sha256"]), 64)
+        self.assertEqual(self.run_tool("--integration").returncode, 1)
+
+    def test_reopen_needs_existing_nonempty_evidence_and_reason(self):
+        self.ledger({"id": "F1", "status": "declined", "note": "not relevant under prior assumptions"})
+        before = (self.root / "validation/findings.jsonl").read_bytes()
+        evidence = self.root / "evidence.txt"
+        for content, reason in ((None, "A new observed failure recurred"), ("", "A new observed failure recurred"),
+                                ("new observed failure", ".")):
+            if content is not None:
+                evidence.write_text(content)
+            result = self.run_tool("--reopen", "F1", "--evidence", str(evidence), "--reason", reason)
+            self.assertEqual(result.returncode, 1)
+            self.assertEqual((self.root / "validation/findings.jsonl").read_bytes(), before)
+
     def test_malformed_rows_and_duplicates_fail(self):
         (self.root / "validation" / "findings.jsonl").write_text("not json\n")
         self.assertEqual(self.run_tool().returncode, 1)

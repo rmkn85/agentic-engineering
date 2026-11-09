@@ -1,0 +1,10 @@
+{
+  "id": "review-requires-independent-frame",
+  "rule": "Methodology and control reviews cannot skip independent framing",
+  "file": "tools/blind_review.py",
+  "find": "or args.review_kind != \"ordinary\":",
+  "replace": "or False:",
+  "tests": [
+    "tools.tests.test_blind_review.BlindReviewTests.test_control_and_methodology_cannot_use_legacy_review_without_frame"
+  ]
+}

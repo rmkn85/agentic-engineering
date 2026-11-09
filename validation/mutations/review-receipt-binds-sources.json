@@ -1,0 +1,10 @@
+{
+  "id": "review-receipt-binds-sources",
+  "rule": "Changing original request invalidates framing",
+  "file": "tools/blind_review.py",
+  "find": "if digest(request.read_bytes()) != payload[\"request_sha256\"] or digest(failure.read_bytes()) != payload[\"failure_sha256\"]:",
+  "replace": "if False:",
+  "tests": [
+    "tools.tests.test_blind_review.BlindReviewTests.test_receipt_cannot_be_overwritten_or_accept_changed_sources_or_frame"
+  ]
+}
