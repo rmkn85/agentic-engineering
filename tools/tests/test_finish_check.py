@@ -22,10 +22,27 @@ class FinishCheckTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
+        subprocess.run(['git', 'init', '-q', str(self.root)], check=True)
         # A per-instance sleep duration, so parallel suites never see each other's processes.
         self.marker = f"{40000 + (os.getpid() * 7 + id(self)) % 50000}.{os.getpid()}"
         (self.root / "Makefile").write_text(MAKEFILE.replace("{marker}", self.marker))
         (self.root / "README").write_text("a file, not a target\n")
+
+    def fresh(self):
+        # Independent table cases are separate tasks, not contract revisions.
+        for name in ('goal-contract.json', 'goal-status.json', 'reflection-state.json'):
+            (self.root / '.agent' / name).unlink(missing_ok=True)
+
+    def authorize_revision(self):
+        path = self.root / '.agent' / 'goal.json'
+        record = json.loads(path.read_text())
+        previous = json.loads((self.root / '.agent/goal-contract.json').read_text())
+        record['supersedes'] = {'goal': previous['contract']['goal'], 'digest': previous['digest'],
+                                'reason': 'the owner approved this revision', 'authority': 'see README'}
+        record['reflection'] = {'interventions': [{'observation': 'the prior check failed',
+                'evidence': 'see README', 'hypothesis': 'the revised scope resolves failure',
+                'expected_effect': 'the maintained checks should pass', 'run': 'ok'}]}
+        path.write_text(json.dumps(record))
 
     def goal(self, *items, text="Users can export a report", reflection=None):
         (self.root / ".agent").mkdir(exist_ok=True)
@@ -59,7 +76,7 @@ class FinishCheckTests(unittest.TestCase):
         self.assertEqual(self.gaps(), [])
         self.assertEqual((self.root / ".agent" / ".gitignore").read_text(), "*\n!.gitignore\n!audit.json\n")
         status = json.loads((self.root / ".agent" / "goal-status.json").read_text())
-        self.assertEqual(status, {"goal": "Users can export a report", "met": True})
+        self.assertEqual((status["goal"], status["met"], status["schema"]), ("Users can export a report", True, "goal-receipt/v2"))
 
     def test_failing_check_blocks_and_records_gap_with_unknown_reflection(self):
         self.goal({"id": "t", "check": "tests pass", "run": "bad"})
@@ -85,19 +102,23 @@ class FinishCheckTests(unittest.TestCase):
     def test_manual_evidence_must_cite_a_file_or_url(self):
         for evidence, met in (("x", False), ("it works", False), ("see Makefile", True),
                               ("https://example.invalid/run/1", True)):
+            self.fresh()
             self.goal({"id": "t", "check": "tests pass", "run": "ok"},
                       {"id": "h", "check": "owner", "status": "pass", "evidence": evidence})
             self.assertEqual(self.run_tool().returncode == 0, met, evidence)
 
     def test_recipes_that_cannot_fail_prove_nothing(self):
         for run in ("noop", "say"):
+            self.fresh()
             self.goal({"id": "t", "check": "c", "run": run})
             self.assertIn("cannot fail", self.run_tool().stdout)
 
     def test_common_no_op_spellings_prove_nothing(self):
         for run in ("bintrue", "comment", "test1"):
+            self.fresh()
             self.goal({"id": "t", "check": "c", "run": run})
             self.assertIn("cannot fail", self.run_tool().stdout, run)
+        self.fresh()
         self.goal({"id": "t", "check": "c", "run": "filetest"})
         self.assertEqual(self.run_tool().returncode, 0)
 
@@ -106,8 +127,8 @@ class FinishCheckTests(unittest.TestCase):
         self.decision(self.hook())
         self.goal({"id": "t", "check": "c", "run": "ok"}, text="Make a small edit")
         for attempt in range(1, 4):
-            self.assertIn("goal changed", self.decision(self.hook()).get("reason", ""), attempt)
-        self.assertIn("NOT verified", self.decision(self.hook())["systemMessage"])
+            self.assertIn("contract changed", self.decision(self.hook()).get("reason", ""), attempt)
+        self.assertIn("NOT met", self.decision(self.hook())["systemMessage"])
 
     def test_a_reasoned_goal_change_is_allowed_and_recorded(self):
         self.goal({"id": "t", "check": "export tests pass", "run": "bad"}, text="Users can export a monthly report")
@@ -116,6 +137,7 @@ class FinishCheckTests(unittest.TestCase):
                   "supersedes": {"goal": "Users can export a monthly report",
                                  "reason": "the owner moved export to the next release"}}
         (self.root / ".agent" / "goal.json").write_text(json.dumps(record))
+        self.authorize_revision()
         self.assertEqual(self.hook().stdout, "")
         gap = json.loads(self.gaps()[-1].read_text())
         self.assertEqual(gap["superseded_goal"]["goal"], "Users can export a monthly report")
@@ -124,6 +146,7 @@ class FinishCheckTests(unittest.TestCase):
         self.goal({"id": "t", "check": "c", "run": "ok"}, text="first goal")
         self.assertEqual(self.hook().stdout, "")
         self.goal({"id": "t", "check": "c", "run": "ok"}, text="second goal")
+        self.authorize_revision()
         self.assertEqual(self.hook().stdout, "")
 
     def test_a_goal_blocked_on_its_only_machine_check_can_end_blocked(self):
@@ -155,6 +178,7 @@ class FinishCheckTests(unittest.TestCase):
 
     def test_target_without_recipe_proves_nothing(self):
         for run in ("README", "Makefile"):
+            self.fresh()
             self.goal({"id": "t", "check": "c", "run": run})
             result = self.run_tool()
             self.assertEqual(result.returncode, 2, run)
@@ -171,6 +195,7 @@ class FinishCheckTests(unittest.TestCase):
     def test_blocked_needs_a_named_blocker(self):
         self.goal({"id": "h", "check": "deployed", "status": "blocked"})
         self.assertIn("status is blocked", self.run_tool().stdout)
+        self.fresh()
         self.goal({"id": "t", "check": "tests pass", "run": "ok"},
                   {"id": "h", "check": "deployed", "status": "blocked", "blocker": "no deploy credentials in this sandbox"})
         self.assertEqual(self.run_tool().returncode, 2)
@@ -178,6 +203,7 @@ class FinishCheckTests(unittest.TestCase):
 
     def test_commands_cannot_come_from_the_record(self):
         for run in ("bad; rm -rf x", "../x", "-f /tmp/m"):
+            self.fresh()
             self.goal({"id": "t", "check": "c", "run": run})
             result = self.run_tool()
             self.assertEqual(result.returncode, 1, run)
@@ -200,6 +226,8 @@ class FinishCheckTests(unittest.TestCase):
 
     def test_missing_make_is_an_unmet_check_not_a_crash(self):
         self.goal({"id": "t", "check": "tests pass", "run": "ok"})
+        import shutil
+        (self.root / "git").symlink_to(shutil.which("git"))
         result = self.run_tool(env={**os.environ, "PATH": str(self.root)})
         self.assertEqual(result.returncode, 2)
         self.assertIn("make is not installed", result.stdout)
@@ -230,6 +258,7 @@ class FinishCheckTests(unittest.TestCase):
         (self.root / "tools").mkdir()
         (self.root / "tools" / "finish_check.py").write_text("")
         for run, why in (("help", "cannot fail"), ("loop", "calls the finish gate")):
+            self.fresh()
             self.goal({"id": "t", "check": "c", "run": run})
             self.assertIn(why, self.run_tool().stdout)
 

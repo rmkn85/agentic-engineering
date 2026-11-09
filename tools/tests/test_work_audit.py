@@ -57,11 +57,11 @@ class WorkAuditTests(unittest.TestCase):
         self.commit("docs/handoff.md", "short\n", "docs: replace handoff")
         self.assertNotIn("loop", self.kinds(self.report()))
 
-    def test_a_goal_the_finish_gate_found_met_is_not_open(self):
+    def test_a_legacy_success_receipt_is_not_authoritative(self):
         self.write(".agent/goal.json", json.dumps({"goal": "Exports work", "acceptance": []}))
         self.assertIn("goal", self.kinds(self.report()))
         self.write(".agent/goal-status.json", json.dumps({"goal": "Exports work", "met": True}))
-        self.assertNotIn("goal", self.kinds(self.report()))
+        self.assertIn("goal", self.kinds(self.report()))
         self.write(".agent/goal-status.json", json.dumps({"goal": "Other goal", "met": True}))
         self.assertIn("goal", self.kinds(self.report()))
 

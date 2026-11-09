@@ -539,21 +539,17 @@ def handoffs(root: Path, files: list[str]) -> tuple[int, int]:
 
 
 def goal_open(root: Path) -> str | None:
-    """The recorded goal, unless the finish gate's last verdict on this same goal was "met"."""
-    path, status = root / ".agent" / "goal.json", root / ".agent" / "goal-status.json"
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
+    """Do not run checks: only a current input-bound success closes the goal."""
+    from goal_control import read, receipt_state
+    data = read(root / ".agent/goal.json")
+    goal = data.get("goal")
+    if not isinstance(goal, str):
         return None
-    goal = data.get("goal") if isinstance(data, dict) and isinstance(data.get("goal"), str) else None
     try:
-        verdict = json.loads(status.read_text(encoding="utf-8"))
-        if (verdict.get("goal") == goal and verdict.get("met") is True
-                and status.stat().st_mtime >= path.stat().st_mtime):
-            return None
-    except (OSError, ValueError, AttributeError):
-        pass
-    return goal
+        state, _ = receipt_state(root, data)
+    except (KeyError, TypeError, ValueError):
+        state = "unverified"
+    return None if state == "verified" else goal
 
 
 def hygiene(root: Path) -> list[str]:

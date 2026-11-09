@@ -1,0 +1,10 @@
+{
+  "id": "goal-source-freshness",
+  "rule": "Changed source invalidates successful receipts",
+  "file": "tools/goal_control.py",
+  "find": "        if receipt.get('snapshot') != snapshot(root, goal):",
+  "replace": "        if False:",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_progress_is_mutable_but_receipt_not_authority_after_source_change"
+  ]
+}

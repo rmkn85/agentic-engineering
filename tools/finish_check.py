@@ -29,9 +29,14 @@ Rules:
 - Ending with blocked items needs a "reflection" object in the goal record
   with first_divergence, guidance_followed and guidance_missing_or_misleading,
   each a real sentence.
-- The first goal a session records is pinned. Replacing it with a different
-  goal before it is met needs "supersedes": {"goal": "<the pinned goal text>",
-  "reason": "<why the goal changed>"}; the change is kept in the gap record.
+- The complete acceptance contract is pinned across sessions. Revisions need
+  "supersedes": {"digest": "<previous contract digest>", "reason": "<why it
+  changed>", "authority": "<file or URL authorizing the revision>"}. History is
+  retained in .agent/goal-contract.json. Progress and evidence are mutable.
+- Success receipts bind current source, validator and declared inputs. Failed
+  acceptance, stale evidence and explicit triggers require reflection.interventions
+  with observation, evidence, hypothesis, expected_effect and a fixed Make run
+  target. The tool executes it and derives the result; a status label proves nothing.
 
 Scope: the gate stops a cooperative agent from finishing by mistake: no
 goal, a vacuous check, a silently narrowed goal, or a claim without a pointer.
@@ -58,6 +63,9 @@ import signal
 import subprocess
 import sys
 from pathlib import Path
+
+from goal_control import (ContractError, contract, digest, snapshot, pin_contract, receipt_state,
+                          require_correction, reflection_check, write)
 
 TARGET = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 STATUSES = {"pass", "blocked", "pending", "fail"}
@@ -122,6 +130,11 @@ def load_goal(path: Path) -> dict:
         for key in ("evidence", "blocker"):
             if key in item and not isinstance(item[key], str):
                 raise GoalError(f"item {name!r}: {key} must be a string")
+    for owner in [data, *items]:
+        for field in ('inputs', 'requirement_refs'):
+            if field in owner and (not isinstance(owner[field], list) or any(
+                    not isinstance(ref, (str, dict)) for ref in owner[field])):
+                raise GoalError(field + " must be a list of file paths or path objects")
     return data
 
 
@@ -166,10 +179,32 @@ def record_status(root: Path, goal: dict, results: list[dict]) -> None:
     path = root / ".agent" / "goal-status.json"
     ignore_agent_dir(root)
     met = all(r["state"] == "met" for r in results)
-    path.write_text(json.dumps({"goal": goal["goal"], "met": met}) + "\n", encoding="utf-8")
+    write(path, {"schema": "goal-receipt/v2", "goal": goal["goal"], "met": met,
+                 "contract_digest": digest(contract(goal, root)), "snapshot": snapshot(root, goal),
+                 "results": results})
 
 
 def evaluate(goal: dict, root: Path, timeout: int) -> list[dict]:
+    try:
+        pin_contract(root, goal)
+        review = goal.get("review", {})
+        if goal.get("kind") in ("methodology", "control") or (isinstance(review, dict) and review.get("kind") in ("methodology", "control")):
+            require_correction(root, "methodology", "declared methodology or control task")
+            if not isinstance(review, dict) or review.get("kind") not in ("methodology", "control"):
+                raise ContractError("methodology/control goal needs a sealed review declaration")
+            try:
+                from blind_review import validate_goal_framing
+            except ImportError as exc:
+                raise ContractError("blind review validator is unavailable") from exc
+            problem = validate_goal_framing(root, goal)
+            if problem:
+                raise ContractError("; ".join(problem))
+        freshness, why = receipt_state(root, goal)
+        if freshness == "stale":
+            require_correction(root, "stale-evidence", why + ": " + digest(snapshot(root, goal)))
+        before = snapshot(root, goal)
+    except ContractError as exc:
+        return [{"id": "contract", "check": "acceptance contract preserved", "state": "unmet", "why": str(exc)}]
     results, cache = [], {}
     for item in goal["acceptance"]:
         run = item.get("run")
@@ -195,6 +230,18 @@ def evaluate(goal: dict, root: Path, timeout: int) -> list[dict]:
         results.append({"id": "machine-check", "check": "at least one passing run check", "state": state,
                         "why": "every run check is blocked" if state == "blocked"
                         else "no passing run check: manual items alone cannot prove the goal"})
+    after = snapshot(root, goal)
+    if before != after:
+        results.append({"id": "concurrent-change", "check": "stable validation inputs", "state": "unmet",
+                        "why": "source or declared inputs changed while checks ran"})
+    if any(r["state"] == "unmet" for r in results):
+        require_correction(root, "failed-acceptance", summary(results) + ": " + digest(after))
+    correction = reflection_check(goal, root, timeout, run_target)
+    if correction:
+        # External blockers may stop incomplete through the existing bounded hook.
+        blocked = all(r["state"] in ("met", "blocked") for r in results) and any(r["state"] == "blocked" for r in results)
+        results.append({"id": "correction", "check": "corrective intervention verified",
+                        "state": "blocked" if blocked else "unmet", "why": correction})
     return results
 
 
@@ -317,23 +364,13 @@ def hook(root: Path, goal_path: Path, event: dict, timeout: int) -> int:
         return 0
     pinned = remember(root, session)
     superseded = None
-    if pinned and text(pinned.get("goal")) and pinned["goal"] != goal["goal"] and not pinned.get("met"):
-        change = goal.get("supersedes")
-        if not (isinstance(change, dict) and change.get("goal") == pinned["goal"] and sentence(change.get("reason"))):
-            count = bump(root, session, "goal-swapped")
-            if count <= MAX_BLOCKS:
-                return block(f"The goal changed from {pinned['goal']!r} before it was met ({count}/{MAX_BLOCKS}). "
-                             "Restore it and finish, or add \"supersedes\": {\"goal\": <the old goal>, "
-                             "\"reason\": <why it changed>} to .agent/goal.json.")
-            gap = write_gap(root, pinned, [{"id": "goal-record", "check": "goal kept", "state": "unmet",
-                                            "why": f"goal replaced by {goal['goal']!r} without a reason"}],
-                            ended=True).relative_to(root)
-            print(json.dumps({"systemMessage": f"finish-check: session ended after its goal was replaced; "
-                                               f"original goal NOT verified. Gap record: {gap}"}))
-            return 0
-        superseded = {"goal": pinned["goal"], "reason": change["reason"]}
+    if pinned and pinned.get("goal") != goal["goal"]:
+        superseded = goal.get("supersedes")
     results = evaluate(goal, root, timeout)
-    record_status(root, goal, results)
+    try:
+        record_status(root, goal, results)
+    except ContractError:
+        pass
     remember(root, session, dict(goal, met=all(r["state"] == "met" for r in results)))
     if all(r["state"] == "met" for r in results):
         if superseded:
@@ -363,6 +400,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", default=".")
     parser.add_argument("--goal", default=".agent/goal.json")
     parser.add_argument("--timeout", type=int, default=600)
+    parser.add_argument("--inspect", action="store_true", help="report receipt freshness without running checks")
+    parser.add_argument("--trigger", choices=("stale-evidence", "repetition", "methodology"), help="record corrective obligation")
     parser.add_argument("--hook", action="store_true", help="act as a Claude Code Stop hook")
     args = parser.parse_args(argv)
 
@@ -377,6 +416,15 @@ def main(argv: list[str] | None = None) -> int:
     cwd = event.get("cwd") if isinstance(event.get("cwd"), str) else None
     root = Path(args.root if args.root != "." else cwd or ".").resolve()
     goal_path = root / args.goal
+    if args.trigger:
+        require_correction(root, args.trigger, "startup detected " + args.trigger)
+    if args.inspect:
+        try:
+            state, reason = receipt_state(root, load_goal(goal_path))
+        except GoalError as exc:
+            state, reason = "unverified", str(exc)
+        print(json.dumps({"state": state, "reason": reason}))
+        return 0 if state == "verified" else 2
     if args.hook:
         return hook(root, goal_path, event, args.timeout)
     if not goal_path.exists():
@@ -387,7 +435,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"finish-check: {exc}", file=sys.stderr)
         return 1
     results = evaluate(goal, root, args.timeout)
-    record_status(root, goal, results)
+    try:
+        record_status(root, goal, results)
+    except ContractError:
+        pass
     if all(r["state"] == "met" for r in results):
         print(f"finish-check: goal met ({len(results)} checks)")
         return 0
