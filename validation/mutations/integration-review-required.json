@@ -1,0 +1,10 @@
+{
+  "id": "integration-review-required",
+  "rule": "Changed methodology requires independent review",
+  "file": "tools/check_review.py",
+  "find": "missing = required - covered",
+  "replace": "missing = set()",
+  "tests": [
+    "tools.tests.test_check_review.ReviewBoundaryTests.test_changed_controls_require_review"
+  ]
+}

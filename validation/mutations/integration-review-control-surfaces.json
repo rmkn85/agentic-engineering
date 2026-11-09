@@ -1,0 +1,10 @@
+{
+  "id": "integration-review-control-surfaces",
+  "rule": "Methodology docs and native activity routes remain reviewed",
+  "file": "tools/check_review.py",
+  "find": "'Makefile', 'tools/make'",
+  "replace": "'Makefile', 'not-tools-make'",
+  "tests": [
+    "tools.tests.test_check_review.ReviewBoundaryTests.test_methodology_docs_native_routes_and_evaluators_need_review"
+  ]
+}

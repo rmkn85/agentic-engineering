@@ -1,0 +1,10 @@
+{
+  "id": "integration-review-frame-binding",
+  "rule": "An accepted report cannot follow changed framing inputs",
+  "file": "tools/check_review.py",
+  "find": "if identity(root, review[key]) != review['input_hashes'][key]:",
+  "replace": "if False:",
+  "tests": [
+    "tools.tests.test_check_review.ReviewBoundaryTests.test_resealing_changed_request_cannot_reuse_accepted_report"
+  ]
+}

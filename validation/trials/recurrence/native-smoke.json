@@ -1,0 +1,29 @@
+{
+  "configured_hooks": true,
+  "effort": "medium",
+  "expected_reply_observed": false,
+  "feasible": false,
+  "hook_adoption_proven": false,
+  "hook_trust": "unknown",
+  "model": "gpt-6.1-sol",
+  "phase": "smoke",
+  "returncode": 1,
+  "runtime_settings": {
+    "effort": null,
+    "model": null
+  },
+  "status": "failed",
+  "usage": null,
+  "wall_seconds": 0.217,
+  "schema": "sanitized-native-feasibility/v1",
+  "date": "2026-11-09",
+  "cli_version": "0.156.1",
+  "failure_phase": "pre-model app-server initialization",
+  "failure_class": "read-only native installation/state",
+  "baseline": "4cdeefd11dd415512d691f4bf5a6197132141123",
+  "native_comparison": "unrun",
+  "raw_evidence_sha256": {
+    "stdout.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr.log": "6ffea33635e8c449e191c457846b0989f71a060c69042cd52deccb0409a0f656"
+  }
+}
