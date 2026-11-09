@@ -1,0 +1,10 @@
+{
+  "id": "goal-stale-refresh-stability",
+  "file": "tools/goal_control.py",
+  "find": "    if current != {'contract_digest': evaluated_contract, 'snapshot_digest': digest(before)}:",
+  "replace": "    if False:",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_stale_refresh_cannot_accept_changed_inputs_during_check"
+  ],
+  "rule": "Freshness resolution rejects input changes during verification"
+}

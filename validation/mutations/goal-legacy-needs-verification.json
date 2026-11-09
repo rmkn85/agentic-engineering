@@ -1,0 +1,11 @@
+{
+  "id": "goal-legacy-needs-verification",
+  "file": "tools/goal_control.py",
+  "find": "        return 'unverified', 'missing or legacy receipt'",
+  "replace": "        return 'verified', 'missing or legacy receipt'",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_legacy_valid_success_requires_explicit_current_verification",
+    "tools.tests.test_goal_control.GoalControls.test_legacy_success_requires_real_fresh_verification"
+  ],
+  "rule": "Legacy success cannot attest current acceptance without explicit verification"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "goal-stale-refresh-retains-old-identity",
+  "file": "tools/goal_control.py",
+  "find": "'before': old_identity, 'after': current, 'obligations': obligations,",
+  "replace": "'before': current, 'after': current, 'obligations': obligations,",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_healthy_source_change_refreshes_without_authored_intervention"
+  ],
+  "rule": "Freshness evidence retains prior and current identities without relabeling old success"
+}

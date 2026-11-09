@@ -27,9 +27,12 @@ cheap invalidation, not a demand to rerun every check on each audit.
 
 ## Correct an observed discrepancy
 
-Failed acceptance, stale evidence, repeated/no-progress work and methodology or
-control changes activate corrective work. Healthy tasks need no intervention
-record. Use the existing goal's `reflection.interventions` list:
+Stale evidence alone requires explicit full acceptance verification on stable
+current inputs. The gate retains old/new identities and generated check results;
+healthy tasks need no authored intervention record. Inspect and audit never refresh.
+Failed acceptance, revision, repeated/no-progress work, concurrent changes and
+methodology/control obligations still require explicit correction. Use the existing
+goal's `reflection.interventions` list:
 
 ```json
 {

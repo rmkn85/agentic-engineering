@@ -1,0 +1,10 @@
+{
+  "id": "goal-stale-refresh-only",
+  "file": "tools/goal_control.py",
+  "find": "    if not obligations or any(item.get('trigger') != 'stale-evidence' for item in obligations):",
+  "replace": "    if not obligations:",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_stale_with_substantive_obligations_cannot_auto_resolve"
+  ],
+  "rule": "Substantive and mixed obligations cannot be resolved as evidence refresh"
+}

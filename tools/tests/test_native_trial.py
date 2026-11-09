@@ -151,6 +151,33 @@ class NativeTrialTests(unittest.TestCase):
         (self.repo / 'summary.py').write_text('import json\ndef total(rows): return sum(r["quantity"]*r["price"] for r in rows)\ndef export(rows,currency="USD"): return json.dumps({"total":total(rows),"currency":currency})\n')
         self.assertTrue(trial.score(self.audit)['calibration_passed'])
 
+    def test_healthy_oracle_rejects_authored_form_but_allows_generated_freshness(self):
+        self.prepare('healthy-small-change')
+        (self.repo / 'summary.py').write_text('import json\ndef total(rows): return sum(r["quantity"]*r["price"] for r in rows)\ndef export(rows,currency="USD"): return json.dumps({"total":total(rows),"currency":currency})\n')
+        clean = fixture.score(self.repo, self.base / 'healthy.json', 'healthy-small-change')
+        self.assertTrue(clean['passed'], clean)
+        self.assertTrue(clean['assertions']['healthy_no_authored_intervention'])
+        # Same five-field authored form shape observed in the original v2 healthy output.
+        goal_path = self.repo / '.agent/goal.json'
+        original = goal_path.read_text()
+        goal = json.loads(original)
+        goal['reflection'] = {'interventions': [{'observation': 'prior evidence predates changed source',
+            'evidence': 'REQUEST.md', 'hypothesis': 'updated checks verify requested behavior',
+            'expected_effect': 'current consumer checks will pass', 'run': 'check'}]}
+        goal_path.write_text(json.dumps(goal))
+        authored = fixture.score(self.repo, self.base / 'authored.json', 'healthy-small-change')
+        self.assertTrue(authored['assertions']['independent_consumer'])
+        self.assertTrue(authored['assertions']['local_checks'])
+        self.assertFalse(authored['assertions']['healthy_no_authored_intervention'])
+        self.assertFalse(authored['passed'])
+        goal_path.write_text(original)
+        receipt_path = self.repo / '.agent/reflection-receipt.json'
+        receipt_path.write_text(json.dumps({'kind': 'freshness-verification', 'status': 'supported',
+                                          'checks': [{'id': 'checks', 'state': 'met'}]}))
+        self.assertTrue(fixture.score(self.repo, self.base / 'generated.json', 'healthy-small-change')['passed'])
+        receipt_path.write_text(json.dumps({'history': [{'intervention': goal['reflection']['interventions'][0]}]}))
+        self.assertFalse(fixture.score(self.repo, self.base / 'retained.json', 'healthy-small-change')['passed'])
+
     def test_stale_success_was_produced_by_helper_then_invalidated(self):
         self.prepare('stale-successful-handoff')
         status = json.loads((self.repo / '.agent/goal-status.json').read_text())

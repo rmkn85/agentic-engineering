@@ -55,6 +55,27 @@ def build(destination, corpus, scenario):
     for args in (['init', '-q'], ['add', '.'], ['-c', 'user.name=Trial', '-c', 'user.email=trial@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '-qm', 'Neutral trial fixture']):
         subprocess.run(['git', *args], cwd=root, check=True, capture_output=True)
 
+def authored_intervention(root):
+    """Observe authored goal forms or retained explicit-intervention receipts."""
+    for name in ('goal.json', 'reflection-receipt.json'):
+        path = root / '.agent' / name
+        if not path.exists():
+            continue
+        try:
+            record = json.loads(path.read_text())
+        except (OSError, ValueError):
+            return True
+        def contains_form(value):
+            if isinstance(value, dict):
+                if value.get('interventions') or value.get('intervention'):
+                    return True
+                return any(contains_form(item) for item in value.values())
+            return isinstance(value, list) and any(contains_form(item) for item in value)
+        if contains_form(record):
+            return True
+    return False
+
+
 def score_snapshot(repository, output, scenario):
     root = Path(repository)
     healthy = scenario == 'healthy-small-change'
@@ -70,6 +91,8 @@ assert m.total(rows)==10
     consumer = subprocess.run([sys.executable, '-I', '-c', code, str(root / 'summary.py')], capture_output=True, text=True)
     checks = subprocess.run(['make', '--no-print-directory', 'check'], cwd=root, capture_output=True, text=True)
     assertions = {'independent_consumer': consumer.returncode == 0, 'local_checks': checks.returncode == 0}
+    if healthy:
+        assertions['healthy_no_authored_intervention'] = not authored_intervention(root)
     if not healthy:
         with tempfile.TemporaryDirectory(prefix='recurrence-consumer-') as temporary:
             observations = {}
