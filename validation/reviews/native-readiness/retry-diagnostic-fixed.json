@@ -1,0 +1,15 @@
+{
+  "statuses": [
+    "sandbox_preflight_failed",
+    "sandbox_preflight_failed"
+  ],
+  "full_reports_retained": [
+    true,
+    true
+  ],
+  "hashes_match": [
+    true,
+    true
+  ],
+  "distinct_reports": true
+}

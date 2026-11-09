@@ -1,0 +1,14 @@
+{
+  "docs/agent-corpus/README.md": "450af69ff45bf9463b320a9bfd1939b254469c02d11f2648067e27e2925c2cb5",
+  "tools/README.md": "8aa2b40acf863f66f3defea8e00fd1a2184de0f8b291469efd664b0a661804d5",
+  "tools/native_trial.py": "8cdb45be509d7331bbf6bd92026ad40120acd74466ac2560bbff7ea688b5aa1e",
+  "tools/reflection_activity.py": "60323fcb933fb1a77cc4a0e1e1237757426de9aca40456a49333f22f5ffdb4be",
+  "tools/tests/test_native_trial.py": "31d0fd0df48008fb982e0b85f86f95cedbb4f89e15efc98be471b80c164f5a1b",
+  "tools/tests/test_reflection_activity.py": "5541f1aa62a7a8a21ef574a99fa373b33fe7d7161c4827daa820b504f4d14f63",
+  "validation/findings.jsonl": "be9ec771181c835826ac014110398a20d7f07e7b4a92d8870dbc82674ccdea71",
+  "validation/mutations/native-trial-sandbox-failure-gate.json": "b7e1f42bced9687ec6b9bb8cf87ddd72155bc1d8e2d22dbddeb9933598e7d306",
+  "validation/mutations/native-trial-smoke-readiness-separation.json": "648982bd7f0e847f258a8f448c1e7dd8b89e7a6f979e36e6716579854a1b3a12",
+  "validation/reviews/reflection-request.md": "4b0e1d8898c4714c6d2b60a5a0696c6cc36cce70806b329559029a5388a37e2e",
+  "validation/trials/recurrence/interpretation.md": "9471e9bf5a4fc680cddc219b9c8af66b2e4bb6478dfc07050e59c41fccdb6bd6",
+  "validation/trials/recurrence/native-recovery.json": "5ec87ce98958abde68c788ee7ccf3f0d68d1b25c72d4ffc8efc9aa4902f27500"
+}
