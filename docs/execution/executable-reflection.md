@@ -107,3 +107,8 @@ These mechanisms operate within a cooperative, reviewed workflow. They cannot
 defend against an actor replacing policy, checks and receipts together, judge
 human acceptance, or guarantee discovery of every future failure. Retire or
 revise controls when observed delivery cost and false alarms outweigh benefit.
+
+Research rationale remains in the [outcome-control source map](../../references/outcome-control-source-map.md).
+The links and evidence types there support design hypotheses, not effectiveness
+claims for this implementation. The [current experiment status](../../validation/trials/recurrence/interpretation.md)
+separates mechanical protection from unproved native behavior.
