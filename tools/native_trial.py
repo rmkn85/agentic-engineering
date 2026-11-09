@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -71,11 +72,13 @@ def preflight(repository, codex='codex', trust_receipt=None):
     discovery = [p for p in [repository / 'AGENTS.md', repository / '.codex/hooks.json',
                             home / 'hooks.json', home / 'config.toml'] if p.is_file()]
     trust = None
-    if trust_receipt:
-        trust = json.loads(Path(trust_receipt).read_text())
-        if trust.get('native_hook_trust') != 'confirmed':
-            raise ValueError('trust receipt must record native_hook_trust=confirmed; runner never grants trust')
     hooks = repository / '.codex/hooks.json'
+    if trust_receipt and hooks.is_file():
+        trust = json.loads(Path(trust_receipt).read_text())
+        if not isinstance(trust, dict) or trust.get('native_hook_trust') != 'confirmed':
+            raise ValueError('trust receipt must record native_hook_trust=confirmed; runner never grants trust')
+        if trust.get('hook_config_sha256') != digest(hooks):
+            raise ValueError('trust report does not bind current hook configuration bytes')
     return {'cli_version': version.stdout.strip(), 'cli_available': version.returncode == 0,
             'ephemeral_supported': '--ephemeral' in help_result.stdout,
             'host_controls': host_controls(),
@@ -85,9 +88,30 @@ def preflight(repository, codex='codex', trust_receipt=None):
             'discovered_files': {p.name if p.parent == home else str(p.relative_to(repository)): digest(p) for p in discovery},
             'hook_config_present': hooks.exists(), 'native_hook_trust': 'reported_confirmed' if trust else 'unknown',
             'hook_invocation_observed': False,
-            'trust_receipt_sha256': digest(trust_receipt) if trust_receipt else None,
+            'trust_receipt_sha256': digest(trust_receipt) if trust else None,
             'limitations': ['Cached availability is not a successful model request.',
                             'Discovery and trust receipts do not prove hooks executed.']}
+
+def exclude_trial_assets(corpus, source, builder, evaluator):
+    """Export operating instructions without the experiment's scored oracles."""
+    before = tree_hash(corpus)
+    excluded_paths = {'validation/trials'}
+    for asset in (builder, evaluator):
+        if asset.is_relative_to(source):
+            excluded_paths.add(asset.relative_to(source).as_posix())
+    asset_hashes = {digest(builder), digest(evaluator)}
+    removed = {name: identity for name, identity in before.items()
+               if any(name == path or name.startswith(path + '/') for path in excluded_paths)
+               or identity in asset_hashes}
+    for name in sorted(removed):
+        (corpus / name).unlink()
+    # Remove empty excluded directories too, so builders cannot discover them.
+    for name in sorted(excluded_paths):
+        path = corpus / name
+        if path.is_dir(): shutil.rmtree(path)
+    return {'source_tree_sha256': state_digest(before), 'export_tree_sha256': state_digest(tree_hash(corpus)),
+            'excluded_paths': sorted(excluded_paths), 'excluded_files': removed}
+
 
 def prepare(source, ref, builder, scenario, repository, audit, arm, pair, evaluator, baseline_ref, candidate_ref):
     source, repository, audit = Path(source).resolve(), Path(repository).resolve(), Path(audit).resolve()
@@ -113,6 +137,7 @@ def prepare(source, ref, builder, scenario, repository, audit, arm, pair, evalua
     archive.stdout.close()
     if archive.wait() or extracted.returncode:
         raise ValueError('source archive failed')
+    export = exclude_trial_assets(corpus, source, builder, evaluator)
     result = command([sys.executable, str(builder), 'build', '--destination', str(repository), '--corpus', str(corpus), '--scenario', scenario])
     (audit / 'build.stdout').write_text(result.stdout); (audit / 'build.stderr').write_text(result.stderr)
     if result.returncode:
@@ -126,7 +151,7 @@ def prepare(source, ref, builder, scenario, repository, audit, arm, pair, evalua
                  p.startswith('.codex/') or p.startswith('.agentic-engineering/')}
     spec = {'schema': 1, 'pair': pair, 'arm': arm, 'scenario': scenario,
             'source_commit': commit.stdout.strip(), 'source_commits': identities, 'model': MODEL, 'effort': EFFORT,
-            'builder_sha256': digest(builder), 'evaluator_sha256': digest(evaluator),
+            'builder_sha256': digest(builder), 'evaluator_sha256': digest(evaluator), 'instruction_export': export,
             'prompt_sha256': digest(audit / 'prompt.txt'), 'fixture': snapshot, 'initial_state': workspace_state(repository), 'protected': protected,
             'host_controls': host_controls(),
             'conditions': {'fresh_session': True, 'instructions': 'native AGENTS discovery',

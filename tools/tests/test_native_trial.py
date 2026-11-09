@@ -128,6 +128,44 @@ class NativeTrialTests(unittest.TestCase):
         rows = [json.loads(s) for s in (self.audit/'attempts.jsonl').read_text().splitlines()]
         self.assertEqual([r['status'] for r in rows], ['started','interrupted','reuse_rejected'])
 
+    def test_instruction_export_excludes_oracles_before_generic_builder(self):
+        directory = self.source / 'validation/trials/recurrence'
+        directory.mkdir(parents=True)
+        (directory / 'scoring.py').write_text('SEALED_ORACLE_MARKER = 17\n')
+        external = self.source / 'standalone_evaluator.py'
+        external.write_bytes(FIXTURE.read_bytes())
+        subprocess.run(['git', 'add', '.'], cwd=self.source, check=True)
+        subprocess.run(['git', '-c', 'user.name=Trial', '-c', 'user.email=trial@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '-qm', 'Trial-only evaluator assets'], cwd=self.source, check=True)
+        ref = subprocess.check_output(['git','rev-parse','HEAD'], cwd=self.source, text=True).strip()
+        frozen = trial.prepare(self.source, ref, external, 'workflow-false-completion', self.repo,
+                               self.audit, 'baseline', 'pair-1', external, ref, ref)
+        installed = self.repo / '.agentic-engineering'
+        self.assertFalse((installed / 'validation/trials').exists())
+        self.assertFalse((installed / 'standalone_evaluator.py').exists())
+        self.assertFalse(any(p.is_file() and trial.digest(p) == trial.digest(external) for p in installed.rglob('*')))
+        self.assertTrue((self.repo / 'consumer_acceptance.py').is_file())
+        self.assertIn('standalone_evaluator.py', frozen['instruction_export']['excluded_files'])
+        self.assertNotEqual(frozen['instruction_export']['source_tree_sha256'], frozen['instruction_export']['export_tree_sha256'])
+
+    def test_trust_report_binds_exact_hook_configuration(self):
+        hooks = self.source / '.codex/hooks.json'
+        hooks.parent.mkdir(); hooks.write_text('{"hooks":{}}')
+        receipt = self.base / 'trust.json'
+        trial.write(receipt, {'native_hook_trust':'confirmed', 'hook_config_sha256':'wrong'})
+        observed = subprocess.CompletedProcess([], 0, '--json --model --cd --ephemeral', '')
+        with mock.patch.object(trial, 'command', return_value=observed):
+            with self.assertRaisesRegex(ValueError, 'current hook configuration bytes'):
+                trial.preflight(self.source, trust_receipt=receipt)
+            trial.write(receipt, {'native_hook_trust':'confirmed', 'hook_config_sha256':trial.digest(hooks)})
+            result = trial.preflight(self.source, trust_receipt=receipt)
+            self.assertEqual(result['native_hook_trust'], 'reported_confirmed')
+            self.assertFalse(result['hook_invocation_observed'])
+            hooks.write_text('{"hooks":{"changed":[]}}')
+            with self.assertRaisesRegex(ValueError, 'current hook configuration bytes'):
+                trial.preflight(self.source, trust_receipt=receipt)
+            hooks.unlink()
+            self.assertEqual(trial.preflight(self.source, trust_receipt=receipt)['native_hook_trust'], 'unknown')
+
     def test_changed_initial_tree_never_launches(self):
         self.prepare()
         (self.repo / 'coaching.txt').write_text('manual assistance after freeze')

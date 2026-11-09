@@ -1,0 +1,8 @@
+{
+  "id": "native-trial-excludes-oracles",
+  "rule": "Native workers receive operating instructions without scored trial oracles",
+  "file": "tools/native_trial.py",
+  "find": "    export = exclude_trial_assets(corpus, source, builder, evaluator)",
+  "replace": "    export = {}",
+  "tests": ["tools.tests.test_native_trial.NativeTrialTests.test_instruction_export_excludes_oracles_before_generic_builder"]
+}
