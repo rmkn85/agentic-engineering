@@ -178,6 +178,19 @@ class NativeTrialTests(unittest.TestCase):
         receipt_path.write_text(json.dumps({'history': [{'intervention': goal['reflection']['interventions'][0]}]}))
         self.assertFalse(fixture.score(self.repo, self.base / 'retained.json', 'healthy-small-change')['passed'])
 
+    def test_healthy_oracle_rejects_legacy_reflection_form(self):
+        self.prepare('healthy-small-change')
+        path = self.repo / '.agent/goal.json'
+        goal = json.loads(path.read_text())
+        goal['reflection'] = {'first_divergence': 'A source edit required fresh checks',
+                              'guidance_followed': 'The current checks were executed',
+                              'guidance_missing_or_misleading': 'No product failure was observed'}
+        path.write_text(json.dumps(goal))
+        self.assertTrue(fixture.authored_intervention(self.repo))
+        goal['reflection'] = {}
+        path.write_text(json.dumps(goal))
+        self.assertFalse(fixture.authored_intervention(self.repo))
+
     def test_stale_success_was_produced_by_helper_then_invalidated(self):
         self.prepare('stale-successful-handoff')
         status = json.loads((self.repo / '.agent/goal-status.json').read_text())

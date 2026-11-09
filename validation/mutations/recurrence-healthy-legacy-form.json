@@ -1,0 +1,10 @@
+{
+  "id": "recurrence-healthy-legacy-form",
+  "file": "validation/trials/recurrence/fixture.py",
+  "find": "if name == 'goal.json' and record.get('reflection'):",
+  "replace": "if False:",
+  "tests": [
+    "tools.tests.test_native_trial.NativeTrialTests.test_healthy_oracle_rejects_legacy_reflection_form"
+  ],
+  "rule": "Healthy scoring rejects legacy authored reflection forms as well as intervention forms"
+}

@@ -65,6 +65,8 @@ def authored_intervention(root):
             record = json.loads(path.read_text())
         except (OSError, ValueError):
             return True
+        if name == 'goal.json' and record.get('reflection'):
+            return True
         def contains_form(value):
             if isinstance(value, dict):
                 if value.get('interventions') or value.get('intervention'):
