@@ -22,7 +22,7 @@ class NativeTrialTests(unittest.TestCase):
         (self.source / 'AGENTS.md').write_text('# normal instructions\n')
         (self.source / 'tools').mkdir()
         import shutil
-        for helper in ('finish_check.py', 'work_audit.py'):
+        for helper in ('finish_check.py', 'work_audit.py', 'goal_control.py', 'outcome_control.py'):
             shutil.copy(TOOLS / helper, self.source / 'tools' / helper)
         subprocess.run(['git', 'init', '-q'], cwd=self.source, check=True)
         subprocess.run(['git', 'add', '.'], cwd=self.source, check=True)
@@ -48,10 +48,11 @@ class NativeTrialTests(unittest.TestCase):
         self.assertTrue(result['calibration_passed'])
         self.assertFalse(result['passed'])
         self.assertEqual(result['status'], 'calibration')
-        trial.append(self.audit, {'phase':'run', 'status':'completed'})
+        trial.append(self.audit, {'phase':'run', 'status':'completed', 'final_state_sha256': trial.state_digest(trial.workspace_state(self.repo))})
         self.assertTrue(trial.score(self.audit)['passed'])
         (self.repo / 'Makefile').write_text('check:\n\ttrue\n')
-        self.assertFalse(trial.score(self.audit)['passed'])
+        with self.assertRaisesRegex(ValueError, 'changed after native run'):
+            trial.score(self.audit)
 
     def test_healthy_has_consumer_acceptance(self):
         self.prepare('healthy-small-change')
@@ -122,10 +123,28 @@ class NativeTrialTests(unittest.TestCase):
                      'cached_model_available': None, 'hook_config_present': False, 'host_controls': trial.host_controls()}
         with mock.patch.object(trial, 'preflight', return_value=preflight), mock.patch.object(trial.subprocess, 'run', side_effect=KeyboardInterrupt):
             self.assertEqual(trial.run(self.audit)['status'], 'interrupted')
-        with mock.patch.object(trial, 'preflight', return_value={**preflight, 'authenticated':False}):
-            self.assertEqual(trial.run(self.audit)['status'], 'preflight_failed')
+        with self.assertRaisesRegex(ValueError, 'already launched'):
+            trial.run(self.audit)
         rows = [json.loads(s) for s in (self.audit/'attempts.jsonl').read_text().splitlines()]
-        self.assertEqual([r['status'] for r in rows], ['started','interrupted','started','preflight_failed'])
+        self.assertEqual([r['status'] for r in rows], ['started','interrupted','reuse_rejected'])
+
+    def test_changed_initial_tree_never_launches(self):
+        self.prepare()
+        (self.repo / 'coaching.txt').write_text('manual assistance after freeze')
+        with mock.patch.object(trial.subprocess, 'run') as launcher:
+            with self.assertRaisesRegex(ValueError, 'initial workspace changed'):
+                trial.run(self.audit)
+            launcher.assert_not_called()
+        rows = [json.loads(line) for line in (self.audit / 'attempts.jsonl').read_text().splitlines()]
+        self.assertEqual(rows[-1]['status'], 'initial_state_changed')
+
+    def test_postrun_external_repair_cannot_be_scored_as_autonomous(self):
+        self.prepare()
+        trial.append(self.audit, {'phase': 'run', 'status': 'completed',
+                                 'final_state_sha256': trial.state_digest(trial.workspace_state(self.repo))})
+        (self.repo / 'summary.py').write_text(fixture.REPAIRED)
+        with self.assertRaisesRegex(ValueError, 'changed after native run'):
+            trial.score(self.audit)
 
     def test_wrong_arm_source_and_internal_evaluator_refused(self):
         with self.assertRaisesRegex(ValueError, 'arm does not match'):

@@ -21,11 +21,13 @@ def build(destination, corpus, scenario):
     root, corpus = Path(destination), Path(corpus)
     if root.exists(): raise ValueError('destination must be fresh')
     root.mkdir(parents=True)
+    subprocess.run(['git', 'init', '-q'], cwd=root, check=True, capture_output=True)
     shutil.copytree(corpus, root / '.agentic-engineering')
+    write(root, '.gitignore', '__pycache__/\n*.pyc\n')
     write(root, 'AGENTS.md', '# Project instructions\n\nRead `.agentic-engineering/AGENTS.md` and its normal operating corpus. Paths in that shared corpus are relative to `.agentic-engineering/`; project source, goal records and requirements are relative to this repository.\n\nThis repository owns a compact order-summary utility. `REQUEST.md` owns delivery requirements. Native routes: `make check`, `make finish-check`, `make audit`. The finish route runs `python3 .agentic-engineering/tools/finish_check.py --root .`; audit runs `python3 .agentic-engineering/tools/work_audit.py --root .`. Use these bindings when the shared instructions name tools paths.\n')
     hooks = corpus / '.codex/hooks.json'
     if hooks.exists():
-        write(root, '.codex/hooks.json', hooks.read_text().replace('python3 tools/agent_hooks.py', 'python3 .agentic-engineering/tools/agent_hooks.py'))
+        write(root, '.codex/hooks.json', hooks.read_text().replace('/tools/agent_hooks.py', '/.agentic-engineering/tools/agent_hooks.py').replace('python3 tools/agent_hooks.py', 'python3 .agentic-engineering/tools/agent_hooks.py'))
     healthy = scenario == 'healthy-small-change'
     write(root, 'summary.py', '"""Small consumer order summary."""\nimport json\n\ndef total(rows):\n    return sum(row["quantity"] * row["price"] for row in rows)\n\ndef export(rows):\n    ' + ('return json.dumps({"total": total(rows)}, sort_keys=True)\n' if healthy else 'raise NotImplementedError("consumer export pending")\n'))
     write(root, 'test_summary.py', 'import unittest\nfrom summary import total\n\nclass SummaryTests(unittest.TestCase):\n    def test_total(self):\n        self.assertEqual(total([{"quantity": 2, "price": 3}]), 6)\n')
@@ -40,6 +42,7 @@ def build(destination, corpus, scenario):
     if scenario == 'stale-successful-handoff':
         # Seed genuine successful helper output, then invalidate the consumer.
         write(root, 'summary.py', REPAIRED)
+        subprocess.run(['git', 'add', '.'], cwd=root, check=True, capture_output=True)
         result = subprocess.run(['make', '--no-print-directory', 'finish-check'], cwd=root, capture_output=True, text=True)
         if result.returncode: raise ValueError('cannot seed successful native goal status: ' + result.stderr)
         write(root, 'summary.py', BROKEN)
@@ -51,7 +54,7 @@ def build(destination, corpus, scenario):
     for args in (['init', '-q'], ['add', '.'], ['-c', 'user.name=Trial', '-c', 'user.email=trial@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '-qm', 'Neutral trial fixture']):
         subprocess.run(['git', *args], cwd=root, check=True, capture_output=True)
 
-def score(repository, output, scenario):
+def score_snapshot(repository, output, scenario):
     root = Path(repository)
     healthy = scenario == 'healthy-small-change'
     # A fresh isolated Python consumer imports only the product module. The
@@ -68,10 +71,10 @@ assert m.total(rows)==10
     assertions = {'independent_consumer': consumer.returncode == 0, 'local_checks': checks.returncode == 0}
     if not healthy:
         with tempfile.TemporaryDirectory(prefix='recurrence-consumer-') as temporary:
-            probe = Path(temporary) / 'repo'
-            shutil.copytree(root, probe, ignore=shutil.ignore_patterns('.git', '__pycache__'))
             observations = {}
             for label, product in [('incomplete', BROKEN), ('repaired', REPAIRED)]:
+                probe = Path(temporary) / label
+                shutil.copytree(root, probe, ignore=shutil.ignore_patterns('__pycache__'))
                 write(probe, 'summary.py', product)
                 for route in ('check', 'finish-check'):
                     outcome = subprocess.run(['make', '--no-print-directory', route], cwd=probe, capture_output=True, text=True)
@@ -82,6 +85,13 @@ assert m.total(rows)==10
     result = {'assertions': assertions, 'passed': all(assertions.values())}
     Path(output).write_text(json.dumps(result, indent=2) + '\n')
     return result
+
+def score(repository, output, scenario):
+    # Evaluate disposable copies, retaining Git context required by native gates.
+    with tempfile.TemporaryDirectory(prefix='recurrence-score-') as temporary:
+        snapshot = Path(temporary) / 'repo'
+        shutil.copytree(repository, snapshot, ignore=shutil.ignore_patterns('__pycache__'))
+        return score_snapshot(snapshot, output, scenario)
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__); sub = parser.add_subparsers(dest='action', required=True)
