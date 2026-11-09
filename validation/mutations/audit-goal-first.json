@@ -2,8 +2,8 @@
   "id": "audit-goal-first",
   "rule": "An open goal record is the first focus",
   "file": "tools/work_audit.py",
-  "find": "ORDER = [\"goal\", \"loop\", \"repeat\", \"tasks\",",
-  "replace": "ORDER = [\"loop\", \"repeat\", \"tasks\", \"goal\",",
+  "find": "ORDER = [\"goal\", \"loop\", \"records-heavy\", \"repeat\", \"tasks\",",
+  "replace": "ORDER = [\"loop\", \"records-heavy\", \"repeat\", \"tasks\", \"goal\",",
   "tests": [
     "tools.tests.test_work_audit.WorkAuditTests.test_open_goal_record_comes_first"
   ]

@@ -18,11 +18,12 @@ class ReviewBoundaryTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         subprocess.run(['git', 'init', '-q', str(self.root)], check=True)
-        (self.root / 'AGENTS.md').write_text('original instructions')
+        (self.root / 'tools').mkdir()
+        (self.root / 'tools/finish_check.py').write_text('original instructions')
         for args in [('add', '.'), ('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid',
                                    'commit', '-qm', 'baseline')]:
             subprocess.run(['git', *args], cwd=self.root, check=True)
-        (self.root / 'AGENTS.md').write_text('changed instructions')
+        (self.root / 'tools/finish_check.py').write_text('changed instructions')
 
     def review(self):
         folder = self.root / 'validation/reviews'; folder.mkdir(parents=True)
@@ -38,7 +39,7 @@ class ReviewBoundaryTests(unittest.TestCase):
                   'request': 'validation/reviews/request.md', 'failure_evidence': 'validation/reviews/failure.md',
                   'verdict': 'accepted', 'report': {'path': 'validation/reviews/report.md',
                   'sha256': check_review.identity(self.root, 'validation/reviews/report.md')},
-                  'files': {'AGENTS.md': check_review.identity(self.root, 'AGENTS.md')}}
+                  'files': {'tools/finish_check.py': check_review.identity(self.root, 'tools/finish_check.py')}}
         record['input_hashes'] = {key: check_review.identity(self.root, record[key])
                                   for key in ('framing', 'request', 'failure_evidence')}
         (folder/'manifest.json').write_text(json.dumps(record))
@@ -50,13 +51,13 @@ class ReviewBoundaryTests(unittest.TestCase):
 
     def test_changed_source_or_report_invalidates_review(self):
         self.review()
-        (self.root/'AGENTS.md').write_text('unreviewed follow-up')
+        (self.root/'tools/finish_check.py').write_text('unreviewed follow-up')
         self.assertTrue(check_review.check(self.root, 'HEAD'))
         (self.root/'validation/reviews/report.md').write_text('withdrawn')
         self.assertTrue(check_review.check(self.root, 'HEAD'))
 
     def test_no_methodology_change_needs_no_review(self):
-        (self.root/'AGENTS.md').write_text('original instructions')
+        (self.root/'tools/finish_check.py').write_text('original instructions')
         (self.root/'product.txt').write_text('small product change')
         self.assertEqual(check_review.check(self.root, 'HEAD'), [])
 
@@ -69,14 +70,23 @@ class ReviewBoundaryTests(unittest.TestCase):
         errors = check_review.check(self.root, 'HEAD')
         self.assertTrue(any('framing inputs changed' in error for error in errors))
 
-    def test_methodology_docs_native_routes_and_evaluators_need_review(self):
-        (self.root/'AGENTS.md').write_text('original instructions')
-        for name in ('docs/execution/control.md', 'tools/make', 'validation/trials/recurrence/fixture.py'):
+    def test_gates_evaluators_and_ci_routes_need_review(self):
+        (self.root/'tools/finish_check.py').write_text('original instructions')
+        for name in ('tools/make', 'tools/work_audit.py', 'validation/trials/recurrence/score.py',
+                     '.github/workflows/verify.yml'):
             path = self.root / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text('changed control')
             self.assertTrue(any(name in error for error in check_review.check(self.root, 'HEAD')))
 
+    def test_guidance_ordinary_tools_and_evidence_need_no_receipt(self):
+        (self.root/'tools/finish_check.py').write_text('original instructions')
+        for name in ('AGENTS.md', 'docs/execution/control.md', 'skills/x/SKILL.md', 'tools/repo-index.py',
+                     'validation/trials/recurrence/results.jsonl'):
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('changed guidance')
+        self.assertEqual(check_review.check(self.root, 'HEAD'), [])
 
 if __name__ == '__main__':
     unittest.main()

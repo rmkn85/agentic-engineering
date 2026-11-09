@@ -65,7 +65,7 @@ PROCESS = re.compile(r"(^|/)(\.github|\.gitlab|\.circleci|\.claude|\.cursor|\.co
                      r"\.vscode|\.idea|\.devcontainer|ci|scripts)(/|$)|(^|/)(Makefile|GNUmakefile|[^/]*\.mk|"
                      r"\.gitlab-ci\.yml|\.pre-commit-config\.yaml|Procfile|process-compose\.yaml|"
                      r"AGENTS[^/]*\.md|CLAUDE\.md|GEMINI\.md)$", re.I)
-TESTS = re.compile(r"(^|/)(tests?|__tests__|spec|fixtures?|testdata)(/|$)|(^|/)(test_[^/]*|[^/]*_test\.\w+|"
+TESTS = re.compile(r"(^|/)(tests?|__tests__|spec|fixtures?|testdata|mutations)(/|$)|(^|/)(test_[^/]*|[^/]*_test\.\w+|"
                    r"[^/]*\.(test|spec)\.\w+)$", re.I)
 STUB = re.compile(r"\bNotImplementedError\b|unimplemented!|todo!\(|"
                   r"@unittest\.skip\(|pytest\.mark\.(skip|xfail)\b(?!if)|\b(it|describe|test)\.skip\(|@Disabled\b|"
@@ -74,6 +74,9 @@ NOTE = re.compile(r"\b(TODO|FIXME|XXX|HACK)\b|\bnot implemented\b", re.I)
 UNFINISHED = re.compile(STUB.pattern + "|" + NOTE.pattern, re.I)
 VENDORED = re.compile(r"(^|/)(vendor|vendored|third[_-]party|external|extern|node_modules|\.venv|venv|"
                       r"site-packages|dist|build|generated|gen|__generated__)(/|$)|\.min\.(js|css)$|_pb2\.py$", re.I)
+EVIDENCE_DATA = re.compile(r"(^|/)(validation|evidence|receipts?|results?|trials?|reviews?|findings|reports?|runs|"
+                           r"logs?|checkpoints?|journals?|snapshots?|artifacts?)/.*\.(json|jsonl|ya?ml|csv|tsv|txt|log)$",
+                           re.I)
 HANDOFF = re.compile(r"(handoff|hand-off|continuation|dev-handoff)", re.I)
 CODE = re.compile(r"\.(py|js|jsx|ts|tsx|go|rs|java|kt|cs|cpp|cc|c|h|hpp|rb|php|swift|scala|gd|lua|sh)$", re.I)
 INSTRUCTION_FILE = re.compile(
@@ -105,6 +108,8 @@ LINKED_WORDS = 6000      # entry plus the documents it tells every newcomer to r
 REQUIRED = re.compile(r"\b(read|start (with|from|here)|apply|follow)\b", re.I)
 HANDOFF_WORDS = 800      # a current handoff, not a history
 SUPPORT_SHARE = 0.5      # records + process above this share of recent commits is a loop
+RECORD_WEIGHT = 0.4      # ...or above this share of added lines, even when each commit also touches code
+RECORD_MIN_LINES = 300   # below this many added lines a change is too small to judge (a typo fix is not creep)
 RECENT = 3               # ...unless one of the latest commits already changes product
 
 
@@ -140,21 +145,26 @@ def kind(path: str, product: list[str]) -> str:
         return "test"
     if PROCESS.search(path):
         return "process"
-    if RECORDS.search(path) and not CODE.search(path):  # code is never a record, whatever its name
+    if (RECORDS.search(path) or EVIDENCE_DATA.search(path)) and not CODE.search(path):  # code is never a record
         return "records"
     return "product"
 
 
-def commit_mix(root: Path, count: int, product: list[str]) -> list[dict]:
-    log = git(root, "log", f"-{count}", "--no-merges", "--name-only", "--format=\x1e%h\x1f%s")
+def commit_mix(root: Path, count: int, product: list[str], since: str | None = None) -> list[dict]:
+    window = [f"{since}..HEAD"] if since else [f"-{count}"]
+    log = git(root, "log", *window, "--no-merges", "--numstat", "--format=\x1e%h\x1f%s")
     commits = []
     for block in log.split("\x1e")[1:]:
         head, _, body = block.partition("\n")
         sha, _, subject = head.partition("\x1f")
-        paths = [p for p in body.splitlines() if p.strip()]
-        kinds = {kind(p, product) for p in paths}
+        added: Counter = Counter()
+        for line in body.splitlines():
+            parts = line.split("\t")
+            if len(parts) == 3:
+                added[kind(parts[2], product)] += int(parts[0]) if parts[0].isdigit() else 0
+        kinds = set(added)
         main = next((k for k in ("product", "test", "process", "records") if k in kinds), "records")
-        commits.append({"sha": sha, "subject": subject, "kind": main, "paths": len(paths)})
+        commits.append({"sha": sha, "subject": subject, "kind": main, "paths": len(kinds), "added": dict(added)})
     return commits
 
 
@@ -600,6 +610,18 @@ def direction(ctx: dict) -> list[dict]:
                                          f"({share:.0%}), e.g. {examples}",
                                  "Make the next commit change product behaviour and prove it with a check. "
                                  "Add a record only when someone will act on it; replace the old one."))
+        lines: Counter = Counter()
+        for c in commits:
+            lines.update(c.get("added", {}))
+        total = sum(lines.values())
+        heavy = (lines["records"] + lines["process"]) / total if total else 0
+        if heavy > RECORD_WEIGHT and total >= RECORD_MIN_LINES and not any(f["kind"] == "loop" for f in found):
+            found.append(finding("records-heavy", f"{heavy:.0%} of lines added in the last {len(commits)} commits are "
+                                 f"records or process ({lines['records'] + lines['process']} of {total}); product "
+                                 f"{lines['product']}, tests {lines['test']}",
+                                 "Make the next change behaviour-first. Keep one current record per subject, "
+                                 "replaced, not appended, and remove ceremony (receipts, reviews, forms) that no "
+                                 "measured failure requires: process grows where nothing checks it."))
         opening = lambda c: " ".join(c["subject"].lower().split()[:3])
         openings = Counter(opening(c) for c in commits)
         latest = {opening(c) for c in commits[:RECENT]}  # history an agent cannot change is not a finding
@@ -744,7 +766,7 @@ def code(ctx: dict) -> list[dict]:
 
 
 AREAS = (direction, evidence, knowledge, guidance, flow, harness, code)
-ORDER = ["goal", "loop", "repeat", "tasks", "unfinished", "vacuous-tests", "cannot-fail", "handoff",
+ORDER = ["goal", "loop", "records-heavy", "repeat", "tasks", "unfinished", "vacuous-tests", "cannot-fail", "handoff",
          "stale-references", "instructions", "instruction-growth", "entry", "wip", "hygiene", "large-files",
          "allowlist", "todo-notes", "size"]
 NEVER_FOCUS = {"todo-notes", "size"}
@@ -753,7 +775,7 @@ NEVER_FOCUS = {"todo-notes", "size"}
 IGNORABLE = {"unfinished", "todo-notes", "vacuous-tests", "cannot-fail", "stale-references", "size", "large-files",
              "allowlist"}  # advisory: acted on when a task touches the code, never a task by themselves
 AREA = {kind: area for area, kinds in (
-    ("direction", ("goal", "loop", "repeat", "tasks")),
+    ("direction", ("goal", "loop", "records-heavy", "repeat", "tasks")),
     ("evidence", ("unfinished", "vacuous-tests", "cannot-fail", "todo-notes")),
     ("knowledge", ("handoff", "stale-references")), ("instructions", ("instructions", "instruction-growth", "entry")),
     ("flow", ("wip", "hygiene", "large-files")), ("harness", ("allowlist",)), ("code", ("size",))) for kind in kinds}
@@ -790,7 +812,7 @@ def ignored(rules: list[dict], kind_name: str, path: str) -> bool:
     return any(r["kind"] == kind_name and fnmatch.fnmatch(path, r.get("path", "*")) for r in rules)
 
 
-def audit(root: Path, count: int) -> dict:
+def audit(root: Path, count: int, since: str | None = None) -> dict:
     NOTES.clear()
     cfg = config(root)
     product = [p for p in cfg.get("product", []) if isinstance(p, str)]
@@ -799,7 +821,7 @@ def audit(root: Path, count: int) -> dict:
     marks = [m for m in unfinished(root, files, product)
              if not ignored(rules, "unfinished" if m[3] == "stub" else "todo-notes", m[0])]
     ctx = {"root": root, "cfg": cfg, "product": product, "count": count, "files": files, "rules": rules,
-           "commits": commit_mix(root, count, product),
+           "commits": commit_mix(root, count, product, since),
            "gaps": [m for m in marks if m[3] == "stub"], "notes": [m for m in marks if m[3] == "note"]}
     found = [f for area in AREAS for f in area(ctx) if not ignored(rules, f["kind"], "*")]
     found.sort(key=lambda f: ORDER.index(f["kind"]))
@@ -814,10 +836,12 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--root", default=".")
     parser.add_argument("--commits", type=int, default=50)
+    parser.add_argument("--since", help="judge only commits after this ref (for example the base of a change)")
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--strict", action="store_true", help="exit 1 when any finding is present")
+    parser.add_argument("--fail-on", default="", help="comma-separated finding kinds that make the exit status 1")
     args = parser.parse_args(argv)
-    report = audit(Path(args.root).resolve(), args.commits)
+    report = audit(Path(args.root).resolve(), args.commits, args.since)
     if args.json:
         print(json.dumps(report, indent=2))
     else:
@@ -828,7 +852,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"note: {note}")
         for number, finding in enumerate(report["findings"], 1):
             print(f"{number}. [{finding['area']}/{finding['kind']}] {finding['problem']}\n   -> {finding['action']}")
-    return 1 if args.strict and report["findings"] else 0
+    failing = {k.strip() for k in args.fail_on.split(",") if k.strip()}
+    hit = [f for f in report["findings"] if f["kind"] in failing]
+    return 1 if (args.strict and report["findings"]) or hit else 0
 
 
 if __name__ == "__main__":

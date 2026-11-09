@@ -1,10 +1,10 @@
 {
   "id": "integration-review-control-surfaces",
-  "rule": "Methodology docs and native activity routes remain reviewed",
+  "rule": "Finish gates, trial evaluators and CI routes remain reviewed",
   "file": "tools/check_review.py",
-  "find": "'Makefile', 'tools/make'",
-  "replace": "'Makefile', 'not-tools-make'",
+  "find": "    return (path in CONTROLS or path.startswith('.github/workflows/') or",
+  "replace": "    return (path.startswith('.github/workflows/') or",
   "tests": [
-    "tools.tests.test_check_review.ReviewBoundaryTests.test_methodology_docs_native_routes_and_evaluators_need_review"
+    "tools.tests.test_check_review.ReviewBoundaryTests.test_gates_evaluators_and_ci_routes_need_review"
   ]
 }

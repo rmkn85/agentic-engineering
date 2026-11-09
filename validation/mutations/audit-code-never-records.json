@@ -2,8 +2,8 @@
   "id": "audit-code-never-records",
   "rule": "Code files are never classified as records",
   "file": "tools/work_audit.py",
-  "find": "    if RECORDS.search(path) and not CODE.search(path):  # code is never a record, whatever its name",
-  "replace": "    if RECORDS.search(path):",
+  "find": "    if (RECORDS.search(path) or EVIDENCE_DATA.search(path)) and not CODE.search(path):  # code is never a record",
+  "replace": "    if RECORDS.search(path) or EVIDENCE_DATA.search(path):",
   "tests": [
     "tools.tests.test_work_audit.WorkAuditTests.test_interfaces_vendored_code_and_notes_do_not_become_the_focus"
   ]
