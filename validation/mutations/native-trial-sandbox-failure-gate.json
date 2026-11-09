@@ -1,0 +1,10 @@
+{
+  "id": "native-trial-sandbox-failure-gate",
+  "rule": "Explicit read-only sandbox startup failure prevents a model launch and preserves failed preflight evidence",
+  "file": "tools/native_trial.py",
+  "find": "    if check.get('read_only_sandbox_probe', {}).get('status') == 'failed':",
+  "replace": "    if False:",
+  "tests": [
+    "tools.tests.test_native_trial.NativeTrialTests.test_sandbox_failure_refuses_model_launch_and_retains_attempt"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "id": "native-trial-postrun-binding",
+  "rule": "External repairs after a native run cannot be attributed to that run",
+  "file": "tools/native_trial.py",
+  "find": "    if last_run and state_digest(workspace_state(repo)) != last_run['final_state_sha256']:",
+  "replace": "    if False:",
+  "tests": ["tools.tests.test_native_trial.NativeTrialTests.test_postrun_external_repair_cannot_be_scored_as_autonomous"]
+}

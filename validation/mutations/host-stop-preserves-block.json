@@ -1,0 +1,10 @@
+{
+  "id": "host-stop-preserves-block",
+  "rule": "Host stop cannot convert unmet acceptance to success",
+  "file": "tools/agent_hooks.py",
+  "find": "    return response\n",
+  "replace": "    return {\"continue\": True}\n",
+  "tests": [
+    "tools.tests.test_agent_hooks.AgentHooksTests.test_stop_preserves_block_and_reason"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "payload": {
+    "schema": 1,
+    "request_sha256": "4b0e1d8898c4714c6d2b60a5a0696c6cc36cce70806b329559029a5388a37e2e",
+    "failure_sha256": "649436ba12a1db9b198a9555fa318f0146f77c9e8ddeadd92076c7d8561a7ddb",
+    "frame": {
+      "criteria": [
+        {
+          "id": "C1",
+          "requirement": "Preserve the authoritative user outcome and acceptance across sessions and changes.",
+          "check": "Continue an interrupted task whose convenient checks pass while its requested consumer outcome remains incomplete; acceptance must remain open until delivered."
+        },
+        {
+          "id": "C2",
+          "requirement": "Reflection produces executed corrective work with independent outcome evidence.",
+          "check": "An actual observed discrepancy triggers a feasible correction and fresh consumer verification; reflection text and gate exit alone cannot establish improvement."
+        },
+        {
+          "id": "C3",
+          "requirement": "Prior evidence supports only the candidate and observations it actually tested.",
+          "check": "Modify relevant source, requirements or supporting evidence after verification; previous success must no longer establish current acceptance."
+        },
+        {
+          "id": "C4",
+          "requirement": "Review detects an incorrect frame independently of the builder.",
+          "check": "Retain criteria derived from original authority before implementation exposure; altered framing or acceptance requires renewed review against original authority."
+        },
+        {
+          "id": "C5",
+          "requirement": "Ordinary healthy work remains efficient.",
+          "check": "A healthy no-gap task should finish with necessary checks, without mandatory reflection prose, extra agents or redundant trial work."
+        },
+        {
+          "id": "C6",
+          "requirement": "Native recurrence experiments are uncoached and preserve trial integrity.",
+          "check": "Freeze identities, observe real host execution, bind scoring to that run result, retain retries and assistance, and keep the external oracle unavailable to workers."
+        },
+        {
+          "id": "C7",
+          "requirement": "Claims distinguish mechanics, behavior, continuation and limitations.",
+          "check": "Report deterministic test results separately from fresh/resumed native behavior, actual host-hook invocation, and unrun or blocked acceptance."
+        }
+      ],
+      "discrepancies": []
+    }
+  },
+  "sha256": "1858df92a4f54023e9d1e048add064bc9de268a9fbec114e83f9e7b8b3d598e5"
+}

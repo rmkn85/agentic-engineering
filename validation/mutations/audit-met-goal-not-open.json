@@ -1,10 +1,10 @@
 {
   "id": "audit-met-goal-not-open",
-  "rule": "A goal the finish gate found met is not reported as open",
+  "rule": "A currently verified input-bound goal is not reported as open",
   "file": "tools/work_audit.py",
-  "find": "                and status.stat().st_mtime >= path.stat().st_mtime):\n            return None",
-  "replace": "                and status.stat().st_mtime >= path.stat().st_mtime):\n            pass",
+  "find": "    return None if state == \"verified\" else goal",
+  "replace": "    return goal",
   "tests": [
-    "tools.tests.test_work_audit.WorkAuditTests.test_a_goal_the_finish_gate_found_met_is_not_open"
+    "tools.tests.test_goal_control.GoalControls.test_progress_is_mutable_but_receipt_not_authority_after_source_change"
   ]
 }

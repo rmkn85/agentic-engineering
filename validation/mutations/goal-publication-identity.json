@@ -1,0 +1,10 @@
+{
+  "id": "goal-publication-identity",
+  "rule": "Receipts preserve evaluation identity through publication",
+  "file": "tools/finish_check.py",
+  "find": "    if not bound and all(r['state'] == 'met' for r in results):",
+  "replace": "    if False:",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_publication_cannot_bind_old_acceptance_to_new_source"
+  ]
+}

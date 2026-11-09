@@ -1,0 +1,10 @@
+{
+  "id": "goal-intervention-result",
+  "rule": "Actual failed intervention overrides a self label",
+  "file": "tools/goal_control.py",
+  "find": "        if status != 'supported':",
+  "replace": "        if False:",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_self_label_and_prose_cannot_resolve_failed_intervention"
+  ]
+}

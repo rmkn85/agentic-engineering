@@ -1,0 +1,10 @@
+{
+  "synthetic_existing_receipt": {
+    "native_run_completed": true,
+    "passed": true,
+    "integrity": false,
+    "status": "inconclusive"
+  },
+  "launcher_accepted": true,
+  "stdout": "synthetic: existing completed result retained\nFour matched pairs recorded. Comparative interpretation and integration review remain required.\n"
+}

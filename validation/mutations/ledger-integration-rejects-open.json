@@ -1,0 +1,10 @@
+{
+  "id": "ledger-integration-rejects-open",
+  "rule": "Integration cannot pass unresolved findings",
+  "file": "tools/check_findings.py",
+  "find": "if integration and status == \"open\":",
+  "replace": "if False:",
+  "tests": [
+    "tools.tests.test_check_findings.CheckFindingsTests.test_integration_rejects_open_findings_at_every_severity"
+  ]
+}

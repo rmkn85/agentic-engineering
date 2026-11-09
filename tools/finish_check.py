@@ -29,9 +29,14 @@ Rules:
 - Ending with blocked items needs a "reflection" object in the goal record
   with first_divergence, guidance_followed and guidance_missing_or_misleading,
   each a real sentence.
-- The first goal a session records is pinned. Replacing it with a different
-  goal before it is met needs "supersedes": {"goal": "<the pinned goal text>",
-  "reason": "<why the goal changed>"}; the change is kept in the gap record.
+- The complete acceptance contract is pinned across sessions. Revisions need
+  "supersedes": {"digest": "<previous contract digest>", "reason": "<why it
+  changed>", "authority": "<file or URL authorizing the revision>"}. History is
+  retained in .agent/goal-contract.json. Progress and evidence are mutable.
+- Success receipts bind current source, validator and declared inputs. Failed
+  acceptance, stale evidence and explicit triggers require reflection.interventions
+  with observation, evidence, hypothesis, expected_effect and a fixed Make run
+  target. The tool executes it and derives the result; a status label proves nothing.
 
 Scope: the gate stops a cooperative agent from finishing by mistake: no
 goal, a vacuous check, a silently narrowed goal, or a claim without a pointer.
@@ -58,6 +63,9 @@ import signal
 import subprocess
 import sys
 from pathlib import Path
+
+from goal_control import (ContractError, contract, digest, snapshot, pin_contract, receipt_state,
+                          require_correction, reflection_check, retained_goal, write)
 
 TARGET = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 STATUSES = {"pass", "blocked", "pending", "fail"}
@@ -122,6 +130,11 @@ def load_goal(path: Path) -> dict:
         for key in ("evidence", "blocker"):
             if key in item and not isinstance(item[key], str):
                 raise GoalError(f"item {name!r}: {key} must be a string")
+    for owner in [data, *items]:
+        for field in ('inputs', 'requirement_refs'):
+            if field in owner and (not isinstance(owner[field], list) or any(
+                    not isinstance(ref, (str, dict)) for ref in owner[field])):
+                raise GoalError(field + " must be a list of file paths or path objects")
     return data
 
 
@@ -161,15 +174,55 @@ def ignore_agent_dir(root: Path) -> None:
         marker.write_text(content, encoding="utf-8")
 
 
+class Evaluation(list):
+    """Results and the immutable input identity on which acceptance executed."""
+    def __init__(self, results, identity, source):
+        super().__init__(results)
+        self.contract_digest = identity
+        self.snapshot = source
+
+
 def record_status(root: Path, goal: dict, results: list[dict]) -> None:
-    """Leave the last verdict where other tools (work_audit.py) can read it without re-running checks."""
+    """Publish evaluated identity only; never bind old results to newly read inputs."""
     path = root / ".agent" / "goal-status.json"
     ignore_agent_dir(root)
-    met = all(r["state"] == "met" for r in results)
-    path.write_text(json.dumps({"goal": goal["goal"], "met": met}) + "\n", encoding="utf-8")
+    try:
+        current_contract = digest(contract(goal, root))
+        current_snapshot = snapshot(root, goal)
+    except ContractError:
+        current_contract, current_snapshot = None, None
+    bound = isinstance(results, Evaluation) and results.contract_digest == current_contract and results.snapshot == current_snapshot
+    if not bound and all(r['state'] == 'met' for r in results):
+        results.append({'id': 'publication-change', 'check': 'evaluated inputs still current',
+                        'state': 'unmet', 'why': 'inputs changed after evaluation or evaluation identity missing'})
+    met = bound and all(r["state"] == "met" for r in results)
+    write(path, {"schema": "goal-receipt/v2", "goal": goal["goal"], "met": met,
+                 "contract_digest": getattr(results, 'contract_digest', current_contract),
+                 "snapshot": getattr(results, 'snapshot', current_snapshot), "results": results})
 
 
 def evaluate(goal: dict, root: Path, timeout: int) -> list[dict]:
+    try:
+        pin_contract(root, goal)
+        review = goal.get("review", {})
+        if goal.get("kind") in ("methodology", "control") or (isinstance(review, dict) and review.get("kind") in ("methodology", "control")):
+            require_correction(root, "methodology", "declared methodology or control task")
+            if not isinstance(review, dict) or review.get("kind") not in ("methodology", "control"):
+                raise ContractError("methodology/control goal needs a sealed review declaration")
+            try:
+                from blind_review import validate_goal_framing
+            except ImportError as exc:
+                raise ContractError("blind review validator is unavailable") from exc
+            problem = validate_goal_framing(root, goal)
+            if problem:
+                raise ContractError("; ".join(problem))
+        freshness, why = receipt_state(root, goal)
+        if freshness == "stale":
+            require_correction(root, "stale-evidence", why + ": " + digest(snapshot(root, goal)))
+        before = snapshot(root, goal)
+        evaluated_contract = digest(contract(goal, root))
+    except ContractError as exc:
+        return [{"id": "contract", "check": "acceptance contract preserved", "state": "unmet", "why": str(exc)}]
     results, cache = [], {}
     for item in goal["acceptance"]:
         run = item.get("run")
@@ -195,7 +248,34 @@ def evaluate(goal: dict, root: Path, timeout: int) -> list[dict]:
         results.append({"id": "machine-check", "check": "at least one passing run check", "state": state,
                         "why": "every run check is blocked" if state == "blocked"
                         else "no passing run check: manual items alone cannot prove the goal"})
-    return results
+    try:
+        after = snapshot(root, goal)
+    except ContractError as exc:
+        results.append({'id': 'inputs-unavailable', 'check': 'validation inputs remain available',
+                        'state': 'unmet', 'why': str(exc)})
+        require_correction(root, 'failed-acceptance', str(exc))
+        return Evaluation(results, evaluated_contract, before)
+    if any(r["state"] == "unmet" for r in results):
+        require_correction(root, "failed-acceptance", summary(results) + ": " + digest(after))
+    try:
+        correction = reflection_check(goal, root, timeout, run_target)
+    except ContractError as exc:
+        correction = "corrective inputs unavailable: " + str(exc)
+    if correction:
+        # External blockers may stop incomplete through the existing bounded hook.
+        blocked = all(r["state"] in ("met", "blocked") for r in results) and any(r["state"] == "blocked" for r in results)
+        results.append({"id": "correction", "check": "corrective intervention verified",
+                        "state": "blocked" if blocked else "unmet", "why": correction})
+    try:
+        stable = snapshot(root, goal) == before and digest(contract(goal, root)) == evaluated_contract
+    except ContractError:
+        stable = False
+    if not stable:
+        if not any(r['id'] == 'concurrent-change' for r in results):
+            results.append({'id': 'concurrent-change', 'check': 'stable validation inputs',
+                            'state': 'unmet', 'why': 'inputs changed during acceptance or corrective validation'})
+        require_correction(root, 'concurrent-change', digest(before))
+    return Evaluation(results, evaluated_contract, before)
 
 
 def write_gap(root: Path, goal: dict, results: list[dict], ended: bool = False,
@@ -292,7 +372,13 @@ def block(reason: str) -> int:
 def hook(root: Path, goal_path: Path, event: dict, timeout: int) -> int:
     session = str(event.get("session_id") or "unknown")
     if not goal_path.exists():
-        saved = remember(root, session)
+        saved = retained_goal(root)
+        if saved:
+            state, _ = receipt_state(root, saved)
+            if state == "verified":
+                return 0
+        else:
+            saved = remember(root, session)
         if saved and text(saved.get("goal")) and not saved.get("met"):
             count = bump(root, session, "goal-removed")
             if count <= MAX_BLOCKS:
@@ -317,23 +403,13 @@ def hook(root: Path, goal_path: Path, event: dict, timeout: int) -> int:
         return 0
     pinned = remember(root, session)
     superseded = None
-    if pinned and text(pinned.get("goal")) and pinned["goal"] != goal["goal"] and not pinned.get("met"):
-        change = goal.get("supersedes")
-        if not (isinstance(change, dict) and change.get("goal") == pinned["goal"] and sentence(change.get("reason"))):
-            count = bump(root, session, "goal-swapped")
-            if count <= MAX_BLOCKS:
-                return block(f"The goal changed from {pinned['goal']!r} before it was met ({count}/{MAX_BLOCKS}). "
-                             "Restore it and finish, or add \"supersedes\": {\"goal\": <the old goal>, "
-                             "\"reason\": <why it changed>} to .agent/goal.json.")
-            gap = write_gap(root, pinned, [{"id": "goal-record", "check": "goal kept", "state": "unmet",
-                                            "why": f"goal replaced by {goal['goal']!r} without a reason"}],
-                            ended=True).relative_to(root)
-            print(json.dumps({"systemMessage": f"finish-check: session ended after its goal was replaced; "
-                                               f"original goal NOT verified. Gap record: {gap}"}))
-            return 0
-        superseded = {"goal": pinned["goal"], "reason": change["reason"]}
+    if pinned and pinned.get("goal") != goal["goal"]:
+        superseded = goal.get("supersedes")
     results = evaluate(goal, root, timeout)
-    record_status(root, goal, results)
+    try:
+        record_status(root, goal, results)
+    except ContractError:
+        pass
     remember(root, session, dict(goal, met=all(r["state"] == "met" for r in results)))
     if all(r["state"] == "met" for r in results):
         if superseded:
@@ -363,6 +439,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", default=".")
     parser.add_argument("--goal", default=".agent/goal.json")
     parser.add_argument("--timeout", type=int, default=600)
+    parser.add_argument("--inspect", action="store_true", help="report receipt freshness without running checks")
+    parser.add_argument("--trigger", choices=("stale-evidence", "repetition", "methodology"), help="record corrective obligation")
     parser.add_argument("--hook", action="store_true", help="act as a Claude Code Stop hook")
     args = parser.parse_args(argv)
 
@@ -377,17 +455,45 @@ def main(argv: list[str] | None = None) -> int:
     cwd = event.get("cwd") if isinstance(event.get("cwd"), str) else None
     root = Path(args.root if args.root != "." else cwd or ".").resolve()
     goal_path = root / args.goal
+    if args.trigger:
+        require_correction(root, args.trigger, "startup detected " + args.trigger)
+        print(json.dumps({"trigger": args.trigger, "recorded": True}))
+        return 0
+    if args.inspect:
+        try:
+            goal = load_goal(goal_path) if goal_path.exists() else retained_goal(root)
+            if not goal:
+                raise GoalError("no goal record or retained contract")
+            state, reason = receipt_state(root, goal)
+        except GoalError as exc:
+            state, reason = "unverified", str(exc)
+        print(json.dumps({"state": state, "reason": reason}))
+        return 0 if state == "verified" else 2
     if args.hook:
         return hook(root, goal_path, event, args.timeout)
     if not goal_path.exists():
-        return 0
+        saved = retained_goal(root)
+        if not saved:
+            return 0
+        state, reason = receipt_state(root, saved)
+        if state == "verified":
+            print("finish-check: retained goal has current successful evidence")
+            return 0
+        results = [{"id": "goal-record", "check": "goal record present", "state": "unmet",
+                    "why": "goal record removed; retained contract " + reason}]
+        gap = write_gap(root, saved, results).relative_to(root)
+        print(f"finish-check: retained goal unverified: {summary(results)}; gap record {gap}")
+        return 2
     try:
         goal = load_goal(goal_path)
     except GoalError as exc:
         print(f"finish-check: {exc}", file=sys.stderr)
         return 1
     results = evaluate(goal, root, args.timeout)
-    record_status(root, goal, results)
+    try:
+        record_status(root, goal, results)
+    except ContractError:
+        pass
     if all(r["state"] == "met" for r in results):
         print(f"finish-check: goal met ({len(results)} checks)")
         return 0

@@ -18,11 +18,16 @@ trials or incidents:
 - declined: deliberately not changed; needs a note.
 - open: still to do.
 
---strict also fails while any finding is open.
+--strict and --integration fail while any finding is open. Integration requires
+a disposition (fixed, addressed or declined) with its normal evidence/reason.
+--reopen ID --evidence PATH --reason TEXT retains the previous decision in
+history, records new evidence, and makes a recurring finding open again.
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
+from datetime import date
 import json
 import re
 import sys
@@ -51,7 +56,7 @@ def sentence(value) -> bool:
     return len(re.findall(r"[A-Za-z]{2,}", str(value or ""))) >= 3
 
 
-def problems(root: Path) -> tuple[list[str], dict]:
+def problems(root: Path, integration: bool = False) -> tuple[list[str], dict]:
     errors, counts, seen = [], {s: 0 for s in STATUSES}, set()
     counts["proven"] = 0
     path = root / LEDGER
@@ -78,6 +83,8 @@ def problems(root: Path) -> tuple[list[str], dict]:
             errors.append(f"{name}: unknown status or severity")
             continue
         counts[status] += 1
+        if integration and status == "open":
+            errors.append(f"{name}: unresolved {row['severity']} finding needs a disposition before integration")
         tests = row.get("tests") or []
         if status == "fixed":
             if not tests:
@@ -104,12 +111,61 @@ def problems(root: Path) -> tuple[list[str], dict]:
     return errors, counts
 
 
+
+def reopen(root: Path, ident: str, evidence: Path, reason: str) -> None:
+    """Reopen a decision without erasing its original status, proof or rationale."""
+    if not sentence(reason):
+        raise ValueError("reopening requires a reason explaining recurrence or changed assumptions")
+    try:
+        evidence_ref = evidence.resolve().relative_to(root.resolve()).as_posix()
+    except ValueError:
+        raise ValueError("reopening evidence must be inside root; ledger stores a portable relative reference")
+    data = evidence.read_bytes()
+    if not data.strip():
+        raise ValueError("reopening requires nonempty artifact evidence")
+    ledger = root / LEDGER
+    rows = [json.loads(line) for line in ledger.read_text(encoding="utf-8").splitlines() if line.strip()]
+    matches = [row for row in rows if row.get("id") == ident]
+    if len(matches) != 1:
+        raise ValueError("reopening requires exactly one existing finding id")
+    row = matches[0]
+    if row.get("status") not in STATUSES - {"open"}:
+        raise ValueError("finding is already open or has an unknown status")
+    previous = {key: value for key, value in row.items() if key != "history"}
+    event = {"date": date.today().isoformat(), "reason": reason,
+             "evidence": {"path": evidence_ref, "sha256": hashlib.sha256(data).hexdigest()},
+             "previous": previous}
+    history = row.setdefault("history", [])
+    if not isinstance(history, list):
+        raise ValueError("finding history must be a list")
+    history.append(event)
+    row["status"] = "open"
+    # Original note/tests/mutation stay intact; history retains each earlier decision too.
+    temporary = ledger.with_suffix(".jsonl.tmp")
+    with temporary.open("x", encoding="utf-8") as out:
+        out.write("".join(json.dumps(item) + "\n" for item in rows))
+    temporary.replace(ledger)
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--root", default=".")
     parser.add_argument("--strict", action="store_true", help="also fail while findings are open")
+    parser.add_argument("--integration", action="store_true", help="fail all unresolved findings before integration")
+    parser.add_argument("--reopen", metavar="ID", help="reopen a recurring or invalidated decision")
+    parser.add_argument("--evidence", help="nonempty artifact documenting recurrence or changed assumptions")
+    parser.add_argument("--reason", help="why the earlier decision must be reconsidered")
     args = parser.parse_args(argv)
-    errors, counts = problems(Path(args.root).resolve())
+    if args.reopen:
+        try:
+            if not args.evidence or not args.reason:
+                raise ValueError("--reopen requires --evidence and --reason")
+            reopen(Path(args.root).resolve(), args.reopen, Path(args.evidence), args.reason)
+        except (OSError, ValueError, TypeError) as exc:
+            print(f"findings: FAIL: {exc}", file=sys.stderr)
+            return 1
+    elif args.evidence or args.reason:
+        parser.error("--evidence and --reason require --reopen")
+    errors, counts = problems(Path(args.root).resolve(), integration=args.integration)
     for error in errors:
         print(f"findings: FAIL: {error}", file=sys.stderr)
     print(f"findings: {counts['fixed']} fixed ({counts['proven']} with a mutation proof), "

@@ -1,0 +1,10 @@
+{
+  "id": "goal-reflection-target",
+  "rule": "Interventions must check a current acceptance target",
+  "file": "tools/goal_control.py",
+  "find": "        if intervention['run'] not in targets:",
+  "replace": "        if False:",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_unrelated_passing_target_cannot_resolve_obligation"
+  ]
+}

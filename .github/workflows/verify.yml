@@ -12,7 +12,7 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -29,3 +29,4 @@ jobs:
           if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then BASE_SHA=HEAD^1; fi
           git fetch --no-tags --depth=1 origin "$BASE_SHA" 2>/dev/null || true
           make guidance-delta BASE="$BASE_SHA"
+          make review-check BASE="$BASE_SHA"

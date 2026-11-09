@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/tools/finish_check.py\" --hook --root \"$CLAUDE_PROJECT_DIR\"",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/tools/agent_hooks.py\" --host claude --event stop",
             "timeout": 600
           }
         ]
@@ -49,6 +49,17 @@
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/tools/guard_command.py\" --hook",
             "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/tools/agent_hooks.py\" --host claude --event start",
+            "timeout": 600
           }
         ]
       }

@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "scenarios": [
+    {"id": "workflow-false-completion", "claim": "A successful checkpoint does not complete the outstanding consumer export."},
+    {"id": "stale-successful-handoff", "claim": "A historical green handoff does not replace current consumer acceptance."},
+    {"id": "heldout-acceptance-omission", "claim": "Independent sealed evaluator supplied after candidate freeze.", "builder": "external sealed fixture"},
+    {"id": "healthy-small-change", "claim": "A healthy small change completes without unnecessary recovery work."}
+  ],
+  "execution": {"model": "gpt-6.1-sol", "effort": "medium", "arms": ["baseline", "candidate"], "order": "sequential fresh sessions"},
+  "limits": "One matched pair per scenario is exploratory evidence, not an effect estimate."
+}

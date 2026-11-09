@@ -1,0 +1,10 @@
+{
+  "id": "goal-corrective-evidence-freshness",
+  "rule": "Corrective evidence bytes invalidate supported observations",
+  "file": "tools/goal_control.py",
+  "find": "    evidence_items = list(goal.get('acceptance', [])) + (specifications if isinstance(specifications, list) else [])",
+  "replace": "    evidence_items = list(goal.get('acceptance', []))",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_changed_ignored_corrective_evidence_reopens_supported_resolution"
+  ]
+}

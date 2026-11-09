@@ -1,0 +1,10 @@
+{
+  "id": "ledger-reopen-needs-evidence",
+  "rule": "Reopening requires observed artifact evidence",
+  "file": "tools/check_findings.py",
+  "find": "if not data.strip():",
+  "replace": "if False:",
+  "tests": [
+    "tools.tests.test_check_findings.CheckFindingsTests.test_reopen_needs_existing_nonempty_evidence_and_reason"
+  ]
+}

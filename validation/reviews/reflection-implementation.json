@@ -1,0 +1,42 @@
+{
+  "schema": "methodology-review/v1",
+  "framing": "validation/reviews/reflection-frame.json",
+  "request": "validation/reviews/reflection-request.md",
+  "failure_evidence": "validation/reviews/reflection-failure-evidence.md",
+  "verdict": "accepted",
+  "scope": "Mechanical source review; native acceptance and merge readiness remain blocked",
+  "reviewed_commit": "81c0d5ba73787d86a45519f5ab7b8f5678da284d",
+  "base": "4cdeefd11dd415512d691f4bf5a6197132141123",
+  "report": {
+    "path": "validation/reviews/reflection-final/report.md",
+    "sha256": "28d747f3b646dced43d7fa8df682f412506120f51021235e7705269bc9b8615d"
+  },
+  "files": {
+    ".claude/settings.json": "5035e72ce4fe6bf0f9a418c07f677a2b6b512c40fcbf68bd0e62117ba242c99c",
+    ".codex/hooks.json": "96bc711447fa8d9c770ddd5701acab6cbcccdbdcf0fc5cabfbf38422c8e7986d",
+    ".github/workflows/verify.yml": "4aeaa7c795791c1c28e46b2224348c8ff210d62345347df89b60831f3dcf080f",
+    "AGENTS.md": "79226402a15942b73539429fb987701a41c7b497d4be5889c2c3c802eeb20839",
+    "Makefile": "f1a814f5762436edf198a54fa05a09636c3ac05d8d64a2fe3125c747702f3e79",
+    "docs/execution/executable-reflection.md": "83f84c0e9d6bc24c48295ee1fc57c61e6c68674717b0da7b3134630eb74b623c",
+    "tools/agent_hooks.py": "88fe520d8177c29705600780a400bcf5db321e505f3c7af15965032175e81f8b",
+    "tools/blind_review.py": "72717d746da0696e2c50518b1507212dad60549a2571defe591943b2174a8c95",
+    "tools/check_findings.py": "6dc90983a6ee6505d0e176c7f248859a811c0f2759626274990595435aa10c5f",
+    "tools/check_review.py": "f35920cbfe0a5bfaba18196f10181c1abbf3f5dc8533534ca6143c6e307755e9",
+    "tools/finish_check.py": "abc586638f8b7236d8ce20e25dd8865295a80aaece8ead7a8281cb4d0f5545a1",
+    "tools/goal_control.py": "b95fe0f2746687aff368281c2a4f02812577117cd6e0a8c2f1aa2de0c568e5cf",
+    "tools/make": "ed45039bde7fc9d249a645e0ae63c7a45eb607def62895ebf2486ce31b834b12",
+    "tools/native_trial.py": "150f9d26a8f640bd584f9f2ae382ea4caf2fd6e53a2a778a83fdedbdc3b05bdf",
+    "tools/reflection_activity.py": "013c066ff3edd29dfffa03d572bf0e2c73785ca419706d87b22397dd1b420b79",
+    "tools/run_trial.py": "7181a84350fe72fd326a417399dc1b7d814accf6cf74bef91e615e9d7d6ba94b",
+    "tools/work_audit.py": "b8c333180b96b8431878031cf9537d71b6e46821be0bcf4c14abdcd9019738b3",
+    "validation/trials/recurrence/fixture.py": "fa28392f54b52550475efe04b84c52ab8492a4a09967f575e71dde666e03a238",
+    "validation/trials/recurrence/interpretation.md": "368bc78b74e123fd8f33fa524c49cd0ed4af263d24fb1a2fdb4e6db2d8729e83",
+    "validation/trials/recurrence/native-smoke.json": "0141104fb3152be2c4dc87811a1472f24d54ac6b69f4bfefe8bd1e064613a206",
+    "validation/trials/recurrence/scenarios.json": "9749216c885fd464fd8cb1d87bf9be29e1e2aba78e33e1ee8e10546915d9d758"
+  },
+  "input_hashes": {
+    "framing": "a87fc8c4495a42ae811275c29324c41b5513cb8a28d08b503f7582905b7f63e7",
+    "request": "4b0e1d8898c4714c6d2b60a5a0696c6cc36cce70806b329559029a5388a37e2e",
+    "failure_evidence": "649436ba12a1db9b198a9555fa318f0146f77c9e8ddeadd92076c7d8561a7ddb"
+  }
+}

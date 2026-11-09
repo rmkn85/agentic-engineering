@@ -1,0 +1,10 @@
+{
+  "id": "activity-trust-argument",
+  "rule": "Maintained run forwards explicit evidence without granting trust",
+  "file": "tools/reflection_activity.py",
+  "find": "{'TRUST_RECEIPT': '--trust-receipt'}",
+  "replace": "{'TRUST_RECEIPT': '--unknown-trust-flag'}",
+  "tests": [
+    "tools.tests.test_reflection_activity.ReflectionActivityTests.test_optional_trust_evidence_is_argv_data_without_granting_trust"
+  ]
+}

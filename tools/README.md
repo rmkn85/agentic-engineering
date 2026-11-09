@@ -2,6 +2,46 @@
 
 These helpers exist to move exact work out of the model and make optimization measurable.
 
+## Ordinary goal reflection and native recurrence trials
+
+The [executable reflection contract](../docs/execution/executable-reflection.md)
+documents acceptance pinning, input-bound receipts, explicit revisions,
+corrective interventions, independent framing and host adapters.
+`python3 tools/finish_check.py --inspect` checks receipt freshness without
+executing acceptance; `--trigger repetition` records an obligation without
+executing checks. `make finish-check` performs the actual verification.
+`make review-check BASE=<commit>` requires current independent review of changed
+methodology. `make findings` rejects open findings; `make check` also enforces
+their integration dispositions.
+
+`python3 tools/run_trial.py native-prepare --help` describes frozen neutral trial
+fixtures and external evaluators. Native execution uses maintained activities:
+
+```sh
+./tools/make recurrence-preflight ROOT=/private/trial/repository
+./tools/make recurrence-smoke ROOT=/private/trial/repository AUDIT=/private/trial/smoke
+./tools/make recurrence-run AUDIT=/private/trial/audit TRUST_RECEIPT=/private/trial/reviewed-trust.json
+./tools/make recurrence-score AUDIT=/private/trial/audit
+```
+
+Preflight records `read_only_sandbox_probe`: `passed`, `failed` or `unknown`.
+On a supported Linux CLI, it runs `/bin/true` through the native read-only
+sandbox with managed requirements included, without a model request or a write
+probe. A failure prevents `recurrence-run` from launching; its diagnostics remain
+in the private audit. Unsupported or unobserved probes remain `unknown`.
+A pass proves command startup only, not workspace writes or model tool use.
+Smoke reports `model_request_feasible` separately; its no-tool reply does not
+prove a runnable engineering session. Each preflight, smoke or run activity
+accepts optional `CODEX=/absolute/path/to/codex` as one literal executable path.
+
+The optional trust receipt reports `native_hook_trust: "confirmed"` and the
+reviewed `hook_config_sha256`; it never grants trust. Run each frozen fixture once. A retry or externally repaired fixture
+needs a new preparation and an explicit assisted/regression interpretation.
+Logs, exact patches, final workspace identities, observed settings and usage
+remain outside the public corpus. A mechanical calibration without a completed
+native run is not behavioral evidence. Publish only sanitized receipts after
+review; retain failed and interrupted attempts.
+
 ## Outcome control activities
 
 Use the [native adoption contract](../docs/adoption/outcome-controls.md) to bind

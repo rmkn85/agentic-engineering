@@ -1,0 +1,9 @@
+{
+  "private-operator-launcher": "08c29b705e60e95d85fb55e89b67dbc10b14a9827b042e9d514d8100fa12bbd7",
+  "tools/native_trial.py": "c7094cd4ba7f7f6d25591495e031bb20255e97f5efe85a39a7ffdc860d306984",
+  "tools/tests/test_native_trial.py": "535b526fb64b467ce55eb75a9c45c257c14c8e5bfd7d5652ea1f060716de7f31",
+  "validation/findings.jsonl": "00b80df76e7896b02e18f206b15b424ccf9cb371e9d9092fc667515f182c4307",
+  "validation/mutations/native-trial-preflight-attempt-binding.json": "201aebce6cc69815d4a7bfb399ad962f3ad5f13fd29c6b1fae029ccba7dd890b",
+  "validation/trials/recurrence/interpretation.md": "9471e9bf5a4fc680cddc219b9c8af66b2e4bb6478dfc07050e59c41fccdb6bd6",
+  "validation/trials/recurrence/native-recovery.json": "be261bcf595b961a034d36afb015f10a88e12f01c3158b50fc909a6723bb2d51"
+}

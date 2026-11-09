@@ -1,0 +1,10 @@
+{
+  "id": "ledger-reopen-preserves-decision",
+  "rule": "Recurring finding retains earlier decisions and proof",
+  "file": "tools/check_findings.py",
+  "find": "history.append(event)",
+  "replace": "history.clear()",
+  "tests": [
+    "tools.tests.test_check_findings.CheckFindingsTests.test_reopen_preserves_decision_and_proof_history"
+  ]
+}

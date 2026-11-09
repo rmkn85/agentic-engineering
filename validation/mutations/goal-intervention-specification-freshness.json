@@ -1,0 +1,10 @@
+{
+  "id": "goal-intervention-specification-freshness",
+  "rule": "Changed corrective hypotheses predictions or targets invalidate observations",
+  "file": "tools/goal_control.py",
+  "find": "            'interventions': specifications, 'disk_interventions': intervention_specifications(disk_goal)}",
+  "replace": "            'interventions': [], 'disk_interventions': []}",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_intervention_specification_is_bound_but_status_labels_are_not"
+  ]
+}

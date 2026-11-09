@@ -1,10 +1,12 @@
 {
   "id": "finish-goal-pinned",
-  "rule": "A session's unmet goal cannot be swapped without a stated reason",
-  "file": "tools/finish_check.py",
-  "find": "pinned[\"goal\"] != goal[\"goal\"] and not pinned.get(\"met\"):",
-  "replace": "pinned[\"goal\"] != goal[\"goal\"] and False:",
+  "rule": "Acceptance authority persists across sessions",
+  "file": "tools/goal_control.py",
+  "find": "    if previous.get('digest') and previous['digest'] != identity:",
+  "replace": "    if False:",
   "tests": [
-    "tools.tests.test_finish_check.FinishCheckTests.test_swapping_an_unmet_goal_needs_a_stated_reason"
+    "tools.tests.test_goal_control.GoalControls.test_removed_consumer_cannot_hide_behind_same_goal_text_across_sessions",
+    "tools.tests.test_finish_check.FinishCheckTests.test_swapping_an_unmet_goal_needs_a_stated_reason",
+    "tools.tests.test_goal_control.GoalControls.test_shared_acceptance_substitution_invalidates_both_control_routes"
   ]
 }

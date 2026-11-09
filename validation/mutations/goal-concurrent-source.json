@@ -1,0 +1,10 @@
+{
+  "id": "goal-concurrent-source",
+  "rule": "A check must not pass while inputs change",
+  "file": "tools/finish_check.py",
+  "find": "    if not stable:",
+  "replace": "    if False:",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_concurrent_source_change_rejects_success"
+  ]
+}

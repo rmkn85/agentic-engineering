@@ -1,0 +1,12 @@
+[
+  {
+    "fresh_score_valid": false,
+    "accepted": false,
+    "maintained_score_invoked": true
+  },
+  {
+    "fresh_score_valid": true,
+    "accepted": true,
+    "maintained_score_invoked": true
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "id": "review-discrepancy-artifact-binding",
+  "rule": "Resolved discrepancies require unchanged artifact bytes",
+  "file": "tools/blind_review.py",
+  "find": "if not data.strip() or digest(data) != item[\"sha256\"]:",
+  "replace": "if False:",
+  "tests": [
+    "tools.tests.test_blind_review.BlindReviewTests.test_discrepancy_requires_resolved_nonempty_hash_bound_artifact"
+  ]
+}

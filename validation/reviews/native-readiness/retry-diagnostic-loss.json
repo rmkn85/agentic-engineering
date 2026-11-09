@@ -1,0 +1,78 @@
+{
+  "statuses": [
+    "sandbox_preflight_failed",
+    "sandbox_preflight_failed"
+  ],
+  "first_diagnostic_retained": false,
+  "second_diagnostic_retained": true,
+  "attempt_rows": [
+    {
+      "attempt": "0e1d5897-c38f-4771-9300-4a51a33f48f4",
+      "hook_adapter_events": null,
+      "hook_calls": null,
+      "host_controls_match": true,
+      "human_assistance": [],
+      "phase": "run",
+      "runtime_settings": {
+        "effort": null,
+        "model": null
+      },
+      "selected_actions": [],
+      "started_at": "2026-11-09T08:41:48.875893+00:00",
+      "status": "started",
+      "usage": null,
+      "wall_seconds": null
+    },
+    {
+      "attempt": "0e1d5897-c38f-4771-9300-4a51a33f48f4",
+      "hook_adapter_events": null,
+      "hook_calls": null,
+      "host_controls_match": true,
+      "human_assistance": [],
+      "phase": "run",
+      "runtime_settings": {
+        "effort": null,
+        "model": null
+      },
+      "selected_actions": [],
+      "started_at": "2026-11-09T08:41:48.875893+00:00",
+      "status": "sandbox_preflight_failed",
+      "usage": null,
+      "wall_seconds": null
+    },
+    {
+      "attempt": "085ba4d3-ff01-4da8-a823-a457e03c03d5",
+      "hook_adapter_events": null,
+      "hook_calls": null,
+      "host_controls_match": true,
+      "human_assistance": [],
+      "phase": "run",
+      "runtime_settings": {
+        "effort": null,
+        "model": null
+      },
+      "selected_actions": [],
+      "started_at": "2026-11-09T08:41:48.884170+00:00",
+      "status": "started",
+      "usage": null,
+      "wall_seconds": null
+    },
+    {
+      "attempt": "085ba4d3-ff01-4da8-a823-a457e03c03d5",
+      "hook_adapter_events": null,
+      "hook_calls": null,
+      "host_controls_match": true,
+      "human_assistance": [],
+      "phase": "run",
+      "runtime_settings": {
+        "effort": null,
+        "model": null
+      },
+      "selected_actions": [],
+      "started_at": "2026-11-09T08:41:48.884170+00:00",
+      "status": "sandbox_preflight_failed",
+      "usage": null,
+      "wall_seconds": null
+    }
+  ]
+}

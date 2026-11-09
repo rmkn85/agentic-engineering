@@ -1,0 +1,11 @@
+{
+  "id": "goal-retained-across-sessions",
+  "rule": "Unresolved pinned acceptance remains visible after goal deletion across sessions",
+  "file": "tools/goal_control.py",
+  "find": "    return {key: saved[key] for key in ('goal', 'kind', 'review', 'acceptance', 'requirement_refs', 'inputs') if key in saved}",
+  "replace": "    return None",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_removed_unmet_goal_survives_new_session_and_audit_without_execution",
+    "tools.tests.test_goal_control.GoalControls.test_removed_completed_goal_requires_current_evidence"
+  ]
+}

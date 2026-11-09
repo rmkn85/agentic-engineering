@@ -8,7 +8,7 @@ the deterministic checks that show the guided behaviour happened:
      "task": "the task text given to the agent", "checks": ["goal-record", ...]}
 
   prepare  make a fresh local clone for one arm and print the agent prompt.
-           Arm "guided" prepends the repository instructions a host would
+           Legacy coached arm "guided" prepends repository instructions a host would
            auto-load (AGENTS.md, CLAUDE.md); arm "unguided" replaces them with
            a one-line stub. Give the prompt to a fresh agent session.
   score    run the scenario's checks in that clone and append the result to
@@ -156,7 +156,7 @@ def score(root: Path, clone: Path, label: str) -> dict:
     state = json.loads((clone / STATE).read_text(encoding="utf-8"))
     data = load(root, state["scenario"])
     results = {name: CHECKS[name](clone, state["start"]) for name in data["checks"]}
-    record = {"scenario": state["scenario"], "arm": state["arm"], "agent": label,
+    record = {"scenario": state["scenario"], "arm": state["arm"], "agent": label, "instruction_delivery": "legacy_coached_prompt" if state["arm"] == "guided" else "legacy_stub",
               "date": dt.date.today().isoformat(), "checks": results,
               "passed": sum(results.values()), "total": len(results),
               "changed_files": changed(clone, state["start"])}
@@ -168,6 +168,10 @@ def score(root: Path, clone: Path, label: str) -> dict:
 
 
 def main(argv: list[str] | None = None) -> int:
+    native_args = list(sys.argv[1:] if argv is None else argv)
+    if native_args and native_args[0].startswith("native-"):
+        from native_trial import main as native_main
+        return native_main([native_args[0].removeprefix("native-"), *native_args[1:]])
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--root", default=".")
     sub = parser.add_subparsers(dest="command", required=True)
