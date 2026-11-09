@@ -540,8 +540,10 @@ def handoffs(root: Path, files: list[str]) -> tuple[int, int]:
 
 def goal_open(root: Path) -> str | None:
     """Do not run checks: only a current input-bound success closes the goal."""
-    from goal_control import read, receipt_state
+    from goal_control import read, receipt_state, retained_goal
     data = read(root / ".agent/goal.json")
+    if not (root / ".agent/goal.json").exists():
+        data = retained_goal(root) or {}
     goal = data.get("goal")
     if not isinstance(goal, str):
         return None

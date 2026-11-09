@@ -77,6 +77,14 @@ def intervention_specifications(goal):
             if isinstance(item, dict) else item for item in interventions]
 
 
+def retained_goal(root):
+    """Recover immutable authority only; never invent progress or evidence."""
+    saved = read(root / '.agent/goal-contract.json').get('contract')
+    if not isinstance(saved, dict) or not isinstance(saved.get('goal'), str) or not isinstance(saved.get('acceptance'), list):
+        return None
+    return {key: saved[key] for key in ('goal', 'kind', 'review', 'acceptance', 'requirement_refs', 'inputs') if key in saved}
+
+
 def snapshot(root, goal):
     try:
         proc = subprocess.run(['git', 'ls-files', '-z', '--cached', '--others', '--exclude-standard'],
@@ -115,6 +123,8 @@ def snapshot(root, goal):
         names.append('blind_review.py')
     validators = [file_ref(Path(__file__).parent, p) for p in names]
     disk_goal = read(root / '.agent/goal.json')
+    if not (root / '.agent/goal.json').exists():
+        disk_goal = retained_goal(root) or {}
     disk_contract = digest(contract(disk_goal, root)) if disk_goal.get('acceptance') else None
     return {'files': refs, 'validators': validators, 'goal_contract': disk_contract,
             'interventions': specifications, 'disk_interventions': intervention_specifications(disk_goal)}

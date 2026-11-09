@@ -65,7 +65,7 @@ import sys
 from pathlib import Path
 
 from goal_control import (ContractError, contract, digest, snapshot, pin_contract, receipt_state,
-                          require_correction, reflection_check, write)
+                          require_correction, reflection_check, retained_goal, write)
 
 TARGET = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 STATUSES = {"pass", "blocked", "pending", "fail"}
@@ -372,7 +372,13 @@ def block(reason: str) -> int:
 def hook(root: Path, goal_path: Path, event: dict, timeout: int) -> int:
     session = str(event.get("session_id") or "unknown")
     if not goal_path.exists():
-        saved = remember(root, session)
+        saved = retained_goal(root)
+        if saved:
+            state, _ = receipt_state(root, saved)
+            if state == "verified":
+                return 0
+        else:
+            saved = remember(root, session)
         if saved and text(saved.get("goal")) and not saved.get("met"):
             count = bump(root, session, "goal-removed")
             if count <= MAX_BLOCKS:
@@ -455,7 +461,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.inspect:
         try:
-            state, reason = receipt_state(root, load_goal(goal_path))
+            goal = load_goal(goal_path) if goal_path.exists() else retained_goal(root)
+            if not goal:
+                raise GoalError("no goal record or retained contract")
+            state, reason = receipt_state(root, goal)
         except GoalError as exc:
             state, reason = "unverified", str(exc)
         print(json.dumps({"state": state, "reason": reason}))
@@ -463,7 +472,18 @@ def main(argv: list[str] | None = None) -> int:
     if args.hook:
         return hook(root, goal_path, event, args.timeout)
     if not goal_path.exists():
-        return 0
+        saved = retained_goal(root)
+        if not saved:
+            return 0
+        state, reason = receipt_state(root, saved)
+        if state == "verified":
+            print("finish-check: retained goal has current successful evidence")
+            return 0
+        results = [{"id": "goal-record", "check": "goal record present", "state": "unmet",
+                    "why": "goal record removed; retained contract " + reason}]
+        gap = write_gap(root, saved, results).relative_to(root)
+        print(f"finish-check: retained goal unverified: {summary(results)}; gap record {gap}")
+        return 2
     try:
         goal = load_goal(goal_path)
     except GoalError as exc:

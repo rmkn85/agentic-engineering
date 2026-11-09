@@ -310,3 +310,42 @@ class GoalControls(unittest.TestCase):
                 self.assertEqual(richer.oc.validate_control(task, self.root, richer.NOW), [])
         self.assertEqual((self.root / '.agent/goal-status.json').read_bytes(), ordinary_before)
         self.assertEqual((self.root / 'proof/verified.json').read_bytes(), richer_before)
+
+    def test_removed_unmet_goal_survives_new_session_and_audit_without_execution(self):
+        self.goal['acceptance'][0]['run'] = 'bad'
+        self.run_gate()
+        (self.root / '.agent/goal.json').unlink()
+        before = (self.root / '.agent/goal-status.json').read_bytes()
+        self.assertEqual(work_audit.goal_open(self.root), self.goal['goal'])
+        self.assertEqual((self.root / '.agent/goal-status.json').read_bytes(), before)
+        command = [sys.executable, gate.__file__, '--root', str(self.root)]
+        cli = subprocess.run(command, capture_output=True, text=True, check=False)
+        self.assertEqual(cli.returncode, 2, cli.stdout + cli.stderr)
+        self.assertIn('retained goal unverified', cli.stdout)
+        event = json.dumps({'session_id': 'new-session-after-deletion'})
+        for _ in range(gate.MAX_BLOCKS):
+            proc = subprocess.run(command + ['--hook'], input=event, capture_output=True, text=True, check=False)
+            self.assertEqual(json.loads(proc.stdout)['decision'], 'block')
+        final = subprocess.run(command + ['--hook'], input=event, capture_output=True, text=True, check=False)
+        self.assertIn('NOT verified', json.loads(final.stdout)['systemMessage'])
+        self.assertEqual((self.root / '.agent/goal-status.json').read_bytes(), before)
+        self.assertNotIn('status', control.retained_goal(self.root)['acceptance'][0])
+
+    def test_removed_completed_goal_requires_current_evidence(self):
+        self.run_gate()
+        (self.root / '.agent/goal.json').unlink()
+        command = [sys.executable, gate.__file__, '--root', str(self.root)]
+        proc = subprocess.run(command, capture_output=True, text=True, check=False)
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIsNone(work_audit.goal_open(self.root))
+        (self.root / 'source').write_text('changed after completion')
+        proc = subprocess.run(command, capture_output=True, text=True, check=False)
+        self.assertEqual(proc.returncode, 2, proc.stdout + proc.stderr)
+        self.assertEqual(work_audit.goal_open(self.root), self.goal['goal'])
+
+    def test_no_goal_and_no_retained_contract_remains_unaffected(self):
+        (self.root / '.agent/goal.json').unlink()
+        proc = subprocess.run([sys.executable, gate.__file__, '--root', str(self.root)],
+                              capture_output=True, text=True, check=False)
+        self.assertEqual((proc.returncode, proc.stdout), (0, ''))
+        self.assertIsNone(work_audit.goal_open(self.root))
