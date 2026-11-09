@@ -121,6 +121,7 @@ def pin_contract(root, goal):
         from finish_check import cites
         if not cites(root, revision['authority']):
             raise ContractError('supersedes authority must cite a repository file or URL')
+        require_correction(root, 'acceptance-revision', previous['digest'] + ' -> ' + identity)
         history = previous.get('history', []) + [{k: v for k, v in previous.items() if k != 'history'}]
     else:
         history = previous.get('history', [])
@@ -139,13 +140,25 @@ def receipt_state(root, goal):
             return 'stale', 'source, validator or declared input changed'
     except (ContractError, OSError, ValueError) as exc:
         return 'stale', str(exc)
+    reflection = read(root / '.agent/reflection-state.json')
+    if reflection.get('obligations') and (not reflection.get('resolved') or reflection.get('resolution_identity') != observation_identity(root, goal)):
+        return 'unverified', 'corrective obligation unresolved for current inputs'
     return ('verified', 'current successful receipt') if receipt.get('met') is True else ('unverified', 'last checks did not pass')
+
+
+def observation_identity(root, goal):
+    return {'contract_digest': digest(contract(goal, root)), 'snapshot_digest': digest(snapshot(root, goal))}
 
 
 def require_correction(root, trigger, evidence):
     path = root / '.agent/reflection-state.json'
     state = read(path)
-    obligation = {'trigger': trigger, 'evidence': evidence}
+    goal = read(root / '.agent/goal.json')
+    try:
+        identity = observation_identity(root, goal) if goal.get('acceptance') else None
+    except ContractError as exc:
+        identity = {'unavailable': str(exc)}
+    obligation = {'trigger': trigger, 'evidence': evidence, 'observation_identity': identity}
     if obligation not in state.get('obligations', []):
         state.setdefault('obligations', []).append(obligation)
         state['resolved'] = False
@@ -156,28 +169,49 @@ def require_correction(root, trigger, evidence):
 def reflection_check(goal, root, timeout, runner):
     path = root / '.agent/reflection-state.json'
     state = read(path)
-    if not state.get('obligations') or state.get('resolved'):
+    current = observation_identity(root, goal)
+    if not state.get('obligations'):
         return None
+    if state.get('resolved') and state.get('resolution_identity') == current:
+        return None
+    # Resolution belongs to the exact contract and observations that were checked.
+    if state.get('resolved'):
+        state['resolved'] = False
+        state['status'] = 'pending'
+        write(path, state)
     reflection = goal.get('reflection', {})
     interventions = reflection.get('interventions', []) if isinstance(reflection, dict) else []
     if not isinstance(interventions, list) or not interventions:
         return 'corrective intervention required: observation, evidence, hypothesis, expected_effect and run'
     from finish_check import sentence, cites, TARGET
+    targets = {item.get('run') for item in goal['acceptance'] if item.get('run')}
     for intervention in interventions:
         if not isinstance(intervention, dict) or not all(sentence(intervention.get(k)) for k in
                 ('observation', 'hypothesis', 'expected_effect')) or not isinstance(intervention.get('evidence'), str) \
                 or not cites(root, intervention['evidence']) or not isinstance(intervention.get('run'), str) \
                 or not TARGET.fullmatch(intervention['run']):
             return 'corrective intervention has incomplete observation, evidence, hypothesis, expected_effect or run'
-        before = snapshot(root, goal)
+        if intervention['run'] not in targets:
+            return 'corrective intervention run must be a current acceptance target'
+        before = observation_identity(root, goal)
         result, reason = runner(root, intervention['run'], timeout)
-        after = snapshot(root, goal)
+        try:
+            after = observation_identity(root, goal)
+        except ContractError as exc:
+            after = {'unavailable': str(exc)}
         status = 'supported' if result == 'met' and before == after else 'refuted' if before == after else 'inconclusive'
-        write(root / '.agent/reflection-receipt.json', {'intervention': intervention, 'status': status,
-              'contract_digest': digest(contract(goal, root)), 'snapshot': after, 'why': reason})
+        receipt = {'intervention': intervention, 'status': status, 'before': before, 'after': after,
+                   'observed_effect': 'acceptance target passed' if result == 'met' else 'acceptance target failed',
+                   'interpretation': 'Target exit and input stability only; hypothesis causality and semantic expected effect remain unverified.',
+                   'why': reason}
+        receipt_path = root / '.agent/reflection-receipt.json'
+        previous = read(receipt_path)
+        history = previous.get('history', []) + ([{k: v for k, v in previous.items() if k != 'history'}] if previous else [])
+        write(receipt_path, dict(receipt, history=history))
         if status != 'supported':
             return 'corrective intervention ' + status
     state['resolved'] = True
     state['status'] = 'supported'
+    state['resolution_identity'] = observation_identity(root, goal)
     write(path, state)
     return None

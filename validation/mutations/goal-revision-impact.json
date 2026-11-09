@@ -1,0 +1,10 @@
+{
+  "id": "goal-revision-impact",
+  "rule": "Authorized acceptance revision still needs impact verification",
+  "file": "tools/goal_control.py",
+  "find": "        require_correction(root, 'acceptance-revision', previous['digest'] + ' -> ' + identity)",
+  "replace": "        pass",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_revision_without_old_success_receipt_still_needs_impact_check"
+  ]
+}

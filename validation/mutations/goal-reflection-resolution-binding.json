@@ -1,0 +1,10 @@
+{
+  "id": "goal-reflection-resolution-binding",
+  "rule": "Resolution belongs to current contract and observations",
+  "file": "tools/goal_control.py",
+  "find": "    if state.get('resolved') and state.get('resolution_identity') == current:",
+  "replace": "    if state.get('resolved'):",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_resolution_reopens_after_observation_or_contract_change"
+  ]
+}

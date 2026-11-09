@@ -1,0 +1,10 @@
+{
+  "id": "goal-reflection-input-stability",
+  "rule": "Intervention changes invalidate earlier acceptance",
+  "file": "tools/finish_check.py",
+  "find": "    if not stable:",
+  "replace": "    if False:",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_intervention_input_change_invalidates_earlier_acceptance"
+  ]
+}

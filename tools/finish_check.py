@@ -174,14 +174,31 @@ def ignore_agent_dir(root: Path) -> None:
         marker.write_text(content, encoding="utf-8")
 
 
+class Evaluation(list):
+    """Results and the immutable input identity on which acceptance executed."""
+    def __init__(self, results, identity, source):
+        super().__init__(results)
+        self.contract_digest = identity
+        self.snapshot = source
+
+
 def record_status(root: Path, goal: dict, results: list[dict]) -> None:
-    """Leave the last verdict where other tools (work_audit.py) can read it without re-running checks."""
+    """Publish evaluated identity only; never bind old results to newly read inputs."""
     path = root / ".agent" / "goal-status.json"
     ignore_agent_dir(root)
-    met = all(r["state"] == "met" for r in results)
+    try:
+        current_contract = digest(contract(goal, root))
+        current_snapshot = snapshot(root, goal)
+    except ContractError:
+        current_contract, current_snapshot = None, None
+    bound = isinstance(results, Evaluation) and results.contract_digest == current_contract and results.snapshot == current_snapshot
+    if not bound and all(r['state'] == 'met' for r in results):
+        results.append({'id': 'publication-change', 'check': 'evaluated inputs still current',
+                        'state': 'unmet', 'why': 'inputs changed after evaluation or evaluation identity missing'})
+    met = bound and all(r["state"] == "met" for r in results)
     write(path, {"schema": "goal-receipt/v2", "goal": goal["goal"], "met": met,
-                 "contract_digest": digest(contract(goal, root)), "snapshot": snapshot(root, goal),
-                 "results": results})
+                 "contract_digest": getattr(results, 'contract_digest', current_contract),
+                 "snapshot": getattr(results, 'snapshot', current_snapshot), "results": results})
 
 
 def evaluate(goal: dict, root: Path, timeout: int) -> list[dict]:
@@ -203,6 +220,7 @@ def evaluate(goal: dict, root: Path, timeout: int) -> list[dict]:
         if freshness == "stale":
             require_correction(root, "stale-evidence", why + ": " + digest(snapshot(root, goal)))
         before = snapshot(root, goal)
+        evaluated_contract = digest(contract(goal, root))
     except ContractError as exc:
         return [{"id": "contract", "check": "acceptance contract preserved", "state": "unmet", "why": str(exc)}]
     results, cache = [], {}
@@ -231,18 +249,27 @@ def evaluate(goal: dict, root: Path, timeout: int) -> list[dict]:
                         "why": "every run check is blocked" if state == "blocked"
                         else "no passing run check: manual items alone cannot prove the goal"})
     after = snapshot(root, goal)
-    if before != after:
-        results.append({"id": "concurrent-change", "check": "stable validation inputs", "state": "unmet",
-                        "why": "source or declared inputs changed while checks ran"})
     if any(r["state"] == "unmet" for r in results):
         require_correction(root, "failed-acceptance", summary(results) + ": " + digest(after))
-    correction = reflection_check(goal, root, timeout, run_target)
+    try:
+        correction = reflection_check(goal, root, timeout, run_target)
+    except ContractError as exc:
+        correction = "corrective inputs unavailable: " + str(exc)
     if correction:
         # External blockers may stop incomplete through the existing bounded hook.
         blocked = all(r["state"] in ("met", "blocked") for r in results) and any(r["state"] == "blocked" for r in results)
         results.append({"id": "correction", "check": "corrective intervention verified",
                         "state": "blocked" if blocked else "unmet", "why": correction})
-    return results
+    try:
+        stable = snapshot(root, goal) == before and digest(contract(goal, root)) == evaluated_contract
+    except ContractError:
+        stable = False
+    if not stable:
+        if not any(r['id'] == 'concurrent-change' for r in results):
+            results.append({'id': 'concurrent-change', 'check': 'stable validation inputs',
+                            'state': 'unmet', 'why': 'inputs changed during acceptance or corrective validation'})
+        require_correction(root, 'concurrent-change', digest(before))
+    return Evaluation(results, evaluated_contract, before)
 
 
 def write_gap(root: Path, goal: dict, results: list[dict], ended: bool = False,

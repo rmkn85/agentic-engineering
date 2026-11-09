@@ -112,17 +112,97 @@ class GoalControls(unittest.TestCase):
 
     def test_self_label_and_prose_cannot_resolve_failed_intervention(self):
         control.require_correction(self.root, 'repetition', 'same failed approach three times')
+        self.goal['acceptance'][0]['run'] = 'bad'
         self.correction('bad')
         results = self.run_gate()
         self.assertTrue(any(r['id'] == 'correction' for r in results))
         self.assertEqual(control.read(self.root / '.agent/reflection-receipt.json')['status'], 'refuted')
         self.assertFalse(control.read(self.root / '.agent/goal-status.json')['met'])
-        self.correction()
+        (self.root / 'Makefile').write_text((self.root / 'Makefile').read_text().replace('@false', '@test -f source'))
+        self.correction('bad')
         self.assertTrue(all(r['state'] == 'met' for r in self.run_gate()))
+        history = control.read(self.root / '.agent/reflection-receipt.json')['history']
+        self.assertEqual(history[0]['status'], 'refuted')
         control.require_correction(self.root, 'repetition', 'same failed approach three times')
-        self.assertTrue(control.read(self.root / '.agent/reflection-state.json')['resolved'])
+        state = control.read(self.root / '.agent/reflection-state.json')
+        self.assertFalse(state['resolved'])  # same words with changed observations reopen
+        count = len(state['obligations'])
+        control.require_correction(self.root, 'repetition', 'same failed approach three times')
+        self.assertEqual(len(control.read(self.root / '.agent/reflection-state.json')['obligations']), count)
 
     def test_legacy_receipt_unverified_without_running_anything(self):
         control.write(self.root / '.agent/goal-status.json', {'goal': self.goal['goal'], 'met': True})
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'unverified')
+        self.assertEqual(work_audit.goal_open(self.root), self.goal['goal'])
+
+    def test_publication_cannot_bind_old_acceptance_to_new_source(self):
+        results = gate.evaluate(self.goal, self.root, 5)
+        self.assertTrue(all(r['state'] == 'met' for r in results))
+        (self.root / 'source').write_text('changed after checks')
+        gate.record_status(self.root, self.goal, results)
+        receipt = control.read(self.root / '.agent/goal-status.json')
+        self.assertFalse(receipt['met'])
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'stale')
+        self.assertTrue(any(r['id'] == 'publication-change' for r in results))
+
+    def test_intervention_input_change_invalidates_earlier_acceptance(self):
+        script = self.root / 'check.py'
+        script.write_text("from pathlib import Path\np=Path('.agent/count')\n"
+                          "n=int(p.read_text()) if p.exists() else 0\np.write_text(str(n+1))\n"
+                          "if n: Path('source').write_text('changed during reflection')\n")
+        (self.root / 'Makefile').write_text('ok:\n\t@' + sys.executable + ' check.py\n')
+        control.require_correction(self.root, 'repetition', 'repeated check failed earlier')
+        self.correction()
+        results = self.run_gate()
+        self.assertTrue(any(r['id'] == 'concurrent-change' for r in results))
+        self.assertFalse(control.read(self.root / '.agent/goal-status.json')['met'])
+        self.assertEqual(control.read(self.root / '.agent/reflection-receipt.json')['status'], 'inconclusive')
+
+    def test_unrelated_passing_target_cannot_resolve_obligation(self):
+        control.require_correction(self.root, 'repetition', 'the repeated approach failed')
+        self.correction('change')
+        results = self.run_gate()
+        self.assertTrue(any(r['id'] == 'correction' and 'current acceptance target' in r['why'] for r in results))
+        self.assertFalse(control.read(self.root / '.agent/reflection-state.json')['resolved'])
+
+    def test_resolution_reopens_after_observation_or_contract_change(self):
+        control.require_correction(self.root, 'repetition', 'the repeated approach failed')
+        self.correction()
+        self.run_gate()
+        self.assertTrue(control.read(self.root / '.agent/reflection-state.json')['resolved'])
+        (self.root / 'source').write_text('new observation')
+        self.goal.pop('reflection')
+        self.assertIsNotNone(control.reflection_check(self.goal, self.root, 5, gate.run_target))
+        self.assertFalse(control.read(self.root / '.agent/reflection-state.json')['resolved'])
+        self.correction()
+        self.run_gate()
+        self.goal['goal'] = 'New authorized outcome'
+        self.goal.pop('reflection')
+        self.assertIsNotNone(control.reflection_check(self.goal, self.root, 5, gate.run_target))
+
+    def test_revision_without_old_success_receipt_still_needs_impact_check(self):
+        old = control.pin_contract(self.root, self.goal)
+        self.goal['acceptance'][0]['check'] = 'new acceptance authorized'
+        self.goal['supersedes'] = {'digest': old, 'reason': 'the owner approved revision', 'authority': 'requirements'}
+        self.save()
+        control.pin_contract(self.root, self.goal)
+        self.assertFalse((self.root / '.agent/goal-status.json').exists())
+        state = control.read(self.root / '.agent/reflection-state.json')
+        self.assertTrue(any(o['trigger'] == 'acceptance-revision' for o in state.get('obligations', [])))
+        self.assertTrue(any(r['id'] == 'correction' for r in self.run_gate()))
+
+    def test_missing_declared_input_at_publication_is_unverified(self):
+        self.goal['inputs'] = ['source']
+        self.save()
+        results = gate.evaluate(self.goal, self.root, 5)
+        (self.root / 'source').unlink()
+        gate.record_status(self.root, self.goal, results)
+        self.assertFalse(control.read(self.root / '.agent/goal-status.json')['met'])
+        self.assertTrue(any(r['id'] == 'publication-change' for r in results))
+
+    def test_new_obligation_invalidates_prior_success_without_rerunning(self):
+        self.run_gate()
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'verified')
+        control.require_correction(self.root, 'repetition', 'new repeated failure observed')
         self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'unverified')
         self.assertEqual(work_audit.goal_open(self.root), self.goal['goal'])
