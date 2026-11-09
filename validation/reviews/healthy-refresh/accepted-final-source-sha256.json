@@ -1,0 +1,27 @@
+{
+  "commit": "6d9287fa50c7df97c307cc243c4e0a0057380cde",
+  "core_review": "99aaa0f2337a350a784399310d3691da76c4d8c9",
+  "core_integrated_as": "deea297",
+  "working_bytes_match_commit": true,
+  "uncommitted_public_counterfactual": "validation/trials/recurrence/native-v2/healthy-counterfactual.json",
+  "files": {
+    "docs/execution/executable-reflection.md": "417ca8a0c1f426362fc36479ffd3e81958ba5142a7c4701c75b76b4ebd6d2a59",
+    "tools/finish_check.py": "93830c25f97d5c78fcd0d8c61c11f40a4ae635360e2f859557e150f2066b84d7",
+    "tools/goal_control.py": "368307187ecfdcdaf269d196e0c49f25f81ad61d7b639c8a8ad4a04f103620fd",
+    "tools/tests/test_goal_control.py": "fa55985cfa75ea3b26d0fe50ecf30ab92833c4880f8973632a34f2fcc5a9db11",
+    "tools/tests/test_native_trial.py": "7c9af81bb5c82da04d35430ad46698929906909c09c4994ffa42f72086dc5799",
+    "validation/findings.jsonl": "93fbb3fa06104ad3eb20d60fea0486a4176e7aac8f2e105aae73c2e274540b62",
+    "validation/mutations/goal-healthy-stale-refresh.json": "d7a8c1fd865a8d9e5ca2c10733a7221ae4d9f54053e2623ed27ad179e68cb1ad",
+    "validation/mutations/goal-legacy-needs-verification.json": "b21452f26f22d7307eda00abf99b5c25f5fd41ec3f0651891ee21d8f06fc0101",
+    "validation/mutations/goal-publication-correction.json": "f4f7922b2f68ab35b8ad8c9c0b30633aec8d70c19363940a7d7a750a6b33b8b4",
+    "validation/mutations/goal-refresh-unchanged-noop.json": "ac66751d8fdaf340a16285933239723c7d01efd358d78e9d3bb47921e278353c",
+    "validation/mutations/goal-stale-refresh-all-checks.json": "0d0cf0abc569b6610884c19ab9d7cee1cb4e3aef40dd5596e6a48791d970682f",
+    "validation/mutations/goal-stale-refresh-only.json": "7544cf826cd5397520e9612bc00a8c11f839faf4bed16315e7d1026f9f7211a1",
+    "validation/mutations/goal-stale-refresh-retains-old-identity.json": "bb2a36065c0a445bcaf0097cce2b945b20df48ec856616efb199bb057dea4b22",
+    "validation/mutations/goal-stale-refresh-stability.json": "ee392c43dd71308f1075e218676c868cc0a03c40387a32d798342cf1980bc9e4",
+    "validation/mutations/recurrence-healthy-legacy-form.json": "1401c57e3fc49722c7641e980462c962d9d20fe1bc0b5e6149fbd0463711658e",
+    "validation/mutations/recurrence-healthy-no-authored-form.json": "7dd0031c83a4d8bcfca49aee2aa046bdebe70b3eccde43edba2d3d3906fff073",
+    "validation/trials/recurrence/fixture.py": "df8db4424cb8a4c794058db4dea354f63aa0d9266abf679d624d9f20661b5194",
+    "validation/trials/recurrence/native-v2/healthy-counterfactual.json": "033bb1b62818ddf22dfdfcc38bac40794229fef75635314cb2e989c2355947f1"
+  }
+}
