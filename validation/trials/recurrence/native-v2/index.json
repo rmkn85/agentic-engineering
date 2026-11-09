@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "baseline": "4cdeefd11dd415512d691f4bf5a6197132141123",
+  "candidate": "8093943da71bf193672bfa3150602614aca7c184",
+  "rows": [
+    {
+      "pair": "p01-baseline",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p01-baseline.json",
+      "raw_receipt_sha256": "dce7717522964e4800996d1fdcd874f2b17a7f2f48c09388a560f315386b371d"
+    },
+    {
+      "pair": "p01-candidate",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p01-candidate.json",
+      "raw_receipt_sha256": "318c40b86d302618bc975893a4ad1b65b0bd71141cd4a544e26733e9291a2966"
+    },
+    {
+      "pair": "p02-baseline",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p02-baseline.json",
+      "raw_receipt_sha256": "93ff7e5cf1b8f56c803702fed6295d69d7089e44a4ee81067bdf8fb89f9bc00e"
+    },
+    {
+      "pair": "p02-candidate",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p02-candidate.json",
+      "raw_receipt_sha256": "c84adebe963b9cbbbd33cabee563c511f585038e6e65c35c0bf51be456ca5a5c"
+    },
+    {
+      "pair": "p03-baseline",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p03-baseline.json",
+      "raw_receipt_sha256": "abe5af52e7613f141b89ca04567e3e256b579999b8551f24149f2e3766fc60b7"
+    },
+    {
+      "pair": "p03-candidate",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p03-candidate.json",
+      "raw_receipt_sha256": "0f5d56006d11d655ee42cf8b540c0017ee86ee3dac331c796a49e0629d908012"
+    },
+    {
+      "pair": "p04-baseline",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p04-baseline.json",
+      "raw_receipt_sha256": "ce92069e0b912e39074561d15b08e80f022c21faaf40ccc5b779f38380231ffd"
+    },
+    {
+      "pair": "p04-candidate",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p04-candidate.json",
+      "raw_receipt_sha256": "6b6f4cb8893a7c8cab40ea8e93ab0a6af9303836d0cc075b717d0c02eeff9645"
+    }
+  ],
+  "limits": [
+    "Four matched task pairs are bounded behavioral observations.",
+    "Effective model settings and native hook events remain unknown where the exec event stream omits them.",
+    "Usage may omit child-session attribution; wall time includes shared-host effects and supports no productivity claim.",
+    "Original failed/invalid pair is retained separately; source corrections preceded this fresh freeze."
+  ],
+  "behavioral_acceptance": {
+    "accepted": false,
+    "failed_criterion": "healthy small change completes without unnecessary authored reflection",
+    "evidence": "healthy-overhead.json",
+    "scope": "Original frozen evaluator reported product and integrity success in all8 runs but omitted this behavioral criterion. Original scores are preserved, not revised."
+  }
+}

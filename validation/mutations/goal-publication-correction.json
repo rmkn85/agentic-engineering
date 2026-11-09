@@ -1,0 +1,10 @@
+{
+  "id": "goal-publication-correction",
+  "rule": "Observed publication concurrency remains a substantive correction obligation",
+  "file": "tools/finish_check.py",
+  "find": "        require_correction(root, 'concurrent-change', 'evaluated identity missing or changed before publication')",
+  "replace": "        pass  # forget publication discrepancy",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_publication_cannot_bind_old_acceptance_to_new_source"
+  ]
+}

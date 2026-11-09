@@ -1,0 +1,9 @@
+{
+  "source_review": "8093943da71bf193672bfa3150602614aca7c184",
+  "disposition": "publication fixes accepted; no new outcome claims reviewed",
+  "reviewed_files": {
+    "validation/trials/recurrence/first-native-pair/verdict.md": "4c650ec5c3a10e3805558793d0f7742c6c3f4118ad0e4cdc3db7c8ad9fbd7283",
+    "validation/trials/recurrence/first-native-pair/supplemental-native-and-truthfulness.md": "644585ca2e2fe212cd37814a09446d834efd8faefcb6b722ab136a6c72d17b2f",
+    "validation/trials/recurrence/interpretation.md": "55f99a6157910805ff342cd435f7ff0ab0f3c322b5b8247c71edcfcc56352d60"
+  }
+}

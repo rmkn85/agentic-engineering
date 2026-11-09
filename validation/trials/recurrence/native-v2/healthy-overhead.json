@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "source": "8093943da71bf193672bfa3150602614aca7c184",
+  "pair": "p04-candidate",
+  "raw_receipt_sha256": "6b6f4cb8893a7c8cab40ea8e93ab0a6af9303836d0cc075b717d0c02eeff9645",
+  "original_product_passed": true,
+  "original_integrity": true,
+  "healthy_no_authored_reflection": false,
+  "observation": "Initial finish-check passed. Requested product changes and all4 tests then passed. Next finish-check rejected completion solely because source-change freshness required an authored five-field reflection intervention.",
+  "independent_reproduction": "A valid utility and meaningful passing test were verified, then only a harmless source comment changed. The test still passed but finish-check required the same form.",
+  "independent_reproduction_sha256": "15f0deeccea8aa101dd0a39d20e04e0c9d89e3a09ab22f43f18be52f50d4dd04",
+  "disposition": "Demonstrated control and scoring gap; preserve this attempt. Repair stale-only refresh behavior and add healthy-overhead assertion before new source freeze."
+}

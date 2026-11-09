@@ -1,0 +1,10 @@
+{
+  "id": "goal-healthy-stale-refresh",
+  "file": "tools/finish_check.py",
+  "find": "        refresh_stale_evidence(root, goal, results, before, evaluated_contract)",
+  "replace": "        pass  # disabled stale-only verification resolution",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_healthy_source_change_refreshes_without_authored_intervention"
+  ],
+  "rule": "Valid changed inputs can be freshly verified without an authored intervention"
+}

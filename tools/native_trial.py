@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Native, fresh-session trials. Private execution material stays outside the corpus.
 
-Trial launches preserve inherited sandbox, trust, rules and user configuration.
-Preflight also tests a stricter read-only sandbox with managed requirements;
+Trial launches preserve trust, rules and user configuration. Native mode inherits
+sandbox policy; explicit outer mode verifies existing containment before launch.
+Native preflight tests a stricter read-only sandbox with managed requirements;
 it cannot grant hook trust or prove workspace writes or adherence.
 """
 from __future__ import annotations
@@ -18,6 +19,8 @@ import subprocess
 import sys
 import time
 import uuid
+
+import native_boundary
 
 MODEL = "gpt-6.1-sol"
 EFFORT = "medium"
@@ -80,8 +83,9 @@ def read_only_sandbox_probe(repository, codex):
         return dict(probe, reason=type(exc).__name__)
 
 
-def preflight(repository, codex='codex', trust_receipt=None):
+def preflight(repository, codex='codex', trust_receipt=None, boundary='native'):
     repository = Path(repository).resolve()
+    boundary_observation = native_boundary.observe(boundary)
     version = command([codex, '--version'])
     help_result = command([codex, 'exec', '--help'])
     login = command([codex, 'login', 'status'])
@@ -112,7 +116,10 @@ def preflight(repository, codex='codex', trust_receipt=None):
             'discovered_files': {p.name if p.parent == home else str(p.relative_to(repository)): digest(p) for p in discovery},
             'hook_config_present': hooks.exists(), 'native_hook_trust': 'reported_confirmed' if trust else 'unknown',
             'hook_invocation_observed': False,
-            'read_only_sandbox_probe': read_only_sandbox_probe(repository, codex),
+            'execution_boundary': boundary_observation,
+            'read_only_sandbox_probe': (read_only_sandbox_probe(repository, codex) if boundary == 'native' else
+                {'status': 'not_applicable', 'reason': 'explicit_inherited_outer_boundary',
+                 'workspace_write_execution_proven': False}),
             'trust_receipt_sha256': digest(trust_receipt) if trust else None,
             'limitations': ['Cached availability is not a successful model request.',
                             'Discovery and trust receipts do not prove hooks executed.',
@@ -139,7 +146,8 @@ def exclude_trial_assets(corpus, source, builder, evaluator):
             'excluded_paths': sorted(excluded_paths), 'excluded_files': removed}
 
 
-def prepare(source, ref, builder, scenario, repository, audit, arm, pair, evaluator, baseline_ref, candidate_ref):
+def prepare(source, ref, builder, scenario, repository, audit, arm, pair, evaluator, baseline_ref, candidate_ref, boundary='native'):
+    boundary_observation = native_boundary.observe(boundary)
     source, repository, audit = Path(source).resolve(), Path(repository).resolve(), Path(audit).resolve()
     builder, evaluator = Path(builder).resolve(), Path(evaluator).resolve()
     if repository.exists() or audit.exists():
@@ -157,6 +165,12 @@ def prepare(source, ref, builder, scenario, repository, audit, arm, pair, evalua
     if arm not in identities or identities[arm] != commit.stdout.strip():
         raise ValueError('arm does not match frozen source identity')
     audit.mkdir(parents=True)
+    if boundary == 'outer-codex-sandbox' and boundary_observation.get('status') != 'verified':
+        observation_path = audit / 'prepare-boundary.json'
+        write(observation_path, boundary_observation)
+        append(audit, {'phase': 'prepare', 'status': 'execution_boundary_failed',
+                       'boundary_file': observation_path.name, 'boundary_sha256': digest(observation_path)})
+        raise ValueError('outer execution boundary unavailable; see retained prepare observation')
     corpus = audit / 'corpus'; corpus.mkdir()
     archive = subprocess.Popen(['git', 'archive', commit.stdout.strip()], cwd=source, stdout=subprocess.PIPE)
     extracted = subprocess.run(['tar', '-x', '-C', str(corpus)], stdin=archive.stdout, capture_output=True)
@@ -175,13 +189,15 @@ def prepare(source, ref, builder, scenario, repository, audit, arm, pair, evalua
     # These are immutable experimental controls, independent of product files.
     protected = {p: h for p, h in snapshot.items() if p in ('REQUEST.md', 'user-request.txt') or
                  p.startswith('.codex/') or p.startswith('.agentic-engineering/')}
-    spec = {'schema': 1, 'pair': pair, 'arm': arm, 'scenario': scenario,
+    spec = {'schema': 1, 'execution_boundary': boundary_observation, 'pair': pair, 'arm': arm, 'scenario': scenario,
             'source_commit': commit.stdout.strip(), 'source_commits': identities, 'model': MODEL, 'effort': EFFORT,
             'builder_sha256': digest(builder), 'evaluator_sha256': digest(evaluator), 'instruction_export': export,
             'prompt_sha256': digest(audit / 'prompt.txt'), 'fixture': snapshot, 'initial_state': workspace_state(repository), 'protected': protected,
             'host_controls': host_controls(),
             'conditions': {'fresh_session': True, 'instructions': 'native AGENTS discovery',
-                           'host_configuration': 'inherited unchanged', 'permission_policy': 'inherited unchanged', 'ephemeral': True}}
+                           'host_configuration': 'inherited unchanged', 'permission_policy': ('inherited unchanged' if boundary == 'native' else 'verified outer enforcement preserved'),
+                           'inner_cli_sandbox': ('inherited' if boundary == 'native' else 'danger-full-access'),
+                           'approval_policy_and_rules': 'inherited unchanged', 'ephemeral': True}}
     write(audit / 'spec.json', spec)
     write(audit / 'private.json', {'repository': str(repository), 'evaluator': str(evaluator), 'builder': str(builder)})
     write(audit / 'seal.json', {'spec_sha256': digest(audit / 'spec.json')})
@@ -209,7 +225,9 @@ def run(audit, codex='codex', trust_receipt=None):
     if workspace_state(repository) != spec['initial_state']:
         append(audit, {'phase': 'run', 'status': 'initial_state_changed'})
         raise ValueError('frozen initial workspace changed; prepare a new fixture')
-    check = preflight(repository, codex, trust_receipt)
+    frozen_boundary = spec.get('execution_boundary', {'mode': 'native'})
+    boundary = frozen_boundary['mode']
+    check = preflight(repository, codex, trust_receipt, boundary)
     attempt_id = str(uuid.uuid4())
     preflight_path = audit / (attempt_id + '.preflight.json')
     with preflight_path.open('x') as out:
@@ -221,6 +239,8 @@ def run(audit, codex='codex', trust_receipt=None):
                'usage': None, 'wall_seconds': None, 'selected_actions': [], 'hook_calls': None, 'hook_adapter_events': None,
                'runtime_settings': {'model': None, 'effort': None}, 'host_controls_match': check.get('host_controls') == spec['host_controls']}
     append(audit, attempt)
+    if boundary == 'outer-codex-sandbox' and not native_boundary.matches(frozen_boundary, check.get('execution_boundary', {})):
+        attempt.update(status='execution_boundary_failed'); append(audit, attempt); return attempt
     if not attempt['host_controls_match']:
         attempt.update(status='host_controls_changed'); append(audit, attempt); return attempt
     if check.get('read_only_sandbox_probe', {}).get('status') == 'failed':
@@ -231,8 +251,11 @@ def run(audit, codex='codex', trust_receipt=None):
         attempt.update(status='native_hook_trust_required'); append(audit, attempt); return attempt
     args = [codex, 'exec', '--json', '--ephemeral', '-C', str(repository), '-m', MODEL,
             '-c', 'model_reasoning_effort="medium"', '-']
+    if boundary == 'outer-codex-sandbox':
+        args[3:3] = ['--sandbox', 'danger-full-access']
     with (audit / 'launch.json').open('x') as launch:
-        json.dump({'attempt': attempt['attempt'], 'initial_state_sha256': state_digest(spec['initial_state'])}, launch)
+        json.dump({'attempt': attempt['attempt'], 'initial_state_sha256': state_digest(spec['initial_state']),
+                   'execution_boundary': boundary, 'argv': args}, launch)
     started = time.monotonic()
     final_response = None
     try:
@@ -332,19 +355,30 @@ def score(audit):
     return receipt
 
 
-def smoke(repository, audit, codex='codex'):
+def smoke(repository, audit, codex='codex', boundary='native'):
     repository, audit = Path(repository).resolve(), Path(audit).resolve()
     if audit.exists(): raise ValueError('smoke audit must be fresh')
     if audit == repository or repository in audit.parents:
         raise ValueError('smoke audit must be outside the worker repository')
     audit.mkdir(parents=True)
-    observed = preflight(repository, codex)
+    observed = preflight(repository, codex, boundary=boundary)
     write(audit / 'preflight.json', observed)
+    if boundary == 'outer-codex-sandbox' and observed.get('execution_boundary', {}).get('status') != 'verified':
+        row = {'phase': 'smoke', 'status': 'execution_boundary_failed',
+               'preflight_file': 'preflight.json', 'preflight_sha256': digest(audit / 'preflight.json'),
+               'model_request_feasible': False, 'model_tool_execution_proven': False,
+               'workspace_write_execution_proven': False, 'hook_adoption_proven': False}
+        append(audit, row); write(audit / 'smoke-receipt.json', row)
+        return row
     args = [codex, 'exec', '--json', '--ephemeral', '-C', str(repository), '-m', MODEL,
             '-c', 'model_reasoning_effort="medium"', '-s', 'read-only', '-']
+    if boundary == 'outer-codex-sandbox':
+        args[args.index('-s'):args.index('-s') + 2] = ['--sandbox', 'danger-full-access']
     prompt = 'Reply NATIVE_PREFLIGHT_OK. Do not edit files or run tools.'
     write(audit / 'invocation.json', {'argv': args, 'prompt': prompt, 'model': MODEL, 'effort': EFFORT})
     row = {'phase': 'smoke', 'status': 'started', 'model': MODEL, 'effort': EFFORT,
+           'execution_boundary': boundary, 'preflight_file': 'preflight.json',
+           'preflight_sha256': digest(audit / 'preflight.json'),
            'configured_hooks': observed['hook_config_present'], 'hook_trust': observed['native_hook_trust'],
            'hook_adoption_proven': False, 'usage': None, 'runtime_settings': {'model': None, 'effort': None}}
     append(audit, row)
@@ -384,6 +418,8 @@ def main(argv=None):
     for name in ('source', 'ref', 'builder', 'scenario', 'repository', 'audit', 'arm', 'pair', 'evaluator', 'baseline-ref', 'candidate-ref'): p.add_argument('--' + name, required=True)
     p = sub.add_parser('run'); p.add_argument('--audit', required=True); p.add_argument('--codex', default='codex'); p.add_argument('--trust-receipt')
     p = sub.add_parser('score'); p.add_argument('--audit', required=True)
+    for name in ('prepare', 'preflight', 'smoke'):
+        sub.choices[name].add_argument('--boundary', choices=native_boundary.MODES, default='native')
     args = vars(parser.parse_args(argv)); action = args.pop('action')
     try:
         print(json.dumps(globals()[action](**args), sort_keys=True)); return 0

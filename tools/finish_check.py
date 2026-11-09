@@ -34,9 +34,11 @@ Rules:
   changed>", "authority": "<file or URL authorizing the revision>"}. History is
   retained in .agent/goal-contract.json. Progress and evidence are mutable.
 - Success receipts bind current source, validator and declared inputs. Failed
-  acceptance, stale evidence and explicit triggers require reflection.interventions
+  acceptance and substantive triggers require reflection.interventions
   with observation, evidence, hypothesis, expected_effect and a fixed Make run
   target. The tool executes it and derives the result; a status label proves nothing.
+  Stale evidence alone can be refreshed by explicit full acceptance verification
+  on stable current inputs, without an authored intervention. Inspect/audit never refresh.
 
 Scope: the gate stops a cooperative agent from finishing by mistake: no
 goal, a vacuous check, a silently narrowed goal, or a claim without a pointer.
@@ -65,7 +67,7 @@ import sys
 from pathlib import Path
 
 from goal_control import (ContractError, contract, digest, snapshot, pin_contract, receipt_state,
-                          require_correction, reflection_check, retained_goal, write)
+                          require_correction, reflection_check, refresh_stale_evidence, retained_goal, write)
 
 TARGET = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 STATUSES = {"pass", "blocked", "pending", "fail"}
@@ -193,6 +195,7 @@ def record_status(root: Path, goal: dict, results: list[dict]) -> None:
         current_contract, current_snapshot = None, None
     bound = isinstance(results, Evaluation) and results.contract_digest == current_contract and results.snapshot == current_snapshot
     if not bound and all(r['state'] == 'met' for r in results):
+        require_correction(root, 'concurrent-change', 'evaluated identity missing or changed before publication')
         results.append({'id': 'publication-change', 'check': 'evaluated inputs still current',
                         'state': 'unmet', 'why': 'inputs changed after evaluation or evaluation identity missing'})
     met = bound and all(r["state"] == "met" for r in results)
@@ -258,6 +261,7 @@ def evaluate(goal: dict, root: Path, timeout: int) -> list[dict]:
     if any(r["state"] == "unmet" for r in results):
         require_correction(root, "failed-acceptance", summary(results) + ": " + digest(after))
     try:
+        refresh_stale_evidence(root, goal, results, before, evaluated_contract)
         correction = reflection_check(goal, root, timeout, run_target)
     except ContractError as exc:
         correction = "corrective inputs unavailable: " + str(exc)

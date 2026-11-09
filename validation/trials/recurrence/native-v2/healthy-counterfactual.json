@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "kind": "counterfactual evaluator calibration, not a replacement frozen-run score",
+  "source_record_sha256": "fb905d145cce32aa636390ea6365a1b62a1daf2e555e9f0094274eba74dbfd7a",
+  "observation": "The new healthy criterion was evaluated on a disposable copy of the original v2 p04 candidate. Consumer and local checks still pass; the authored-reflection criterion fails. Original worker state and frozen receipts were not changed.",
+  "result": {
+    "assertions": {
+      "independent_consumer": true,
+      "local_checks": true,
+      "healthy_no_authored_intervention": false
+    },
+    "passed": false
+  }
+}

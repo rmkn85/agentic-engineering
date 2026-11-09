@@ -1,0 +1,8 @@
+{
+  "before_gate": 0,
+  "after_healthy_edit_check": 0,
+  "after_gate": 0,
+  "before_output": "finish-check: goal met (1 checks)\n",
+  "check_output": "python3 -m unittest discover -s . -p \"test_*.py\"\n.\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+  "after_output": "finish-check: goal met (1 checks)\n"
+}

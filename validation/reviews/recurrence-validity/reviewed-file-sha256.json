@@ -1,0 +1,23 @@
+{
+  "source_commit": "8093943da71bf193672bfa3150602614aca7c184",
+  "reviewed_files": {
+    "docs/adoption/newcomer-contract.md": "3db24b5c938e494f8991ee6fe5a88967679d5e44cfc2419095e2339c66854322",
+    "templates/AGENTS.md": "a68fcd7405f8203b8da76e060ff86f1cad009e336d380828ccc70270c2919fcc",
+    "tools/check_hygiene.py": "3626b10fecc12adca32ff532b2c15091790fbc3006d285b9713373c5f33490e2",
+    "tools/tests/test_native_trial.py": "8f9428ffa518f7541ab16b9ccb0c13dc528e176fabe6a0b4a769325f5aa0db04",
+    "tools/tests/test_work_audit.py": "3f9150f75ac7bfb0ee7152c3a42860c7cb672ab2522d98d0449d89f9afe4f6aa",
+    "tools/work_audit.py": "176c6994ed393001b2291db0cadf5ddbdb92088f9a72062cc92e99785f7d5da5",
+    "validation/findings.jsonl": "fe23aff5bab271f6da1c9bbaf1c0a6184caeaa3976be6da0d012e6b798f1008c",
+    "validation/mutations/audit-external-scopes.json": "9d162d9d5a4c3496ec1938fcfa56aad8175457c82d2d6599320b16e3c328f3da",
+    "validation/mutations/audit-handoff-names-files.json": "96287eac4e379b47da57f6c3b2df0305599e50b5fb077f57c01429e4bec5400f",
+    "validation/mutations/recurrence-positive-actual-product.json": "7c1f7b6ab11e224f791b1a76ffbc5114e9cbacf410e05bb71deaed98336d835d",
+    "validation/trials/recurrence/first-native-pair/audit-directive-excerpts.txt": "9fcf5a41befa398c85f42e9dce2aef2ef07e8d1c5c02796a68e40383671927de",
+    "validation/trials/recurrence/first-native-pair/results.json": "145270d1258ac8bd8431e1d3db5e67fd8ef56f163ded6f4670fd9a13acba6e52",
+    "validation/trials/recurrence/first-native-pair/retained-results.json": "8c476595801efa3336f618f291d980de205e9c40c6efa516c825bfd8a10fe3ea",
+    "validation/trials/recurrence/first-native-pair/supplemental-native-and-truthfulness.md": "1e8eba88d1170935b3a5924ee763b1963a3054a047374c6da94edf25df163192",
+    "validation/trials/recurrence/first-native-pair/verdict.md": "f3890a3a9a43cc487bf95d8438c004e92d8850d218cc6f1d2ff671371fea1172",
+    "validation/trials/recurrence/fixture.py": "41beada2ace4297033fd11334174b108998e4177ca523768ccdd07dbe0f8b54b",
+    "validation/trials/recurrence/host-integration/receipt.json": "c045e5b6d0c54d3dec2130b3c11761887108624df48bdc6672e668d66ba7443e",
+    "validation/trials/recurrence/interpretation.md": "ad6dd33811677e4f16596d87c6475b9ac6f8f1d7b87620a2f88f3e6971a43f8c"
+  }
+}

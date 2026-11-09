@@ -1,0 +1,10 @@
+{
+  "id": "goal-refresh-unchanged-noop",
+  "rule": "Unchanged explicit acceptance does not invent or append a fresh discrepancy record",
+  "file": "tools/goal_control.py",
+  "find": "    if state.get('resolution_identity') == current and state.get('resolved'):\n        return True",
+  "replace": "    pass  # manufacture another freshness discrepancy",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_healthy_source_change_refreshes_without_authored_intervention"
+  ]
+}

@@ -38,7 +38,10 @@ A commit counts as product when it changes any product path. Records are
 docs, handoffs, evidence and notes; process is CI, build files, agent
 configuration and instruction files; tests are tests and fixtures. Override
 the product paths in .agent/audit.json: {"product": ["tools/*.py"]}.
-Unmatched paths are product.
+Unmatched paths are product. Declare dependency directories with
+{"external_scopes": ["shared/methodology", "vendor/library"]}; paths are relative
+to the audit root. These trees are excluded from project rewrite findings.
+Audit a dependency with its own --root to maintain that dependency explicitly.
 
 Scope: a heuristic over history and text. It points at likely waste and
 unfinished work; it does not judge whether a change was right.
@@ -116,6 +119,18 @@ def config(root: Path) -> dict:
         return data if isinstance(data, dict) else {}
     except (OSError, ValueError):
         return {}
+
+
+def project_files(files: list[str], cfg: dict) -> list[str]:
+    """Owner-declared dependency trees are outside this root's rewrite authority."""
+    scopes = cfg.get("external_scopes", [])
+    if not isinstance(scopes, list):
+        raise ValueError("external_scopes must be a list of relative directory paths")
+    for scope in scopes:
+        if (not isinstance(scope, str) or not scope or Path(scope).is_absolute()
+                or any(part in ("", ".", "..") for part in scope.split("/"))):
+            raise ValueError("external_scopes must contain relative directory paths without dot segments")
+    return [path for path in files if not any(path == scope or path.startswith(scope + "/") for scope in scopes)]
 
 
 def kind(path: str, product: list[str]) -> str:
@@ -554,11 +569,11 @@ def goal_open(root: Path) -> str | None:
     return None if state == "verified" else goal
 
 
-def hygiene(root: Path) -> list[str]:
+def hygiene(root: Path, files: list[str]) -> list[str]:
     try:
         sys.path.insert(0, str(Path(__file__).resolve().parent))
         from check_hygiene import findings  # same directory, optional
-        return findings(root, None)
+        return findings(root, None, files=files)
     except Exception:  # hygiene is advisory here; a failure must not hide the rest
         return []
 
@@ -641,11 +656,11 @@ def knowledge(ctx: dict) -> list[dict]:
     count_handoff, handoff_words = handoffs(ctx["root"], ctx["files"])
     if count_handoff > 1 or handoff_words > HANDOFF_WORDS:
         keep, *others = handoff_files(ctx["files"])
-        extra = f" and delete {', '.join(others[:8])}{' ...' if len(others) > 8 else ''}" if others else ""
+        extra = f"; review overlapping records in {', '.join(others[:8])}{' ...' if len(others) > 8 else ''}" if others else ""
         found.append(finding("handoff", f"{count_handoff} handoff/continuation files, {handoff_words} words",
                              f"Rewrite {keep} as the one current handoff under {HANDOFF_WORDS} words (goal, last "
-                             f"proven state, next action){extra}; history is in Git. Replace that file at each "
-                             "checkpoint instead of adding a new one."))
+                             f"proven state, next action){extra}. Preserve local authority and unfinished work; "
+                             "consolidate or remove another record only after verifying its ownership and purpose."))
     broken = [b for b in broken_references(ctx["root"], ctx["files"])
               if not ignored(ctx["rules"], "stale-references", b.split(" -> ")[0])]
     if broken:
@@ -703,7 +718,7 @@ def flow(ctx: dict) -> list[dict]:
                              "Move generated or binary artefacts out of Git (release assets, LFS or a data store) "
                              "and ignore them."))
     found += [finding("hygiene", line, "Clean it up: delete merged branches and finished worktrees through Git; "
-                                       "keep one current plan or handoff.") for line in hygiene(root)]
+                                       "keep one current plan or handoff.") for line in hygiene(root, ctx["files"])]
     return found
 
 
@@ -780,7 +795,7 @@ def audit(root: Path, count: int) -> dict:
     cfg = config(root)
     product = [p for p in cfg.get("product", []) if isinstance(p, str)]
     rules = ignore_rules(cfg)
-    files = tracked(root)
+    files = project_files(tracked(root), cfg)
     marks = [m for m in unfinished(root, files, product)
              if not ignored(rules, "unfinished" if m[3] == "stub" else "todo-notes", m[0])]
     ctx = {"root": root, "cfg": cfg, "product": product, "count": count, "files": files, "rules": rules,

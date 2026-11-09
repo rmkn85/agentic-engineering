@@ -69,12 +69,140 @@ class GoalControls(unittest.TestCase):
         self.assertIsNone(work_audit.goal_open(self.root))
         self.goal['acceptance'][0]['status'] = 'pass'
         self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'verified')
-        (self.root / 'source').write_text('broken')
+        (self.root / 'source').unlink()
         self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'stale')
         self.assertEqual(work_audit.goal_open(self.root), self.goal['goal'])
         self.assertTrue(any(r['id'] == 'correction' for r in self.run_gate()))
+        (self.root / 'source').write_text('repaired')
+        self.assertTrue(any(r['id'] == 'correction' for r in self.run_gate()))
         self.correction()
         self.assertTrue(all(r['state'] == 'met' for r in self.run_gate()))
+
+    def test_healthy_source_change_refreshes_without_authored_intervention(self):
+        (self.root / '.gitignore').write_text('.agent/\nignored\n__pycache__/\n')
+        (self.root / 'utility.py').write_text('def value(): return 7\n')
+        (self.root / 'test_utility.py').write_text('import unittest\nfrom utility import value\nclass UtilityTests(unittest.TestCase):\n    def test_value(self): self.assertEqual(value(), 7)\n')
+        (self.root / 'Makefile').write_text('ok:\n\t@' + sys.executable + ' -m unittest discover\n')
+        self.assertTrue(all(item['state'] == 'met' for item in self.run_gate()))
+        old = control.read(self.root / '.agent/goal-status.json')
+        original_goal = (self.root / '.agent/goal.json').read_bytes()
+        (self.root / 'utility.py').write_text('# Return the stable documented value.\ndef value(): return 7\n')
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'stale')
+        before = (self.root / '.agent/goal-status.json').read_bytes()
+        self.assertIsNotNone(work_audit.goal_open(self.root))
+        inspect = subprocess.run([sys.executable, gate.__file__, '--root', str(self.root), '--inspect'],
+                                 capture_output=True, text=True, check=False)
+        self.assertEqual(inspect.returncode, 2)
+        self.assertEqual((self.root / '.agent/goal-status.json').read_bytes(), before)
+        self.assertTrue(all(item['state'] == 'met' for item in self.run_gate()))
+        self.assertEqual((self.root / '.agent/goal.json').read_bytes(), original_goal)
+        self.assertNotIn('reflection', self.goal)
+        receipt = control.read(self.root / '.agent/reflection-receipt.json')
+        self.assertEqual(receipt['kind'], 'freshness-verification')
+        self.assertEqual(receipt['before']['snapshot_digest'], control.digest(old['snapshot']))
+        self.assertEqual(receipt['after'], control.observation_identity(self.root, self.goal))
+        self.assertNotEqual(receipt['before'], receipt['after'])
+        self.assertTrue(all(item['state'] == 'met' for item in receipt['checks']))
+        state = control.read(self.root / '.agent/reflection-state.json')
+        self.assertTrue(state['resolved'])
+        self.assertEqual(state['obligations'][0]['trigger'], 'stale-evidence')
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'verified')
+        receipt_bytes = (self.root / '.agent/reflection-receipt.json').read_bytes()
+        from unittest.mock import patch
+        with patch.object(gate, 'run_target', wraps=gate.run_target) as runner:
+            self.assertTrue(all(item['state'] == 'met' for item in self.run_gate()))
+            runner.assert_called_once_with(self.root, 'ok', 5)
+        self.assertEqual((self.root / '.agent/reflection-receipt.json').read_bytes(), receipt_bytes)
+        (self.root / 'utility.py').write_text('# Preserve the documented value.\ndef value(): return 7\n')
+        self.run_gate()
+        refreshed = control.read(self.root / '.agent/reflection-receipt.json')
+        self.assertEqual(refreshed['history'][0], {k: v for k, v in receipt.items() if k != 'history'})
+
+    def test_declared_input_refresh_and_explicit_stale_trigger_execute_acceptance(self):
+        self.goal['inputs'] = ['ignored']
+        (self.root / 'ignored').write_text('first supported input')
+        self.assertTrue(all(item['state'] == 'met' for item in self.run_gate()))
+        (self.root / 'ignored').write_text('second supported input')
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'stale')
+        self.assertTrue(all(item['state'] == 'met' for item in self.run_gate()))
+        control.require_correction(self.root, 'stale-evidence', 'explicit freshness verification requested')
+        from unittest.mock import patch
+        with patch.object(gate, 'run_target', wraps=gate.run_target) as runner:
+            self.assertTrue(all(item['state'] == 'met' for item in self.run_gate()))
+            runner.assert_called_once_with(self.root, 'ok', 5)
+        self.assertNotIn('reflection', self.goal)
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'verified')
+
+    def test_stale_only_failed_refresh_still_requires_verified_correction(self):
+        (self.root / 'Makefile').write_text('ok:\n\t@test "$$(cat source)" = working\n')
+        self.run_gate()
+        (self.root / 'source').write_text('regression')
+        failed = self.run_gate()
+        self.assertTrue(any(item['id'] == 'correction' for item in failed))
+        self.assertFalse(control.read(self.root / '.agent/goal-status.json')['met'])
+        self.assertFalse(control.read(self.root / '.agent/reflection-state.json')['resolved'])
+        (self.root / 'source').write_text('working')
+        self.assertTrue(any(item['id'] == 'correction' for item in self.run_gate()))
+        self.correction()
+        self.assertTrue(all(item['state'] == 'met' for item in self.run_gate()))
+
+    def test_stale_with_substantive_obligations_cannot_auto_resolve(self):
+        for trigger in ('repetition', 'methodology', 'acceptance-revision', 'concurrent-change'):
+            with self.subTest(trigger=trigger):
+                control.write(self.root / '.agent/reflection-state.json', {})
+                control.require_correction(self.root, 'stale-evidence', 'changed source identity')
+                control.require_correction(self.root, trigger, 'independent substantive discrepancy')
+                results = self.run_gate()
+                self.assertTrue(any(item['id'] == 'correction' for item in results))
+                self.assertFalse(control.read(self.root / '.agent/reflection-state.json')['resolved'])
+
+    def test_stale_refresh_cannot_accept_changed_inputs_during_check(self):
+        self.goal['inputs'] = ['ignored']
+        (self.root / 'ignored').write_text('first')
+        (self.root / 'Makefile').write_text('ok:\n\t@test -f source\n')
+        self.run_gate()
+        (self.root / 'source').write_text('valid new source')
+        (self.root / 'mutate.py').write_text('from pathlib import Path\nwith Path("ignored").open("a") as stream: stream.write("changed")\n')
+        (self.root / 'Makefile').write_text('ok:\n\t@' + sys.executable + ' mutate.py\n')
+        results = self.run_gate()
+        self.assertTrue(any(item['id'] == 'concurrent-change' for item in results))
+        self.assertFalse(control.read(self.root / '.agent/goal-status.json')['met'])
+        self.assertFalse(control.read(self.root / '.agent/reflection-state.json')['resolved'])
+        self.assertFalse((self.root / '.agent/reflection-receipt.json').exists())
+
+    def test_stale_refresh_requires_every_current_check_to_pass(self):
+        self.run_gate()
+        (self.root / 'source').write_text('new supported input')
+        control.require_correction(self.root, 'stale-evidence', 'old receipt predates current input')
+        current = control.snapshot(self.root, self.goal)
+        results = [{'id': 'consumer', 'state': 'met'}, {'id': 'integration', 'state': 'unmet'}]
+        self.assertFalse(control.refresh_stale_evidence(self.root, self.goal, results, current,
+                         control.digest(control.contract(self.goal, self.root))))
+        self.assertFalse(control.read(self.root / '.agent/reflection-state.json')['resolved'])
+        self.assertFalse((self.root / '.agent/reflection-receipt.json').exists())
+
+    def test_legacy_valid_success_requires_explicit_current_verification(self):
+        control.write(self.root / '.agent/goal-status.json', {'met': True, 'goal': self.goal['goal']})
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'unverified')
+        self.assertTrue(all(item['state'] == 'met' for item in self.run_gate()))
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'verified')
+        receipt = control.read(self.root / '.agent/goal-status.json')
+        self.assertEqual(receipt['schema'], 'goal-receipt/v2')
+        self.assertEqual(receipt['snapshot'], control.snapshot(self.root, self.goal))
+        self.assertNotIn('reflection', self.goal)
+
+    def test_legacy_success_requires_real_fresh_verification(self):
+        control.write(self.root / '.agent/goal-status.json', {'met': True, 'goal': self.goal['goal']})
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'unverified')
+        self.assertIsNotNone(work_audit.goal_open(self.root))
+        (self.root / 'Makefile').write_text('ok:\n\t@test -f missing-consumer\n')
+        self.assertFalse(all(item['state'] == 'met' for item in self.run_gate()))
+        self.assertFalse(control.read(self.root / '.agent/goal-status.json')['met'])
+        (self.root / 'missing-consumer').write_text('consumer restored')
+        self.assertTrue(any(item['id'] == 'correction' for item in self.run_gate()))
+        self.correction()
+        self.assertTrue(all(item['state'] == 'met' for item in self.run_gate()))
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'verified')
 
     def test_revision_preserves_previous_contract_and_requires_authority_pointer(self):
         self.run_gate()
@@ -144,6 +272,9 @@ class GoalControls(unittest.TestCase):
         self.assertFalse(receipt['met'])
         self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'stale')
         self.assertTrue(any(r['id'] == 'publication-change' for r in results))
+        self.assertTrue(any(r['id'] == 'correction' for r in self.run_gate()))
+        self.correction()
+        self.assertTrue(all(r['state'] == 'met' for r in self.run_gate()))
 
     def test_intervention_input_change_invalidates_earlier_acceptance(self):
         script = self.root / 'check.py'

@@ -82,7 +82,7 @@ def worktree_age_hours(path: Path) -> float | None:
 
 
 def findings(root: Path, base: str | None, max_hours: float = MAX_WORKTREE_HOURS,
-             max_worktrees: int = MAX_WORKTREES) -> list[str]:
+             max_worktrees: int = MAX_WORKTREES, files: list[str] | None = None) -> list[str]:
     found = []
     base = base or default_base(root)
     if base and not exists(root, base):
@@ -109,7 +109,7 @@ def findings(root: Path, base: str | None, max_hours: float = MAX_WORKTREE_HOURS
         if hours is not None and hours > max_hours:
             found.append(f"extra worktree {extra} is {hours:.0f}h old, over {max_hours:g}h "
                          "(land it on the trunk the same day, harvest, then git worktree remove)")
-    for path in git(root, "ls-files"):
+    for path in files if files is not None else git(root, "ls-files"):
         if process_record(path):
             found.append(f"dated process record: {path} (keep one current handoff; history is in Git)")
         elif scratch(path):

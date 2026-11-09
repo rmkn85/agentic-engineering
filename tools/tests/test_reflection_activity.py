@@ -43,6 +43,17 @@ class ReflectionActivityTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             activity.main(['recurrence-score', 'AUDIT=/tmp/audit', 'CODEX=/tmp/codex'])
 
+    def test_boundary_is_strict_enum_data_and_unavailable_at_run(self):
+        for name, required in [('recurrence-preflight', ['ROOT=/tmp/repo']),
+                               ('recurrence-smoke', ['ROOT=/tmp/repo', 'AUDIT=/tmp/audit'])]:
+            with patch.object(activity.subprocess, 'call', return_value=0) as call:
+                activity.main([name, *required, 'BOUNDARY=outer-codex-sandbox'])
+                self.assertEqual(call.call_args.args[0][-2:], ['--boundary', 'outer-codex-sandbox'])
+            for value in ('unknown', 'native;command', '/tmp/native'):
+                with self.assertRaises(ValueError): activity.main([name, *required, 'BOUNDARY=' + value])
+        with self.assertRaises(ValueError):
+            activity.main(['recurrence-run', 'AUDIT=/tmp/audit', 'BOUNDARY=native'])
+
     def test_exact_smoke_route_preserves_result(self):
         with patch.object(activity.subprocess, 'call', return_value=1) as call:
             self.assertEqual(activity.main(['recurrence-smoke', 'ROOT=/tmp/repo', 'AUDIT=/tmp/audit']), 1)

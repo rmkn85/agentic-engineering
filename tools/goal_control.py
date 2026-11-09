@@ -190,6 +190,42 @@ def require_correction(root, trigger, evidence):
         write(path, state)
 
 
+def refresh_stale_evidence(root, goal, results, before, evaluated_contract):
+    """Resolve only stale evidence using newly executed, stable full acceptance."""
+    path = root / '.agent/reflection-state.json'
+    state = read(path)
+    obligations = state.get('obligations', [])
+    if not obligations or any(item.get('trigger') != 'stale-evidence' for item in obligations):
+        return False
+    if not results or not all(item['state'] == 'met' for item in results):
+        return False
+    current = observation_identity(root, goal)
+    if current != {'contract_digest': evaluated_contract, 'snapshot_digest': digest(before)}:
+        return False
+    if state.get('resolution_identity') == current and state.get('resolved'):
+        return True
+    previous = read(root / '.agent/goal-status.json')
+    old_identity = {'contract_digest': previous.get('contract_digest'),
+                    'snapshot_digest': digest(previous['snapshot']) if 'snapshot' in previous else None}
+    receipt = {'kind': 'freshness-verification', 'status': 'supported',
+               'before': old_identity, 'after': current, 'obligations': obligations,
+               'observation': 'Prior acceptance evidence required freshness verification for the current observations.',
+               'explanation': 'Input drift alone does not demonstrate a product failure.',
+               'prediction': 'Explicit full acceptance verification passes on stable current inputs.',
+               'checks': [dict(item) for item in results],
+               'observed_effect': 'All current acceptance checks passed with stable inputs.',
+               'interpretation': 'Fresh acceptance and input stability only; no causal correction claim.'}
+    receipt_path = root / '.agent/reflection-receipt.json'
+    previous = read(receipt_path)
+    history = previous.get('history', []) + ([{k: v for k, v in previous.items() if k != 'history'}] if previous else [])
+    write(receipt_path, dict(receipt, history=history))
+    state['resolved'] = True
+    state['status'] = 'supported'
+    state['resolution_identity'] = current
+    write(path, state)
+    return True
+
+
 def reflection_check(goal, root, timeout, runner):
     path = root / '.agent/reflection-state.json'
     state = read(path)

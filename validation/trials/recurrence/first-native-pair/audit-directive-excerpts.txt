@@ -1,0 +1,4 @@
+FOCUS: Rewrite .agentic-engineering/docs/dev-handoff/README.md as the one current handoff under 800 words (goal, last proven state, next action) and delete HANDOFF.md; history is in Git. Replace that file at each checkpoint instead of adding a new one.
+1. [knowledge/handoff] 2 handoff/continuation files, 575 words
+FOCUS: Rewrite .agentic-engineering/docs/dev-handoff/README.md as the one current handoff under 800 words (goal, last proven state, next action) and delete HANDOFF.md; history is in Git. Replace that file at each checkpoint instead of adding a new one.
+1. [knowledge/handoff] 2 handoff/continuation files, 169 words

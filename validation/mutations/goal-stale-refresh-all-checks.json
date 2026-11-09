@@ -1,0 +1,10 @@
+{
+  "id": "goal-stale-refresh-all-checks",
+  "file": "tools/goal_control.py",
+  "find": "    if not results or not all(item['state'] == 'met' for item in results):",
+  "replace": "    if not results:",
+  "tests": [
+    "tools.tests.test_goal_control.GoalControls.test_stale_refresh_requires_every_current_check_to_pass"
+  ],
+  "rule": "Freshness resolution requires every current acceptance result to pass"
+}

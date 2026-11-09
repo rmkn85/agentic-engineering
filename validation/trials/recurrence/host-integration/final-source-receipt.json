@@ -1,0 +1,101 @@
+{
+  "cli": "0.167.0",
+  "conclusion": "Final-source host emitted Start context, blocked Stop3 times, ended explicitly incomplete at the retry bound, then admitted independently checked repaired acceptance. This proves this adapter/host path, not autonomous repair or retroactive hook invocation in scored exec transcripts.",
+  "events": [
+    {
+      "durationMs": 341,
+      "entries": [
+        {
+          "kind": "context",
+          "text": "Work audit: Finish this goal first: make each check in .agent/goal.json pass (python3 tools/finish_check.py shows what is unmet)."
+        }
+      ],
+      "eventName": "sessionStart",
+      "executionMode": "sync",
+      "handlerType": "command",
+      "source": "project",
+      "status": "completed"
+    },
+    {
+      "durationMs": 231,
+      "entries": [
+        {
+          "kind": "feedback",
+          "text": "Goal not met (1/3): ready: make check exited 2; machine-check: no passing run check: manual items alone cannot prove the goal; correction: corrective intervention required: observation, evidence, hypothesis, expected_effect and run. Continue until each check passes. If a real blocker prevents it, mark the item blocked with a blocker sentence and fill reflection.first_divergence, reflection.guidance_followed, reflection.guidance_missing_or_misleading in goal.json."
+        }
+      ],
+      "eventName": "stop",
+      "executionMode": "sync",
+      "handlerType": "command",
+      "source": "project",
+      "status": "blocked"
+    },
+    {
+      "durationMs": 243,
+      "entries": [
+        {
+          "kind": "feedback",
+          "text": "Goal not met (2/3): ready: make check exited 2; machine-check: no passing run check: manual items alone cannot prove the goal; correction: corrective intervention required: observation, evidence, hypothesis, expected_effect and run. Continue until each check passes. If a real blocker prevents it, mark the item blocked with a blocker sentence and fill reflection.first_divergence, reflection.guidance_followed, reflection.guidance_missing_or_misleading in goal.json."
+        }
+      ],
+      "eventName": "stop",
+      "executionMode": "sync",
+      "handlerType": "command",
+      "source": "project",
+      "status": "blocked"
+    },
+    {
+      "durationMs": 236,
+      "entries": [
+        {
+          "kind": "feedback",
+          "text": "Goal not met (3/3): ready: make check exited 2; machine-check: no passing run check: manual items alone cannot prove the goal; correction: corrective intervention required: observation, evidence, hypothesis, expected_effect and run. Continue until each check passes. If a real blocker prevents it, mark the item blocked with a blocker sentence and fill reflection.first_divergence, reflection.guidance_followed, reflection.guidance_missing_or_misleading in goal.json."
+        }
+      ],
+      "eventName": "stop",
+      "executionMode": "sync",
+      "handlerType": "command",
+      "source": "project",
+      "status": "blocked"
+    },
+    {
+      "durationMs": 244,
+      "entries": [
+        {
+          "kind": "warning",
+          "text": "finish-check: session ended with the goal NOT met: ready: make check exited 2; machine-check: no passing run check: manual items alone cannot prove the goal; correction: corrective intervention required: observation, evidence, hypothesis, expected_effect and run. Gap record: <retained incomplete gap>."
+        }
+      ],
+      "eventName": "stop",
+      "executionMode": "sync",
+      "handlerType": "command",
+      "source": "project",
+      "status": "completed"
+    },
+    {
+      "durationMs": 285,
+      "entries": [],
+      "eventName": "stop",
+      "executionMode": "sync",
+      "handlerType": "command",
+      "source": "project",
+      "status": "completed"
+    }
+  ],
+  "evidence_kind": "controlled native host integration, explicitly assisted; separate from recurrence comparison",
+  "failed_goal_met": false,
+  "hook_discovery": "native hooks/list reports exact reviewed project Start and Stop hashes trusted",
+  "host_trace_sha256": "75f997a9bb826724d854d4e22a88db5477c4a7c62fe4ba03725565d7b645180d",
+  "intervention": "Operator replaced broken fixture output with ready and declared an intervention executed through unchanged make check. Model was instructed not to edit or run tools.",
+  "repaired_goal_met": true,
+  "requested_effort": "medium",
+  "requested_model": "gpt-6.1-sol",
+  "route": "native app-server lifecycle inside verified inherited outer sandbox",
+  "schema": 1,
+  "source_commit": "6d9287fa50c7df97c307cc243c4e0a0057380cde",
+  "validator_files_sha256": {
+    "agent_hooks.py": "88fe520d8177c29705600780a400bcf5db321e505f3c7af15965032175e81f8b",
+    "finish_check.py": "93830c25f97d5c78fcd0d8c61c11f40a4ae635360e2f859557e150f2066b84d7",
+    "goal_control.py": "368307187ecfdcdaf269d196e0c49f25f81ad61d7b639c8a8ad4a04f103620fd"
+  }
+}

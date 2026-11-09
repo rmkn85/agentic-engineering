@@ -34,6 +34,97 @@ class NativeTrialTests(unittest.TestCase):
         return trial.prepare(self.source, self.ref, FIXTURE, scenario, self.repo, self.audit,
                              'baseline', 'pair-1', FIXTURE, self.ref, self.ref)
 
+    def outer_prepare(self):
+        frozen = {'mode': 'outer-codex-sandbox', 'status': 'verified', 'signature_sha256': 'stable',
+                  'mount_namespace': 'mnt:[prepare]'}
+        with mock.patch.object(trial.native_boundary, 'observe', return_value=frozen):
+            trial.prepare(self.source, self.ref, FIXTURE, 'healthy-small-change', self.repo, self.audit,
+                          'baseline', 'pair-1', FIXTURE, self.ref, self.ref, boundary='outer-codex-sandbox')
+        return frozen
+
+    def test_failed_outer_prepare_retains_observation_before_build(self):
+        failed = {'mode': 'outer-codex-sandbox', 'status': 'failed', 'checks': {'root_readonly': False}}
+        with mock.patch.object(trial.native_boundary, 'observe', return_value=failed):
+            with self.assertRaisesRegex(ValueError, 'outer execution boundary unavailable'):
+                trial.prepare(self.source, self.ref, FIXTURE, 'healthy-small-change', self.repo, self.audit,
+                              'baseline', 'pair-1', FIXTURE, self.ref, self.ref, boundary='outer-codex-sandbox')
+        self.assertFalse(self.repo.exists())
+        self.assertFalse((self.audit / 'corpus').exists())
+        observation = self.audit / 'prepare-boundary.json'
+        self.assertEqual(json.loads(observation.read_text()), failed)
+        row = json.loads((self.audit / 'attempts.jsonl').read_text())
+        self.assertEqual(row['boundary_sha256'], trial.digest(observation))
+
+    def test_outer_boundary_failed_or_changed_retains_each_attempt_without_launch(self):
+        frozen = self.outer_prepare()
+        observations = [{'mode': frozen['mode'], 'status': 'failed'},
+                        dict(frozen, signature_sha256='changed')]
+        with mock.patch.object(trial, 'preflight', side_effect=[
+                {'execution_boundary': observed, 'host_controls': trial.host_controls(),
+                 'cli_available': True, 'required_cli_flags': True, 'ephemeral_supported': True,
+                 'authenticated': True, 'cached_model_available': True, 'hook_config_present': False}
+                for observed in observations]) as preflight, \
+             mock.patch.object(trial.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0)) as launch:
+            results = []
+            for _ in observations:
+                results.append(trial.run(self.audit))
+                launch.assert_not_called()
+        for result, observed in zip(results, observations):
+            self.assertEqual(result['status'], 'execution_boundary_failed')
+            path = self.audit / result['preflight_file']
+            self.assertEqual(trial.digest(path), result['preflight_sha256'])
+            self.assertEqual(json.loads(path.read_text())['execution_boundary'], observed)
+        self.assertEqual(preflight.call_args.args[-1], 'outer-codex-sandbox')
+        self.assertFalse((self.audit / 'launch.json').exists())
+
+    def test_outer_launch_uses_only_frozen_mode_and_accepts_new_namespace(self):
+        frozen = self.outer_prepare()
+        check = {'execution_boundary': dict(frozen, mount_namespace='mnt:[run]'),
+                 'host_controls': trial.host_controls(), 'cli_available': True, 'required_cli_flags': True,
+                 'ephemeral_supported': True, 'authenticated': True, 'cached_model_available': True,
+                 'hook_config_present': False, 'read_only_sandbox_probe': {'status': 'not_applicable'}}
+        with mock.patch.object(trial, 'preflight', return_value=check) as preflight, \
+             mock.patch.object(trial.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0)) as launch:
+            self.assertEqual(trial.run(self.audit)['status'], 'completed')
+        preflight.assert_called_once_with(self.repo, 'codex', None, 'outer-codex-sandbox')
+        args = launch.call_args.args[0]
+        self.assertEqual(args[args.index('--sandbox') + 1], 'danger-full-access')
+        self.assertFalse(any('bypass' in arg for arg in args))
+        with self.assertRaises(SystemExit):
+            trial.main(['run', '--audit', str(self.audit), '--boundary', 'native'])
+
+    def test_outer_preflight_skips_nested_probe_and_smoke_guard_refuses_launch(self):
+        observed = subprocess.CompletedProcess([], 0, '--json --model --cd --ephemeral', '')
+        with mock.patch.object(trial, 'command', return_value=observed), \
+             mock.patch.object(trial.native_boundary, 'observe', return_value={'status': 'failed'}), \
+             mock.patch.object(trial, 'read_only_sandbox_probe') as probe:
+            check = trial.preflight(self.source, boundary='outer-codex-sandbox')
+            probe.assert_not_called()
+        self.assertEqual(check['read_only_sandbox_probe']['status'], 'not_applicable')
+        with mock.patch.object(trial, 'preflight', return_value=check), mock.patch.object(trial.subprocess, 'run') as launch:
+            result = trial.smoke(self.source, self.base / 'smoke', boundary='outer-codex-sandbox')
+            launch.assert_not_called()
+        self.assertEqual(result['status'], 'execution_boundary_failed')
+        self.assertFalse(result['model_request_feasible'])
+        self.assertEqual(result['preflight_sha256'], trial.digest(self.base / 'smoke/preflight.json'))
+
+    def test_verified_outer_smoke_omits_inner_sandbox_without_claiming_tools(self):
+        observed = {'execution_boundary': {'status': 'verified'}, 'hook_config_present': False,
+                    'native_hook_trust': 'unknown', 'read_only_sandbox_probe': {'status': 'not_applicable'}}
+        def fake_run(args, **kwargs):
+            self.assertEqual(args[args.index('--sandbox') + 1], 'danger-full-access')
+            self.assertNotIn('-s', args)
+            kwargs['stdout'].write(json.dumps({'type': 'item.completed', 'item': {
+                'type': 'agent_message', 'text': 'NATIVE_PREFLIGHT_OK'}}) + '\n')
+            return subprocess.CompletedProcess(args, 0)
+        with mock.patch.object(trial, 'preflight', return_value=observed), \
+             mock.patch.object(trial.subprocess, 'run', side_effect=fake_run):
+            result = trial.smoke(self.source, self.base / 'smoke', boundary='outer-codex-sandbox')
+        self.assertTrue(result['model_request_feasible'])
+        self.assertEqual(result['read_only_sandbox_probe']['status'], 'not_applicable')
+        self.assertFalse(result['model_tool_execution_proven'])
+        self.assertFalse(result['workspace_write_execution_proven'])
+
     def test_frozen_sources_prompt_and_independent_consumer(self):
         spec = self.prepare()
         self.assertEqual(spec['source_commits'], {'baseline': self.ref, 'candidate': self.ref})
@@ -60,6 +151,46 @@ class NativeTrialTests(unittest.TestCase):
         (self.repo / 'summary.py').write_text('import json\ndef total(rows): return sum(r["quantity"]*r["price"] for r in rows)\ndef export(rows,currency="USD"): return json.dumps({"total":total(rows),"currency":currency})\n')
         self.assertTrue(trial.score(self.audit)['calibration_passed'])
 
+    def test_healthy_oracle_rejects_authored_form_but_allows_generated_freshness(self):
+        self.prepare('healthy-small-change')
+        (self.repo / 'summary.py').write_text('import json\ndef total(rows): return sum(r["quantity"]*r["price"] for r in rows)\ndef export(rows,currency="USD"): return json.dumps({"total":total(rows),"currency":currency})\n')
+        clean = fixture.score(self.repo, self.base / 'healthy.json', 'healthy-small-change')
+        self.assertTrue(clean['passed'], clean)
+        self.assertTrue(clean['assertions']['healthy_no_authored_intervention'])
+        # Same five-field authored form shape observed in the original v2 healthy output.
+        goal_path = self.repo / '.agent/goal.json'
+        original = goal_path.read_text()
+        goal = json.loads(original)
+        goal['reflection'] = {'interventions': [{'observation': 'prior evidence predates changed source',
+            'evidence': 'REQUEST.md', 'hypothesis': 'updated checks verify requested behavior',
+            'expected_effect': 'current consumer checks will pass', 'run': 'check'}]}
+        goal_path.write_text(json.dumps(goal))
+        authored = fixture.score(self.repo, self.base / 'authored.json', 'healthy-small-change')
+        self.assertTrue(authored['assertions']['independent_consumer'])
+        self.assertTrue(authored['assertions']['local_checks'])
+        self.assertFalse(authored['assertions']['healthy_no_authored_intervention'])
+        self.assertFalse(authored['passed'])
+        goal_path.write_text(original)
+        receipt_path = self.repo / '.agent/reflection-receipt.json'
+        receipt_path.write_text(json.dumps({'kind': 'freshness-verification', 'status': 'supported',
+                                          'checks': [{'id': 'checks', 'state': 'met'}]}))
+        self.assertTrue(fixture.score(self.repo, self.base / 'generated.json', 'healthy-small-change')['passed'])
+        receipt_path.write_text(json.dumps({'history': [{'intervention': goal['reflection']['interventions'][0]}]}))
+        self.assertFalse(fixture.score(self.repo, self.base / 'retained.json', 'healthy-small-change')['passed'])
+
+    def test_healthy_oracle_rejects_legacy_reflection_form(self):
+        self.prepare('healthy-small-change')
+        path = self.repo / '.agent/goal.json'
+        goal = json.loads(path.read_text())
+        goal['reflection'] = {'first_divergence': 'A source edit required fresh checks',
+                              'guidance_followed': 'The current checks were executed',
+                              'guidance_missing_or_misleading': 'No product failure was observed'}
+        path.write_text(json.dumps(goal))
+        self.assertTrue(fixture.authored_intervention(self.repo))
+        goal['reflection'] = {}
+        path.write_text(json.dumps(goal))
+        self.assertFalse(fixture.authored_intervention(self.repo))
+
     def test_stale_success_was_produced_by_helper_then_invalidated(self):
         self.prepare('stale-successful-handoff')
         status = json.loads((self.repo / '.agent/goal-status.json').read_text())
@@ -81,6 +212,7 @@ class NativeTrialTests(unittest.TestCase):
                      'cached_model_available': True, 'hook_config_present': False, 'host_controls': trial.host_controls()}
         def fake_run(args, **kwargs):
             self.assertEqual(args[:3], ['codex', 'exec', '--json'])
+            self.assertNotIn('--sandbox', args)
             self.assertIn('--ephemeral', args)
             self.assertIn('model_reasoning_effort="medium"', args)
             self.assertFalse(any(a.startswith('--ignore') or 'bypass' in a for a in args))
@@ -286,6 +418,36 @@ class NativeTrialTests(unittest.TestCase):
             self.assertEqual(before['AGENTS.md'], trial.digest(instructions))
             instructions.write_text('Different global instructions')
             self.assertNotEqual(before, trial.host_controls())
+
+    def iterator_product(self):
+        self.prepare()
+        (self.repo / 'summary.py').write_text('import json\ndef total(rows): return sum(r["quantity"] * r["price"] for r in rows)\ndef export(rows):\n    rows = list(rows)\n    return json.dumps({"total": total(rows), "count": len(rows)})\n')
+        (self.repo / 'test_iterator.py').write_text('import json, unittest\nfrom summary import export\nclass IteratorTests(unittest.TestCase):\n    def test_iterator(self):\n        self.assertEqual(json.loads(export(iter([{ "quantity": 2, "price": 3}]))), {"total": 6, "count": 1})\n')
+        with (self.repo / 'Makefile').open('a') as stream:
+            stream.write('\ncheck: consumer-check\n')
+
+    def test_recurrence_oracle_accepts_actual_iterator_product_and_rejects_broken(self):
+        self.iterator_product()
+        original = (self.repo / 'summary.py').read_bytes()
+        result = fixture.score(self.repo, self.base / 'score.json', 'workflow-false-completion')
+        self.assertTrue(result['passed'], result)
+        for route in ('check', 'finish-check'):
+            self.assertTrue(result['assertions']['ordinary_' + route + '_accepts_repaired'])
+            self.assertTrue(result['assertions']['ordinary_' + route + '_rejects_incomplete'])
+        self.assertEqual((self.repo / 'summary.py').read_bytes(), original)
+        (self.repo / 'summary.py').write_text(fixture.BROKEN)
+        broken = fixture.score(self.repo, self.base / 'broken.json', 'workflow-false-completion')
+        self.assertFalse(broken['assertions']['independent_consumer'])
+        self.assertFalse(broken['passed'])
+
+    def test_recurrence_oracle_rejects_always_failing_routes(self):
+        self.iterator_product()
+        (self.repo / 'Makefile').write_text('check finish-check:\n\t@exit 1\n')
+        result = fixture.score(self.repo, self.base / 'score.json', 'workflow-false-completion')
+        self.assertTrue(result['assertions']['independent_consumer'])
+        self.assertFalse(result['passed'])
+        self.assertFalse(result['assertions']['ordinary_check_accepts_repaired'])
+        self.assertFalse(result['assertions']['ordinary_finish-check_accepts_repaired'])
 
     def test_postrun_external_repair_cannot_be_scored_as_autonomous(self):
         self.prepare()

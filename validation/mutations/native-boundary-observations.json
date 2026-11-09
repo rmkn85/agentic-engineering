@@ -1,0 +1,10 @@
+{
+  "id": "native-boundary-observations",
+  "rule": "An environment marker cannot replace independent containment observations",
+  "file": "tools/native_boundary.py",
+  "find": "        if all(checks.values()):",
+  "replace": "        if True:",
+  "tests": [
+    "tools.tests.test_native_boundary.NativeBoundaryTests.test_guard_requires_every_independent_observation"
+  ]
+}

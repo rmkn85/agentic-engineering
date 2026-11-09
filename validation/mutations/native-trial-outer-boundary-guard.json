@@ -1,0 +1,10 @@
+{
+  "id": "native-trial-outer-boundary-guard",
+  "rule": "A failed or changed outer boundary prevents launch and retains hash-bound attempts",
+  "file": "tools/native_trial.py",
+  "find": "    if boundary == 'outer-codex-sandbox' and not native_boundary.matches(frozen_boundary, check.get('execution_boundary', {})):",
+  "replace": "    if False:",
+  "tests": [
+    "tools.tests.test_native_trial.NativeTrialTests.test_outer_boundary_failed_or_changed_retains_each_attempt_without_launch"
+  ]
+}

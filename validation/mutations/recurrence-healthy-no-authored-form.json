@@ -1,0 +1,10 @@
+{
+  "id": "recurrence-healthy-no-authored-form",
+  "file": "validation/trials/recurrence/fixture.py",
+  "find": "assertions['healthy_no_authored_intervention'] = not authored_intervention(root)",
+  "replace": "assertions['healthy_no_authored_intervention'] = True",
+  "tests": [
+    "tools.tests.test_native_trial.NativeTrialTests.test_healthy_oracle_rejects_authored_form_but_allows_generated_freshness"
+  ],
+  "rule": "Healthy trial scorer detects authored intervention overhead while allowing generated freshness evidence"
+}

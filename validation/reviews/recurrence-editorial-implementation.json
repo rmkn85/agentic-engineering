@@ -1,0 +1,24 @@
+{
+  "base": "4cdeefd11dd415512d691f4bf5a6197132141123",
+  "failure_evidence": "validation/reviews/reflection-failure-evidence.md",
+  "files": {
+    "validation/trials/recurrence/first-native-pair/supplemental-native-and-truthfulness.md": "644585ca2e2fe212cd37814a09446d834efd8faefcb6b722ab136a6c72d17b2f",
+    "validation/trials/recurrence/first-native-pair/verdict.md": "4c650ec5c3a10e3805558793d0f7742c6c3f4118ad0e4cdc3db7c8ad9fbd7283",
+    "validation/trials/recurrence/interpretation.md": "55f99a6157910805ff342cd435f7ff0ab0f3c322b5b8247c71edcfcc56352d60"
+  },
+  "framing": "validation/reviews/reflection-frame.json",
+  "input_hashes": {
+    "failure_evidence": "649436ba12a1db9b198a9555fa318f0146f77c9e8ddeadd92076c7d8561a7ddb",
+    "framing": "a87fc8c4495a42ae811275c29324c41b5513cb8a28d08b503f7582905b7f63e7",
+    "request": "4b0e1d8898c4714c6d2b60a5a0696c6cc36cce70806b329559029a5388a37e2e"
+  },
+  "report": {
+    "path": "validation/reviews/recurrence-validity/editorial-followthrough.md",
+    "sha256": "ba671f1c3f4c7ffb61d49534342ea7049204e7a7bd7ab25a5de7d7ccf2f2d2c7"
+  },
+  "request": "validation/reviews/reflection-request.md",
+  "reviewed_commit": "8093943da71bf193672bfa3150602614aca7c184",
+  "schema": "methodology-review/v1",
+  "scope": "Editorial clarity and public evidence privacy follow-through; no comparative result claims",
+  "verdict": "accepted"
+}

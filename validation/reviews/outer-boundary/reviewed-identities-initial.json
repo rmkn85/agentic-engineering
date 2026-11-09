@@ -1,0 +1,16 @@
+{
+  "base": "4313609",
+  "files": {
+    "docs/execution/executable-reflection.md": "89fdc7b6cc38cafeb2f4a729530a286a50fbfe1b71fa5c9f7b2cc2f74365a867",
+    "tools/native_boundary.py": "cb2f820d2c401aaaf886b402541893f7ba07a5af516693262b90ef18c91058ec",
+    "tools/native_trial.py": "e775cc2e61e38a60165d26b76c8072d5c1dba8a82e4c4e927372799238cfbbb1",
+    "tools/reflection_activity.py": "41e2be957e19d99e0115018eeaa9c0cd86b207b2feac98e61998a55b4e40dabc",
+    "tools/tests/test_native_boundary.py": "e67ab53512de793442c23bd1c11baeeea623c384fa49a19953dbba3b7e3cfff7",
+    "tools/tests/test_native_trial.py": "fe5e654466ee3c3b622d27246bc30cb04e1813f4a2f2538fb07374a73fbb1f67",
+    "tools/tests/test_reflection_activity.py": "ef394b1d40f24ac03280f211f2dc3dfa2339e937af0442bc6995180ce65cbf72",
+    "validation/findings.jsonl": "4fb8a2abea99a0fc807285430cf50d78866ecb58cf3b183ce4ce5e231e7e82bb",
+    "validation/mutations/native-boundary-observations.json": "b51ea373b506b20d964077757c185556d1a3d903e17f9bf92726cece949a2d7c",
+    "validation/mutations/native-trial-frozen-boundary.json": "ad3b4c006d49e8f416ffc57cfd7b81b11cd90885069d76c5fb9b3e54e64f774d",
+    "validation/mutations/native-trial-outer-boundary-guard.json": "81892a8645b1bd79ef88f984ed72bf7fb3bf434feeefe0a2cbc4a052459a788c"
+  }
+}

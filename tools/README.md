@@ -24,7 +24,7 @@ fixtures and external evaluators. Native execution uses maintained activities:
 ./tools/make recurrence-score AUDIT=/private/trial/audit
 ```
 
-Preflight records `read_only_sandbox_probe`: `passed`, `failed` or `unknown`.
+Default native preflight records `read_only_sandbox_probe`: `passed`, `failed` or `unknown`.
 On a supported Linux CLI, it runs `/bin/true` through the native read-only
 sandbox with managed requirements included, without a model request or a write
 probe. A failure prevents `recurrence-run` from launching; its diagnostics remain
@@ -33,6 +33,13 @@ A pass proves command startup only, not workspace writes or model tool use.
 Smoke reports `model_request_feasible` separately; its no-tool reply does not
 prove a runnable engineering session. Each preflight, smoke or run activity
 accepts optional `CODEX=/absolute/path/to/codex` as one literal executable path.
+
+For an already isolated Codex Linux executor, preparation accepts
+`--boundary outer-codex-sandbox`; preflight and smoke activities accept
+`BOUNDARY=outer-codex-sandbox`. This verifies inherited containment before
+selecting the CLI's outer-boundary execution route. The nested probe becomes
+`not_applicable`. Run reads the sealed mode and has no `BOUNDARY` override.
+See [boundary checks and limitations](../docs/execution/executable-reflection.md).
 
 The optional trust receipt reports `native_hook_trust: "confirmed"` and the
 reviewed `hook_config_sha256`; it never grants trust. Run each frozen fixture once. A retry or externally repaired fixture

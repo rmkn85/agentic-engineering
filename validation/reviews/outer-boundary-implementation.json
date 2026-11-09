@@ -1,0 +1,33 @@
+{
+  "base": "4cdeefd11dd415512d691f4bf5a6197132141123",
+  "failure_evidence": "validation/reviews/reflection-failure-evidence.md",
+  "files": {
+    "docs/execution/executable-reflection.md": "89fdc7b6cc38cafeb2f4a729530a286a50fbfe1b71fa5c9f7b2cc2f74365a867",
+    "tools/README.md": "68bb3114e2074927e5dc4b38b1278ea1261cd5b402e4203a3a5a05f055ba9ff9",
+    "tools/native_boundary.py": "969e0d42320d41b394637e4312f216c890cfbd2a549a0f7f37cfc487feddfd26",
+    "tools/native_trial.py": "e775cc2e61e38a60165d26b76c8072d5c1dba8a82e4c4e927372799238cfbbb1",
+    "tools/reflection_activity.py": "41e2be957e19d99e0115018eeaa9c0cd86b207b2feac98e61998a55b4e40dabc",
+    "tools/tests/test_native_boundary.py": "c0c8c99afb1392136e6b1e0065eb5885abd3028cdf660096ea1daa4ebfcdb958",
+    "tools/tests/test_native_trial.py": "fe5e654466ee3c3b622d27246bc30cb04e1813f4a2f2538fb07374a73fbb1f67",
+    "tools/tests/test_reflection_activity.py": "ef394b1d40f24ac03280f211f2dc3dfa2339e937af0442bc6995180ce65cbf72",
+    "validation/findings.jsonl": "4fb8a2abea99a0fc807285430cf50d78866ecb58cf3b183ce4ce5e231e7e82bb",
+    "validation/mutations/native-boundary-observations.json": "b51ea373b506b20d964077757c185556d1a3d903e17f9bf92726cece949a2d7c",
+    "validation/mutations/native-trial-frozen-boundary.json": "ad3b4c006d49e8f416ffc57cfd7b81b11cd90885069d76c5fb9b3e54e64f774d",
+    "validation/mutations/native-trial-outer-boundary-guard.json": "81892a8645b1bd79ef88f984ed72bf7fb3bf434feeefe0a2cbc4a052459a788c"
+  },
+  "framing": "validation/reviews/reflection-frame.json",
+  "input_hashes": {
+    "failure_evidence": "649436ba12a1db9b198a9555fa318f0146f77c9e8ddeadd92076c7d8561a7ddb",
+    "framing": "a87fc8c4495a42ae811275c29324c41b5513cb8a28d08b503f7582905b7f63e7",
+    "request": "4b0e1d8898c4714c6d2b60a5a0696c6cc36cce70806b329559029a5388a37e2e"
+  },
+  "report": {
+    "path": "validation/reviews/outer-boundary/report.md",
+    "sha256": "21118c66f5a7526f99af0ca6d0e25c27d09d6c152677334c3b0b6b891e191aeb"
+  },
+  "request": "validation/reviews/reflection-request.md",
+  "reviewed_commit": "7bc6568aa355509cfa6d2a6807bc9dce7aca786d",
+  "schema": "methodology-review/v1",
+  "scope": "Explicit verified outer-boundary execution and public source review; matched native consumer outcomes remain a separate gate",
+  "verdict": "accepted"
+}

@@ -1,0 +1,46 @@
+{
+  "arm": "candidate",
+  "assertions": {
+    "delivered_catalog_matches_consumer_contract": true,
+    "existing_consumer_observes_complete_result": true,
+    "source_acceptance_preserved": true
+  },
+  "boundary": "verified inherited outer sandbox; redundant inner CLI sandbox omitted",
+  "calibration_passed": true,
+  "cli_version": "0.167.0",
+  "completion_claim": "unknown",
+  "evaluator_returncode": 0,
+  "final_state_sha256": "9e69dc420c9f5afb113ba453e6d39a57671f0c04ed08793920333d0e2cd27d2c",
+  "human_assistance_count": 0,
+  "integrity": true,
+  "measurements": {
+    "hook_calls": null,
+    "runtime_settings": {
+      "effort": null,
+      "model": null
+    },
+    "usage": {
+      "cache_write_input_tokens": 0,
+      "cached_input_tokens": 219008,
+      "input_tokens": 251985,
+      "output_tokens": 2733,
+      "reasoning_output_tokens": 511
+    },
+    "wall_seconds": 81.555
+  },
+  "native_run_completed": true,
+  "pair": "p03",
+  "passed": true,
+  "phase": "score",
+  "raw_evidence": "Private immutable audit retains command stream, selected actions, original final response, patches, trust and all input identities. Personal paths and host configuration omitted here.",
+  "raw_receipt_sha256": "0f5d56006d11d655ee42cf8b540c0017ee86ee3dac331c796a49e0629d908012",
+  "requested_effort": "medium",
+  "requested_model": "gpt-6.1-sol",
+  "scenario": "heldout",
+  "schema": "sanitized-native-recurrence/v1",
+  "selected_action_count": 11,
+  "source_commit": "8093943da71bf193672bfa3150602614aca7c184",
+  "spec_sha256": "a234465721b29aeced0b7b7b595969284d2220c332a4bb130b348de2a442c1dd",
+  "status": "scored",
+  "truthful_completion": "unknown"
+}

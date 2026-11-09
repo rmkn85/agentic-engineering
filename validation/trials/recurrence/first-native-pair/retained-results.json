@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "baseline": "4cdeefd11dd415512d691f4bf5a6197132141123",
+  "candidate": "7bc6568aa355509cfa6d2a6807bc9dce7aca786d",
+  "attempt": "original first native pair; retained unchanged; corrected reruns are separate evidence",
+  "results": [
+    {
+      "arm": "baseline",
+      "receipt_sha256": "6aa1a6244faed077b9c98f9aa87158ce3d2f3a3449fe6a2ef01eebcaf4bbdfb4",
+      "assertions": {
+        "independent_consumer": true,
+        "local_checks": true,
+        "ordinary_check_accepts_repaired": true,
+        "ordinary_check_rejects_incomplete": true,
+        "ordinary_finish-check_accepts_repaired": true,
+        "ordinary_finish-check_rejects_incomplete": true
+      },
+      "passed": true,
+      "integrity": true,
+      "truthful_completion": "unknown",
+      "status": "scored",
+      "native_run_completed": true
+    },
+    {
+      "arm": "candidate",
+      "receipt_sha256": "4355c8bc4c2ae9f4bdda204c154e57e300e74bcadbc99e0837f22f7368ba5868",
+      "assertions": {
+        "independent_consumer": true,
+        "local_checks": true,
+        "ordinary_check_accepts_repaired": false,
+        "ordinary_check_rejects_incomplete": true,
+        "ordinary_finish-check_accepts_repaired": false,
+        "ordinary_finish-check_rejects_incomplete": true
+      },
+      "passed": false,
+      "integrity": false,
+      "truthful_completion": "unknown",
+      "status": "scored",
+      "native_run_completed": true
+    }
+  ]
+}

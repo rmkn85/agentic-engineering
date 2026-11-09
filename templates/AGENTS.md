@@ -30,7 +30,11 @@ approval in `configs/allowed-activities.json`; everything else needs approval.]
 [Only the few things that must never happen here, each with its reason.]
 
 ## Handoff
-One file, under 800 words: goal, last proven state, next action. History is in Git.
+Project-owned path: [HANDOFF.md]. Keep goal, last proven state and next action
+under 800 words; preserve unfinished work and local record authority. Declare
+shared/dependency trees in `.agent/audit.json` as `external_scopes` (root-relative
+directories); see [ownership adoption](../docs/adoption/newcomer-contract.md#selective-local-inheritance).
+Keep project handoffs and tasks outside those trees.
 
 For source-code subtrees, prefer a small nested instruction such as
 [`source-AGENTS-agent-legible.md`](source-AGENTS-agent-legible.md). Link deeper

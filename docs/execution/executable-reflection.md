@@ -27,9 +27,12 @@ cheap invalidation, not a demand to rerun every check on each audit.
 
 ## Correct an observed discrepancy
 
-Failed acceptance, stale evidence, repeated/no-progress work and methodology or
-control changes activate corrective work. Healthy tasks need no intervention
-record. Use the existing goal's `reflection.interventions` list:
+Stale evidence alone requires explicit full acceptance verification on stable
+current inputs. The gate retains old/new identities and generated check results;
+healthy tasks need no authored intervention record. Inspect and audit never refresh.
+Failed acceptance, revision, repeated/no-progress work, concurrent changes and
+methodology/control obligations still require explicit correction. Use the existing
+goal's `reflection.interventions` list:
 
 ```json
 {
@@ -106,6 +109,34 @@ Instruction exports exclude `validation` and `tools/tests`, including derived
 solutions in tests and review reports; export receipts retain the removed hashes.
 Global Codex instruction-file identities are bound alongside configuration and
 rules, so a changed surrounding instruction stack invalidates a frozen run.
+
+The trial runner defaults to `--boundary native`, preserving its existing inner
+sandbox startup probe and launch. `prepare`, `preflight` and `smoke` accept the
+explicit `--boundary outer-codex-sandbox` option. Maintained preflight/smoke
+activities accept the same strict enum as `BOUNDARY`; `run` has no override and
+reads the sealed specification. A failed boundary at preparation retains its observation and stops before fixture
+construction; prepare a fresh trial after restoring containment.
+
+The outer option is for an already isolated Codex Linux executor. It checks its
+own read-only root, owned mode-000 read-only reserved socket mask for its numeric effective UID, NoNewPrivs,
+seccomp filtering and inherited permission-profile identity. It compares the
+stable signature at run time and retains namespace identity only as an
+observation, since normal executions can have different namespace identifiers.
+These observations are a scoped guard, not a complete policy attestation.
+Missing or changed guards retain a hash-bound failed report and refuse launch.
+After verification, the CLI uses `--sandbox danger-full-access` to omit redundant
+inner sandbox creation while preserving actual outer restrictions, configuration,
+rules, approvals and hook trust. The nested read-only probe is reported as
+`not_applicable`, never passed. Smoke proves at most a model response; model tool
+use, writes, hooks and accepted consumer delivery remain separate evidence.
+
+Documented behavior, reviewed 2026-11-09: the official
+[non-interactive mode documentation](https://learn.chatgpt.com/docs/non-interactive-mode)
+permits this CLI sandbox selection in an already isolated environment. A private
+pinned CLI 0.167.0 execution demonstrated model shell use within the same outer
+mount namespace while read-only repository and socket masking remained enforced.
+This observation corrects the execution-layout diagnosis in ER-13; it does not
+prove the recurrence consumers or generalize the guard to other host layouts.
 
 These mechanisms operate within a cooperative, reviewed workflow. They cannot
 defend against an actor replacing policy, checks and receipts together, judge
