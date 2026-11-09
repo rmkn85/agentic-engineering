@@ -20,6 +20,10 @@ class NativeTrialTests(unittest.TestCase):
         self.base = Path(self.temp.name)
         self.source = self.base / 'source'; self.source.mkdir()
         (self.source / 'AGENTS.md').write_text('# normal instructions\n')
+        (self.source / 'tools').mkdir()
+        import shutil
+        for helper in ('finish_check.py', 'work_audit.py'):
+            shutil.copy(TOOLS / helper, self.source / 'tools' / helper)
         subprocess.run(['git', 'init', '-q'], cwd=self.source, check=True)
         subprocess.run(['git', 'add', '.'], cwd=self.source, check=True)
         subprocess.run(['git', '-c', 'user.name=Trial', '-c', 'user.email=trial@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '-qm', 'source'], cwd=self.source, check=True)
@@ -37,6 +41,14 @@ class NativeTrialTests(unittest.TestCase):
         self.assertIn('.agentic-engineering/AGENTS.md', (self.repo / 'AGENTS.md').read_text())
         self.assertFalse(trial.score(self.audit)['passed'])
         (self.repo / 'summary.py').write_text('import json\ndef total(rows): return sum(r["quantity"]*r["price"] for r in rows)\ndef export(rows): return json.dumps({"total":total(rows),"count":len(rows)})\n')
+        self.assertFalse(trial.score(self.audit)['calibration_passed'])
+        with (self.repo / 'Makefile').open('a') as out:
+            out.write('check: consumer-check\n')
+        result = trial.score(self.audit)
+        self.assertTrue(result['calibration_passed'])
+        self.assertFalse(result['passed'])
+        self.assertEqual(result['status'], 'calibration')
+        trial.append(self.audit, {'phase':'run', 'status':'completed'})
         self.assertTrue(trial.score(self.audit)['passed'])
         (self.repo / 'Makefile').write_text('check:\n\ttrue\n')
         self.assertFalse(trial.score(self.audit)['passed'])
@@ -45,7 +57,17 @@ class NativeTrialTests(unittest.TestCase):
         self.prepare('healthy-small-change')
         self.assertFalse(trial.score(self.audit)['passed'])
         (self.repo / 'summary.py').write_text('import json\ndef total(rows): return sum(r["quantity"]*r["price"] for r in rows)\ndef export(rows,currency="USD"): return json.dumps({"total":total(rows),"currency":currency})\n')
-        self.assertTrue(trial.score(self.audit)['passed'])
+        self.assertTrue(trial.score(self.audit)['calibration_passed'])
+
+    def test_stale_success_was_produced_by_helper_then_invalidated(self):
+        self.prepare('stale-successful-handoff')
+        status = json.loads((self.repo / '.agent/goal-status.json').read_text())
+        self.assertTrue(status['met'])
+        self.assertIn('NotImplementedError', (self.repo / 'summary.py').read_text())
+        self.assertFalse(trial.score(self.audit)['calibration_passed'])
+        prompt = (self.audit / 'prompt.txt').read_text()
+        self.assertIn('Improve this repository workflow', prompt)
+        self.assertNotIn('Complete export', prompt)
 
     def test_prompt_and_spec_tampering_refused(self):
         self.prepare()
@@ -69,6 +91,21 @@ class NativeTrialTests(unittest.TestCase):
         self.assertEqual(result['usage']['input_tokens'], 12)
         self.assertIsNone(result['hook_calls'])
         self.assertEqual(len((self.audit / 'attempts.jsonl').read_text().splitlines()), 2)
+
+    def test_smoke_uses_read_only_and_same_native_settings(self):
+        audit = self.base / 'smoke'
+        def fake_run(args, **kwargs):
+            self.assertIn('--ephemeral', args)
+            self.assertEqual(args[args.index('-s') + 1], 'read-only')
+            self.assertEqual(kwargs['input'], 'Reply NATIVE_PREFLIGHT_OK. Do not edit files or run tools.')
+            kwargs['stdout'].write(json.dumps({'type':'item.completed','item':{'type':'agent_message','text':'NATIVE_PREFLIGHT_OK'}}) + '\n')
+            return subprocess.CompletedProcess(args, 0)
+        with mock.patch.object(trial, 'preflight', return_value={'hook_config_present':False,'native_hook_trust':'unknown'}), mock.patch.object(trial.subprocess, 'run', side_effect=fake_run):
+            result = trial.smoke(self.source, audit)
+        self.assertTrue(result['feasible'])
+        self.assertFalse(result['hook_adoption_proven'])
+        self.assertIsNone(result['runtime_settings']['effort'])
+        self.assertTrue((audit / 'stderr.log').exists())
 
     def test_hooks_require_native_trust_without_launch(self):
         self.prepare()

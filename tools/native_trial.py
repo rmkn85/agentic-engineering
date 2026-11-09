@@ -109,7 +109,7 @@ def prepare(source, ref, builder, scenario, repository, audit, arm, pair, evalua
     (audit / 'prompt.txt').write_text(prompt)
     snapshot = tree_hash(repository)
     # These are immutable experimental controls, independent of product files.
-    protected = {p: h for p, h in snapshot.items() if p in ('Makefile', 'AGENTS.md', 'REQUEST.md', 'user-request.txt') or
+    protected = {p: h for p, h in snapshot.items() if p in ('REQUEST.md', 'user-request.txt') or
                  p.startswith('.codex/') or p.startswith('.agentic-engineering/')}
     spec = {'schema': 1, 'pair': pair, 'arm': arm, 'scenario': scenario,
             'source_commit': commit.stdout.strip(), 'source_commits': identities, 'model': MODEL, 'effort': EFFORT,
@@ -205,18 +205,71 @@ def score(audit):
     if not isinstance(raw, dict): raw = {}
     assertions = raw.get('assertions', {})
     valid = bool(assertions) and all(type(v) is bool for v in assertions.values())
+    attempts_path = audit / 'attempts.jsonl'
+    prior = [json.loads(line) for line in attempts_path.read_text().splitlines()] if attempts_path.exists() else []
+    runs = [row for row in prior if row.get('phase') == 'run']
+    native_completed = bool(runs) and runs[-1].get('status') == 'completed'
+    calibration_passed = integrity and result.returncode == 0 and valid and all(assertions.values()) and raw.get('passed') is True
     receipt = {'phase': 'score', 'scenario': spec['scenario'], 'pair': spec['pair'], 'arm': spec['arm'],
                'source_commit': spec['source_commit'], 'spec_sha256': digest(audit / 'spec.json'),
                'integrity': integrity, 'assertions': assertions if valid else {},
                'evaluator_returncode': result.returncode,
-               'status': 'scored' if valid else 'inconclusive',
-               'passed': integrity and result.returncode == 0 and valid and all(assertions.values()) and raw.get('passed') is True}
+               'status': ('scored' if native_completed else 'calibration') if valid else 'inconclusive',
+               'native_run_completed': native_completed, 'calibration_passed': calibration_passed,
+               'native_attempt': runs[-1].get('attempt') if runs else None,
+               'measurements': {key: runs[-1].get(key) if runs else None for key in
+                                ('usage', 'wall_seconds', 'hook_calls', 'runtime_settings')},
+               'human_assistance_count': len(runs[-1]['human_assistance']) if runs and isinstance(runs[-1].get('human_assistance'), list) else None,
+               'selected_action_count': len(runs[-1]['selected_actions']) if runs and isinstance(runs[-1].get('selected_actions'), list) else None,
+               'passed': native_completed and calibration_passed}
     append(audit, receipt); write(audit / 'receipt.json', receipt)
     return receipt
+
+
+def smoke(repository, audit, codex='codex'):
+    repository, audit = Path(repository).resolve(), Path(audit).resolve()
+    if audit.exists(): raise ValueError('smoke audit must be fresh')
+    if audit == repository or repository in audit.parents:
+        raise ValueError('smoke audit must be outside the worker repository')
+    audit.mkdir(parents=True)
+    observed = preflight(repository, codex)
+    write(audit / 'preflight.json', observed)
+    args = [codex, 'exec', '--json', '--ephemeral', '-C', str(repository), '-m', MODEL,
+            '-c', 'model_reasoning_effort="medium"', '-s', 'read-only', '-']
+    prompt = 'Reply NATIVE_PREFLIGHT_OK. Do not edit files or run tools.'
+    write(audit / 'invocation.json', {'argv': args, 'prompt': prompt, 'model': MODEL, 'effort': EFFORT})
+    row = {'phase': 'smoke', 'status': 'started', 'model': MODEL, 'effort': EFFORT,
+           'configured_hooks': observed['hook_config_present'], 'hook_trust': observed['native_hook_trust'],
+           'hook_adoption_proven': False, 'usage': None, 'runtime_settings': {'model': None, 'effort': None}}
+    append(audit, row)
+    started = time.monotonic()
+    try:
+        with (audit / 'stdout.jsonl').open('w') as stdout, (audit / 'stderr.log').open('w') as stderr:
+            result = subprocess.run(args, input=prompt, text=True, stdout=stdout, stderr=stderr, check=False)
+        row.update(returncode=result.returncode, status='completed' if result.returncode == 0 else 'failed')
+    except (OSError, KeyboardInterrupt) as exc:
+        row.update(status='interrupted' if isinstance(exc, KeyboardInterrupt) else 'failed', error_type=type(exc).__name__)
+    row['wall_seconds'] = round(time.monotonic() - started, 3)
+    row['expected_reply_observed'] = False
+    log = audit / 'stdout.jsonl'
+    if log.exists():
+        for line in log.read_text().splitlines():
+            try: event = json.loads(line)
+            except ValueError: continue
+            if event.get('type') == 'turn.completed': row['usage'] = event.get('usage')
+            if isinstance(event.get('model'), str): row['runtime_settings']['model'] = event['model']
+            if isinstance(event.get('reasoning_effort'), str): row['runtime_settings']['effort'] = event['reasoning_effort']
+            item = event.get('item', {})
+            if item.get('type') == 'agent_message' and item.get('text', '').strip() == 'NATIVE_PREFLIGHT_OK':
+                row['expected_reply_observed'] = True
+    row['feasible'] = row['status'] == 'completed' and row['expected_reply_observed']
+    append(audit, row); write(audit / 'smoke-receipt.json', row)
+    return row
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='action', required=True)
+    p = sub.add_parser('smoke'); p.add_argument('--repository', required=True); p.add_argument('--audit', required=True); p.add_argument('--codex', default='codex')
     p = sub.add_parser('preflight'); p.add_argument('--repository', required=True); p.add_argument('--codex', default='codex'); p.add_argument('--trust-receipt')
     p = sub.add_parser('prepare')
     for name in ('source', 'ref', 'builder', 'scenario', 'repository', 'audit', 'arm', 'pair', 'evaluator', 'baseline-ref', 'candidate-ref'): p.add_argument('--' + name, required=True)
