@@ -419,6 +419,8 @@ class WorkAuditTests(unittest.TestCase):
         self.assertEqual(work_audit.kind("validation/trials/x/results.jsonl", []), "records")
         self.assertEqual(work_audit.kind("validation/mutations/rule.json", []), "test")
         self.assertNotEqual(work_audit.kind("src/results/parse.py", []), "records")
+        self.assertNotEqual(work_audit.kind("app/results/schema.json", []), "records")
+        self.assertEqual(work_audit.kind("validation/x.ndjson", []), "records")
 
     def test_fail_on_and_since_gate_only_the_change_under_review(self):
         self.heavy_history(150)
@@ -427,6 +429,9 @@ class WorkAuditTests(unittest.TestCase):
         self.assertEqual(subprocess.run(gate, capture_output=True).returncode, 1)
         self.commit("src/app.py", "".join(f"def g{i}():\n    return {i}\n" for i in range(200)), "feat: behaviour")
         self.assertEqual(subprocess.run(gate + ["--since", base], capture_output=True).returncode, 0)
+        missing = subprocess.run(gate + ["--since", "no-such-ref"], capture_output=True, text=True)
+        self.assertNotEqual(missing.returncode, 0)
+        self.assertIn("not a commit", missing.stderr)
 
 if __name__ == "__main__":
     unittest.main()

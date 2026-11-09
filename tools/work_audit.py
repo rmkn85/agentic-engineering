@@ -74,9 +74,8 @@ NOTE = re.compile(r"\b(TODO|FIXME|XXX|HACK)\b|\bnot implemented\b", re.I)
 UNFINISHED = re.compile(STUB.pattern + "|" + NOTE.pattern, re.I)
 VENDORED = re.compile(r"(^|/)(vendor|vendored|third[_-]party|external|extern|node_modules|\.venv|venv|"
                       r"site-packages|dist|build|generated|gen|__generated__)(/|$)|\.min\.(js|css)$|_pb2\.py$", re.I)
-EVIDENCE_DATA = re.compile(r"(^|/)(validation|evidence|receipts?|results?|trials?|reviews?|findings|reports?|runs|"
-                           r"logs?|checkpoints?|journals?|snapshots?|artifacts?)/.*\.(json|jsonl|ya?ml|csv|tsv|txt|log)$",
-                           re.I)
+EVIDENCE_DATA = re.compile(r"(^|/)(validation|evidence|receipts?|trials?|reviews?|findings|checkpoints?|journals?)/"
+                           r".*\.(json|jsonl|ndjson|ya?ml|csv|tsv|txt|log)$", re.I)
 HANDOFF = re.compile(r"(handoff|hand-off|continuation|dev-handoff)", re.I)
 CODE = re.compile(r"\.(py|js|jsx|ts|tsx|go|rs|java|kt|cs|cpp|cc|c|h|hpp|rb|php|swift|scala|gd|lua|sh)$", re.I)
 INSTRUCTION_FILE = re.compile(
@@ -151,6 +150,8 @@ def kind(path: str, product: list[str]) -> str:
 
 
 def commit_mix(root: Path, count: int, product: list[str], since: str | None = None) -> list[dict]:
+    if since and not git(root, "rev-parse", "--verify", "--quiet", f"{since}^{{commit}}"):
+        raise SystemExit(f"work-audit: --since {since!r} is not a commit here; a gate must not pass on missing history")
     window = [f"{since}..HEAD"] if since else [f"-{count}"]
     log = git(root, "log", *window, "--no-merges", "--numstat", "--format=\x1e%h\x1f%s")
     commits = []

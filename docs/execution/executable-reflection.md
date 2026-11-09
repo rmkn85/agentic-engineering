@@ -68,7 +68,9 @@ the truth of judgment or independence of the reviewer.
 
 The finish gate checks the declared review. Integration separately uses
 `make review-check BASE=<review base>`: a changed finish gate, trial evaluator,
-proof or review check, or CI route needs a current `methodology-review/v1` manifest under `validation/reviews`, binding reviewed
+proof, review, hygiene or self-audit check, the hook, allowlist, budget or audit
+configuration they read, or a CI route (`CONTROLS` in `tools/check_review.py`)
+needs a current `methodology-review/v1` manifest under `validation/reviews`, binding reviewed
 files, request, failure evidence, sealed framing and the independent report.
 The manifest's `input_hashes` binds `request`, `failure_evidence` and `framing`
 to the exact inputs the accepted report examined; resealing a different frame

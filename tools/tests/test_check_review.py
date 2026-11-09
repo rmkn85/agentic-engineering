@@ -73,7 +73,9 @@ class ReviewBoundaryTests(unittest.TestCase):
     def test_gates_evaluators_and_ci_routes_need_review(self):
         (self.root/'tools/finish_check.py').write_text('original instructions')
         for name in ('tools/make', 'tools/work_audit.py', 'validation/trials/recurrence/score.py',
-                     '.github/workflows/verify.yml'):
+                     '.github/workflows/verify.yml', '.claude/settings.json', '.codex/hooks.json',
+                     'configs/guidance-budget.json', 'configs/allowed-activities.json', '.agent/audit.json',
+                     'tools/check-outcome-controls.py', 'tools/check_hygiene.py', 'tools/check-fresh.py'):
             path = self.root / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text('changed control')

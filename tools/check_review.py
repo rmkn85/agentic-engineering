@@ -15,17 +15,19 @@ from blind_review import validate_frame
 
 
 # Review is required only where an agent could grade its own work or switch a guard off:
-# finish/outcome gates, trial evaluators, the proof, review and self-audit checks, and
-# the routes CI uses to run them. Guidance prose is held by the guidance budget and
-# ordinary tools by their tests and mutation proofs; neither needs a receipt.
-CONTROLS = frozenset(('Makefile', 'tools/make') + tuple(f'tools/{name}.py' for name in (
+# finish/outcome gates, trial evaluators, the proof, review, hygiene and self-audit checks,
+# the hook, allowlist, budget and audit configuration they read, and the routes CI uses
+# to run them. Guidance prose is held by the guidance budget and ordinary tools by their
+# tests and mutation proofs; neither needs a receipt.
+CONTROLS = frozenset(('Makefile', 'tools/make', '.agent/audit.json', 'configs/guidance-budget.json',
+                      'configs/allowed-activities.json') + tuple(f'tools/{name}.py' for name in (
     'finish_check', 'goal_control', 'outcome_control', 'control_evaluation', 'native_trial', 'run_trial',
     'check_review', 'blind_review', 'prove_guards', 'check_findings', 'check_guidance_budget', 'guard_command',
-    'agent_hooks', 'work_audit')))
+    'agent_hooks', 'work_audit', 'check-outcome-controls', 'check_hygiene', 'check-fresh')))
 
 
 def relevant(path):
-    return (path in CONTROLS or path.startswith('.github/workflows/') or
+    return (path in CONTROLS or path.startswith(('.github/workflows/', '.claude/', '.codex/')) or
             (path.startswith('validation/trials/') and path.endswith('.py')))
 
 
