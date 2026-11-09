@@ -1,0 +1,5 @@
+{
+  "global_agents_bound": true,
+  "global_override_bound": true,
+  "override_change_invalidates_identity": true
+}

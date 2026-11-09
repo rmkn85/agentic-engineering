@@ -1,0 +1,11 @@
+{
+  "candidate": "81c0d5ba73787d86a45519f5ab7b8f5678da284d",
+  "evaluator_absent": true,
+  "all_validation_absent": true,
+  "all_tool_tests_absent": true,
+  "derived_test_hash_retained": true,
+  "review_repair_hash_retained": true,
+  "normal_corpus_present": true,
+  "native_helper_present": true,
+  "project_consumer_check_present": true
+}
