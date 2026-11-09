@@ -1,0 +1,144 @@
+{
+  "attempts": [
+    {
+      "cli_version": "0.156.1",
+      "expected_reply_observed": false,
+      "id": "writable-home-old-cli",
+      "observed_outcome": "model_rejected",
+      "raw_evidence_sha256": {
+        "smoke-receipt.json": "16dfce9b39aab07a97da9405f3391b492e41770b0d3d807d7dd072fa89aaa484",
+        "stderr.log": "6e57895185a0b6debe473430455edcac7b7cb85f216a89a3aa278bfe315a0dc1",
+        "stdout.jsonl": "0d44dd9aee226d34db2cf3b965d185e2707e2b554e086dade6dfc27a3ef9b039"
+      },
+      "returncode": 1,
+      "runtime_settings_observed": {
+        "effort": null,
+        "model": null
+      },
+      "status": "failed",
+      "usage": null,
+      "wall_seconds": 4.211
+    },
+    {
+      "cli_version": "0.167.0",
+      "expected_reply_observed": true,
+      "id": "writable-home-current-standalone-cli",
+      "observed_outcome": "model_reply_tool_runtime_incomplete",
+      "raw_evidence_sha256": {
+        "smoke-receipt.json": "a16f8ce446bdf9b3f93d540eb61743471ec5c83d5fc6fd5b73105a7556f02e06",
+        "stderr.log": "ae03eb25c5e319dfd4c6130ab5466e8a8754a1d3e9357f285a8c2ea4d3f61e95",
+        "stdout.jsonl": "4a9ef80aa1f3fe34405bc712b6c9af95e6662100d028d43269cea5ded45c1db0"
+      },
+      "returncode": 0,
+      "runtime_settings_observed": {
+        "effort": null,
+        "model": null
+      },
+      "status": "completed",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 12288,
+        "input_tokens": 17458,
+        "output_tokens": 9,
+        "reasoning_output_tokens": 0
+      },
+      "wall_seconds": 5.217
+    },
+    {
+      "cli_version": "0.167.0",
+      "expected_reply_observed": true,
+      "id": "writable-home-current-complete-cli",
+      "observed_outcome": "model_reply_nested_tool_sandbox_failed",
+      "raw_evidence_sha256": {
+        "smoke-receipt.json": "3fa33a3d7c8c14d3731e74d6f817510c646963533fe94fcd24829eb9d0a2f950",
+        "stderr.log": "fd423788c6a30be07b54d2f13ed34da2c50073f1e3f5e1f682b25ecf2b3aa8ed",
+        "stdout.jsonl": "cdb2a356ef0e1f8b8620eb0cd4cd11a9b1b9713bb282169d8fc3345e63cdce3b"
+      },
+      "returncode": 0,
+      "runtime_settings_observed": {
+        "effort": null,
+        "model": null
+      },
+      "status": "completed",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 31104,
+        "input_tokens": 37889,
+        "output_tokens": 154,
+        "reasoning_output_tokens": 65
+      },
+      "wall_seconds": 16.412
+    }
+  ],
+  "baseline": "4cdeefd11dd415512d691f4bf5a6197132141123",
+  "blocking_prerequisite": {
+    "controls_modified_to_bypass_failure": false,
+    "corroboration": "https://github.com/openai/codex/issues/53799",
+    "kind": "nested_native_tool_sandbox",
+    "observed_error": "app-server socket directory must be a user-owned directory with mode 0700",
+    "observed_mask": {
+      "mode": "000",
+      "owned_by_current_user": true,
+      "read_only": true
+    }
+  },
+  "date": "2026-11-09",
+  "deterministic_readiness_guard": {
+    "fresh_trial_refusal": "sandbox_preflight_failed",
+    "native_model_launch_created": false,
+    "raw_preflight_sha256": "3181fe8a098629828df513f92e57bf5ac6b21c04919486cb4ab1809cf04a40c9",
+    "returncode": 1,
+    "scope": "read_only_command_startup",
+    "status": "failed",
+    "workspace_write_execution_proven": false
+  },
+  "effort": "medium",
+  "frozen_trial_candidate": "40daa16b121b532fd3b3a0b308e891d864be6422",
+  "hook_observations": {
+    "adapter_events_match_native_thread_identity": true,
+    "adapter_events_observed": [
+      "start",
+      "stop"
+    ],
+    "limitation": "Adapter records and correlation are retained separately; the CLI JSON stream did not expose native hook events. No scored hook adoption claim is made.",
+    "native_discovery_and_trust": [
+      {
+        "currentHash": "sha256:3f6607bc468233ba40d804747ce0db5987fe423002456bbb3f9508be54d6d380",
+        "enabled": true,
+        "eventName": "sessionStart",
+        "handlerType": "command",
+        "trustStatus": "trusted"
+      },
+      {
+        "currentHash": "sha256:fae5c7f169ef874947a5ecf45d1ff1409246548711f6b3f9f4916053b0ce6456",
+        "enabled": true,
+        "eventName": "stop",
+        "handlerType": "command",
+        "trustStatus": "trusted"
+      }
+    ],
+    "native_json_hook_events_observed": false
+  },
+  "interpretation": "Writable scratch resolved the state boundary and a current complete CLI resolved model/runtime availability. Native tool execution remains blocked by a separate nested sandbox prerequisite. No consumer outcome, autonomous correction, comparative superiority or productivity benefit was measured.",
+  "model": "gpt-6.1-sol",
+  "native_comparison": "unrun",
+  "preparation": {
+    "heldout_binding_repaired_before_scoring": true,
+    "heldout_original_builder_sha256": "55090054dee78998cd7618192e29f3f3cb6bf8d5f07c3d600c8e00197824433c",
+    "heldout_repaired_builder_sha256": "339223707a6edb693b2de7307f35a4fa2eefe0f69e89667a41fd78661737c7f9",
+    "heldout_scenario_disclosed_to_coordinator": false,
+    "paired_fixtures_frozen": 4,
+    "scored_native_runs_launched": 0
+  },
+  "runtime_preparation": {
+    "approval_and_permission_profiles_preserved": true,
+    "official_package_sha256": "3bbf75e83de6b58aed28f2cf6e33ad423ec31fd4700a1457b94be557ea5a7c6e",
+    "original_configuration_changed": false,
+    "reviewed_local_changes": [
+      "Trust exact neutral fixture project layers",
+      "Trust native-discovered exact lifecycle hook hashes"
+    ],
+    "scope": "Private writable CODEX_HOME with copied existing configuration and private authentication cache; complete pinned official CLI package"
+  },
+  "schema": "sanitized-native-recovery/v1"
+}

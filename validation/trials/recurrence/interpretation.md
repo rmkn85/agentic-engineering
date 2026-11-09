@@ -1,22 +1,40 @@
 # Recurrence experiment status
 
-Status on 2026-11-09: **native comparison blocked before model execution**.
-The native CLI feasibility smoke exited before its in-process app server could
-initialize because its installation/state directory was read-only. No model
-reply, usage measurement, native hook invocation or successful consumer outcome
-was observed. The sanitized receipt is `native-smoke.json`.
+Status on 2026-11-09: **model execution works; native tool execution is blocked**.
+The original CLI 0.156.1 attempt could not initialize its read-only native state.
+That historical failure remains in `native-smoke.json`. The follow-up
+`native-recovery.json` retains three materially different calibration attempts.
 
-The installed CLI, cached model capability and authentication state were
-inspected. Those observations are prerequisites, not evidence of model execution.
-The host configuration, permissions and trust were preserved; no alternate home,
-copied credentials, coached prompt, or global reconfiguration was used to evade
-the boundary. Repeating the unchanged failed route would add no evidence.
+A private writable home is a supported preparation route: [CODEX_HOME](https://learn.chatgpt.com/docs/config-file/environment-variables)
+relocates native state, and the [authentication documentation](https://learn.chatgpt.com/docs/auth)
+describes private headless credential-cache copying. The earlier stop should have
+tested this route. Original host configuration was not changed. The private copy
+retained existing permissions, approval policy, rules, instructions and plugins;
+only the neutral project layers and exact reviewed lifecycle hooks received trust.
+Credential material and personal configuration are excluded from public evidence.
 
-The four paired scenarios remain **unrun**, including the independently prepared
-held-out variation. Its oracle stayed sealed while candidate source was under
-development. Before scoring, freeze the final candidate and complete the same
-native route with reviewed hook trust in an authorized writable host environment.
-The evaluator and its source must remain outside the worker's installed corpus.
+The old CLI then reached the service but could not use the specified model. A
+complete official CLI 0.167.0 package, pinned by release digest, returned the
+requested reply using `gpt-6.1-sol`/Medium. An intermediate standalone-binary
+attempt lacked its code-mode helper; its result is retained separately. Neither
+model reply proves that the agent can run commands or deliver a consumer result.
+
+Native `hooks/list` confirmed discovery and exact-hash trust. Start and Stop
+adapter records matched the calibration thread identity. The CLI JSON stream
+exposed no native hook events, so these observations remain distinct and do not
+establish scored adoption. A model-issued shell command failed before execution:
+the outer sandbox masks the shared native socket directory read-only with mode
+`000`, while the inner sandbox requires `0700`. This matches the open
+[nested sandbox issue](https://github.com/openai/codex/issues/53799), checked
+2026-11-09. No mask, permissions, approval rule or trust control was bypassed.
+
+Four matched pairs were prepared and frozen at candidate `40daa16`, but remain
+**unrun**. The independent preparer repaired one held-out fixture hook-path
+translation before scoring and retained the original; its scenario and oracle
+remained undisclosed to the coordinator. Prepared attempts and native failures
+are retained privately. Before scoring, confirm command readiness in a supported
+native environment, freeze any revised candidate and keep all arms on the same
+settings. The evaluator and its source must remain outside the worker corpus.
 
 Deterministic regression tests exercise contract retention, stale evidence,
 correction transitions, adapter subprocess behavior, fixture calibration and
