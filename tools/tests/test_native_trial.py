@@ -155,6 +155,33 @@ class NativeTrialTests(unittest.TestCase):
         rows = [json.loads(s) for s in (self.audit / 'attempts.jsonl').read_text().splitlines()]
         self.assertEqual([r['status'] for r in rows], ['started', 'sandbox_preflight_failed'])
 
+    def test_failed_preflight_retries_keep_each_complete_hash_bound_observation(self):
+        self.prepare()
+        observations = [
+            {'host_controls': trial.host_controls(), 'cli_available': True,
+             'read_only_sandbox_probe': {'status': 'failed', 'returncode': 1,
+                                         'stderr': diagnostic, 'argv': ['codex', 'sandbox']}}
+            for diagnostic in ('first startup failure', 'second startup failure')
+        ]
+        with mock.patch.object(trial, 'preflight', side_effect=observations), mock.patch.object(trial.subprocess, 'run') as launch:
+            results = [trial.run(self.audit) for _ in observations]
+            launch.assert_not_called()
+        self.assertEqual([r['status'] for r in results], ['sandbox_preflight_failed'] * 2)
+        self.assertNotEqual(results[0]['preflight_file'], results[1]['preflight_file'])
+        for result, observation in zip(results, observations):
+            self.assertEqual(result['preflight_file'], result['attempt'] + '.preflight.json')
+            path = self.audit / result['preflight_file']
+            self.assertTrue(path.is_file())
+            self.assertEqual(json.loads(path.read_text()), observation)
+            self.assertEqual(trial.digest(path), result['preflight_sha256'])
+        rows = [json.loads(s) for s in (self.audit / 'attempts.jsonl').read_text().splitlines()]
+        self.assertEqual(len(rows), 4)
+        for row, result in zip(rows, [results[0]] * 2 + [results[1]] * 2):
+            self.assertEqual(row['preflight_file'], result['preflight_file'])
+            self.assertEqual(row['preflight_sha256'], result['preflight_sha256'])
+        self.assertEqual(json.loads((self.audit / 'preflight.json').read_text()), observations[-1])
+        self.assertFalse((self.audit / 'launch.json').exists())
+
     def test_model_smoke_success_does_not_hide_sandbox_failure(self):
         observed = {'hook_config_present': False, 'native_hook_trust': 'unknown',
                     'read_only_sandbox_probe': {'status': 'failed'}}

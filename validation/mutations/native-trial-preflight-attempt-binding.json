@@ -1,0 +1,10 @@
+{
+  "id": "native-trial-preflight-attempt-binding",
+  "rule": "Each failed native attempt retains complete preflight diagnostics by its own file and hash, including across retries",
+  "file": "tools/native_trial.py",
+  "find": "'preflight_file': preflight_path.name",
+  "replace": "'preflight_file': 'preflight.json'",
+  "tests": [
+    "tools.tests.test_native_trial.NativeTrialTests.test_failed_preflight_retries_keep_each_complete_hash_bound_observation"
+  ]
+}

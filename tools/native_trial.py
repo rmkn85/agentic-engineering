@@ -210,8 +210,13 @@ def run(audit, codex='codex', trust_receipt=None):
         append(audit, {'phase': 'run', 'status': 'initial_state_changed'})
         raise ValueError('frozen initial workspace changed; prepare a new fixture')
     check = preflight(repository, codex, trust_receipt)
+    attempt_id = str(uuid.uuid4())
+    preflight_path = audit / (attempt_id + '.preflight.json')
+    with preflight_path.open('x') as out:
+        out.write(json.dumps(check, indent=2, sort_keys=True) + '\n')
     write(audit / 'preflight.json', check)
-    attempt = {'attempt': str(uuid.uuid4()), 'phase': 'run', 'status': 'started',
+    attempt = {'attempt': attempt_id, 'phase': 'run', 'status': 'started',
+               'preflight_file': preflight_path.name, 'preflight_sha256': digest(preflight_path),
                'started_at': dt.datetime.now(dt.timezone.utc).isoformat(), 'human_assistance': [],
                'usage': None, 'wall_seconds': None, 'selected_actions': [], 'hook_calls': None, 'hook_adapter_events': None,
                'runtime_settings': {'model': None, 'effort': None}, 'host_controls_match': check.get('host_controls') == spec['host_controls']}
