@@ -67,13 +67,15 @@ artifacts resolving them. `validate-frame` checks binding and completeness, not
 the truth of judgment or independence of the reviewer.
 
 The finish gate checks the declared review. Integration separately uses
-`make review-check BASE=<review base>`: changed methodology needs a current
-`methodology-review/v1` manifest under `validation/reviews`, binding reviewed
+`make review-check BASE=<review base>`: a changed finish gate, trial evaluator,
+proof, review, hygiene or self-audit check, the hook, allowlist, budget or audit
+configuration they read, or a CI route (`CONTROLS` in `tools/check_review.py`)
+needs a current `methodology-review/v1` manifest under `validation/reviews`, binding reviewed
 files, request, failure evidence, sealed framing and the independent report.
 The manifest's `input_hashes` binds `request`, `failure_evidence` and `framing`
 to the exact inputs the accepted report examined; resealing a different frame
 cannot reuse that acceptance.
-Unrelated product edits need no new review receipt. Changes to reviewed bytes
+Guidance, ordinary tools and evidence need no receipt: the guidance budget, tests and mutation proofs hold them, and `make audit-self` fails a change that is mostly records or process. Changes to reviewed bytes
 invalidate coverage. `make check` rejects unresolved findings at integration.
 
 Use `check_findings.py --reopen ID --evidence FILE --reason TEXT` when a previous

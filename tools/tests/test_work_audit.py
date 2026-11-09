@@ -395,5 +395,43 @@ class WorkAuditTests(unittest.TestCase):
         self.assertEqual(before, after)
 
 
+    def heavy_history(self, record_lines):
+        for n in range(3):
+            self.write("validation/results/run.jsonl", "".join(f'{{"run": {n}, "row": {i}}}\n' for i in range(record_lines * (n + 1))))
+            self.commit("src/app.py", f"def run():\n    return {n + 2}\n", f"feat: step {n} with its results")
+
+    def test_records_heavy_changes_are_reported_even_when_each_commit_touches_code(self):
+        self.heavy_history(150)
+        report = self.report()
+        self.assertNotIn("loop", self.kinds(report))
+        self.assertIn("behaviour-first", self.finding(report, "records-heavy")["action"])
+
+    def test_small_or_behaviour_led_changes_are_not_records_heavy(self):
+        self.heavy_history(10)
+        self.assertNotIn("records-heavy", self.kinds(self.report()))
+        self.commit("src/app.py", "".join(f"def f{i}():\n    return {i}\n" for i in range(1200)), "feat: real work")
+        self.commit("validation/results/run.jsonl", "".join(f"{{\"r\": {i}}}\n" for i in range(400)), "data: results")
+        self.assertNotIn("records-heavy", self.kinds(self.report()))
+
+    def test_evidence_data_counts_as_records_but_code_never_does(self):
+        sys.path.insert(0, str(TOOL.parent))
+        import work_audit
+        self.assertEqual(work_audit.kind("validation/trials/x/results.jsonl", []), "records")
+        self.assertEqual(work_audit.kind("validation/mutations/rule.json", []), "test")
+        self.assertNotEqual(work_audit.kind("src/results/parse.py", []), "records")
+        self.assertNotEqual(work_audit.kind("app/results/schema.json", []), "records")
+        self.assertEqual(work_audit.kind("validation/x.ndjson", []), "records")
+
+    def test_fail_on_and_since_gate_only_the_change_under_review(self):
+        self.heavy_history(150)
+        base = subprocess.run(GIT + ["rev-parse", "HEAD"], cwd=self.root, capture_output=True, text=True).stdout.strip()
+        gate = [sys.executable, str(TOOL), "--root", str(self.root), "--fail-on", "records-heavy,loop"]
+        self.assertEqual(subprocess.run(gate, capture_output=True).returncode, 1)
+        self.commit("src/app.py", "".join(f"def g{i}():\n    return {i}\n" for i in range(200)), "feat: behaviour")
+        self.assertEqual(subprocess.run(gate + ["--since", base], capture_output=True).returncode, 0)
+        missing = subprocess.run(gate + ["--since", "no-such-ref"], capture_output=True, text=True)
+        self.assertNotEqual(missing.returncode, 0)
+        self.assertIn("not a commit", missing.stderr)
+
 if __name__ == "__main__":
     unittest.main()

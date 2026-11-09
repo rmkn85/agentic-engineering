@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-          fetch-depth: 2
+          fetch-depth: 0
       - name: Exercise native checks from cold and stale committed source
         run: make contributor-trial
       - name: Prove each guarded rule's tests fail when the rule is disabled
@@ -30,3 +30,4 @@ jobs:
           git fetch --no-tags --depth=1 origin "$BASE_SHA" 2>/dev/null || true
           make guidance-delta BASE="$BASE_SHA"
           make review-check BASE="$BASE_SHA"
+          make audit-self BASE="$BASE_SHA"

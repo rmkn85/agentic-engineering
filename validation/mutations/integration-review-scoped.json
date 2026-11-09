@@ -1,0 +1,10 @@
+{
+  "id": "integration-review-scoped",
+  "rule": "Guidance, ordinary tools and evidence need no review receipt",
+  "file": "tools/check_review.py",
+  "find": "            (path.startswith('validation/trials/') and path.endswith('.py')))",
+  "replace": "            path.startswith(('validation/', 'docs/', 'skills/', 'tools/')) or path == 'AGENTS.md')",
+  "tests": [
+    "tools.tests.test_check_review.ReviewBoundaryTests.test_guidance_ordinary_tools_and_evidence_need_no_receipt"
+  ]
+}

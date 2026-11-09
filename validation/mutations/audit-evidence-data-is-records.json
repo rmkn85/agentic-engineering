@@ -1,0 +1,11 @@
+{
+  "id": "audit-evidence-data-is-records",
+  "rule": "Evidence data files count as records, not product",
+  "file": "tools/work_audit.py",
+  "find": "    if (RECORDS.search(path) or EVIDENCE_DATA.search(path)) and not CODE.search(path):",
+  "replace": "    if RECORDS.search(path) and not CODE.search(path):",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_evidence_data_counts_as_records_but_code_never_does",
+    "tools.tests.test_work_audit.WorkAuditTests.test_records_heavy_changes_are_reported_even_when_each_commit_touches_code"
+  ]
+}

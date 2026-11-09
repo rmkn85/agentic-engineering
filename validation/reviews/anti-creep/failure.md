@@ -1,0 +1,5 @@
+# Failure evidence
+
+- From commit 85869a1 to 3b1ae2b (33 non-merge commits) 48% of added lines (3391 of 7113) were records or process: review manifests, receipts, trial result JSON, reports. Product code added 1705 lines, tests 2017. One merged PR (#24) was 73% records/process by added lines (940 of 1280).
+- `python3 tools/work_audit.py` on this repository reported no direction finding for that history: JSON/JSONL evidence under validation/ was classified as product, and the records check only looked at whether each commit touched a code file, so a one-line code change carried any amount of records.
+- `make review-check` required an independent-review manifest for every change to AGENTS.md, docs/, skills/, templates/, configs/ and every non-test tools/*.py, so routine edits produced review receipts; 21 files accumulated under validation/reviews. The repository's own guidance (docs/principles/defaults-before-overrides.md, docs/execution/bounded-recovery.md) says independent review needs a named failure and is not for every routine edit.

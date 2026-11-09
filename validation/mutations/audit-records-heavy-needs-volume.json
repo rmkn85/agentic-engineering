@@ -1,0 +1,10 @@
+{
+  "id": "audit-records-heavy-needs-volume",
+  "rule": "A change too small to judge is never records-heavy",
+  "file": "tools/work_audit.py",
+  "find": "        if heavy > RECORD_WEIGHT and total >= RECORD_MIN_LINES and not any(f[\"kind\"] == \"loop\" for f in found):",
+  "replace": "        if heavy > RECORD_WEIGHT and not any(f[\"kind\"] == \"loop\" for f in found):",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_small_or_behaviour_led_changes_are_not_records_heavy"
+  ]
+}

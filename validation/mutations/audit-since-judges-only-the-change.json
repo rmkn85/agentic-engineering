@@ -1,0 +1,10 @@
+{
+  "id": "audit-since-judges-only-the-change",
+  "rule": "--since limits the judged history to the change under review",
+  "file": "tools/work_audit.py",
+  "find": "    window = [f\"{since}..HEAD\"] if since else [f\"-{count}\"]",
+  "replace": "    window = [f\"-{count}\"]",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_fail_on_and_since_gate_only_the_change_under_review"
+  ]
+}

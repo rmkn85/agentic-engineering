@@ -1,0 +1,10 @@
+{
+  "id": "audit-records-heavy-by-lines",
+  "rule": "Records and process outweighing behaviour by added lines is a direction finding",
+  "file": "tools/work_audit.py",
+  "find": "        if heavy > RECORD_WEIGHT and total >= RECORD_MIN_LINES and not any(f[\"kind\"] == \"loop\" for f in found):",
+  "replace": "        if False:",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_records_heavy_changes_are_reported_even_when_each_commit_touches_code"
+  ]
+}

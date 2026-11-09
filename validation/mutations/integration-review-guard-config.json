@@ -1,0 +1,10 @@
+{
+  "id": "integration-review-guard-config",
+  "rule": "Hook settings under .claude/ and .codex/ remain reviewed",
+  "file": "tools/check_review.py",
+  "find": "path.startswith(('.github/workflows/', '.claude/', '.codex/'))",
+  "replace": "path.startswith(('.github/workflows/',))",
+  "tests": [
+    "tools.tests.test_check_review.ReviewBoundaryTests.test_gates_evaluators_and_ci_routes_need_review"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "payload": {
+    "schema": 1,
+    "request_sha256": "a8c3710b07e36550a1e32426bf4acae8fa2a7977103c5fdc1a8806a65393f864",
+    "failure_sha256": "e1c38ec299f60e9e713013ca536de64a1ebdd4f817ab16e3ee2abbffebff1f3f",
+    "frame": {
+      "criteria": [
+        {
+          "id": "C1",
+          "requirement": "The work audit classifies JSON/JSONL evidence, review manifests, receipts, trial result files and reports (including those under validation/) as records/process, not product code.",
+          "check": "Run python3 tools/work_audit.py on a fixture or the repository history 85869a1..3b1ae2b; files under validation/ such as review manifests, receipts and trial result JSON must be counted as records/process and not as product."
+        },
+        {
+          "id": "C2",
+          "requirement": "The work audit measures the share of records/process by added lines across a range or PR, not by whether each commit touches a code file, and reports a direction finding when that share is mostly records/process.",
+          "check": "Running the audit on the 85869a1..3b1ae2b history (about 48% records) or on PR #24's commits (about 73% records) produces a direction/records finding. A synthetic commit that changes one line of code and adds hundreds of record lines also produces the finding. A history that is mostly product and test lines does not."
+        },
+        {
+          "id": "C3",
+          "requirement": "The audit is applied to this repository's own development, and it fails (non-zero or a blocking finding) when changes are mostly records/process rather than behaviour.",
+          "check": "Confirm the repository's own check path (e.g. a make target or CI) invokes the work audit on this repository's changes. Feed it a mostly-records change and confirm it exits non-zero or reports a failing finding. Feed it a behaviour-dominated change and confirm it passes."
+        },
+        {
+          "id": "C4",
+          "requirement": "Independent-review manifests and receipts are required only where a measured or named failure calls for them, not for every routine edit to AGENTS.md, docs/, skills/, templates/, configs/ or non-test tools/*.py.",
+          "check": "Make a routine edit, with no named failure, to a file in docs/, then skills/, then a non-test tools/*.py, and run make review-check. Each should pass without a new review manifest. A change tied to a named failure or a guard-protecting path should still require review as the repository's guidance specifies."
+        },
+        {
+          "id": "C5",
+          "requirement": "Protections against agents grading their own work or disabling a guard are not weakened.",
+          "check": "Make a change that disables, deletes or loosens a guard or check (e.g. edit the audit or review-check thresholds or classifications to pass more easily, or skip a check), or that has the builder certify its own work. make review-check or the audit must still block it or require independent review, the same as before."
+        },
+        {
+          "id": "C6",
+          "requirement": "The fix itself must not repeat the failure: the change that delivers this should be mostly behaviour (code and tests), not new records or process ceremony.",
+          "check": "Run the updated work audit on the commits that implement this request. Records/process must not be the majority of added lines, and no new review receipts may be added unless a named failure justifies them."
+        },
+        {
+          "id": "C7",
+          "requirement": "Repository guidance and the enforced checks agree: the documented rule that independent review needs a named failure matches what review-check enforces.",
+          "check": "Compare the review-trigger conditions in AGENTS.md/docs with the path or condition logic in the review-check tool. No path class should trigger review in the tool unless the guidance requires review for it."
+        }
+      ],
+      "discrepancies": []
+    }
+  },
+  "sha256": "bcfb6eade228e2f4d3ad26698972e4d125b0eae33e8d911cc7bf59165d6e6355"
+}

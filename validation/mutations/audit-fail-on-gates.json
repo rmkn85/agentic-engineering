@@ -1,0 +1,10 @@
+{
+  "id": "audit-fail-on-gates",
+  "rule": "--fail-on makes a listed finding fail the run",
+  "file": "tools/work_audit.py",
+  "find": "    hit = [f for f in report[\"findings\"] if f[\"kind\"] in failing]",
+  "replace": "    hit = []",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_fail_on_and_since_gate_only_the_change_under_review"
+  ]
+}

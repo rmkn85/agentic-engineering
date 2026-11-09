@@ -1,0 +1,10 @@
+{
+  "id": "audit-since-fails-closed",
+  "rule": "An unresolvable --since base fails the gate instead of passing on no history",
+  "file": "tools/work_audit.py",
+  "find": "    if since and not git(root, \"rev-parse\", \"--verify\", \"--quiet\", f\"{since}^{{commit}}\"):",
+  "replace": "    if False:",
+  "tests": [
+    "tools.tests.test_work_audit.WorkAuditTests.test_fail_on_and_since_gate_only_the_change_under_review"
+  ]
+}
