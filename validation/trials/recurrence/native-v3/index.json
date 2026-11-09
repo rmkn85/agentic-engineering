@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "baseline": "4cdeefd11dd415512d691f4bf5a6197132141123",
+  "candidate": "6d9287fa50c7df97c307cc243c4e0a0057380cde",
+  "rows": [
+    {
+      "pair": "p01-baseline",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p01-baseline.json",
+      "raw_receipt_sha256": "ac7e6a42ff32c65f66f509a74b2486e2500b991ed86b8d694c63a458249cc2b6"
+    },
+    {
+      "pair": "p01-candidate",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p01-candidate.json",
+      "raw_receipt_sha256": "617983bd8f4059f26a5c826fc3ad4e0e119718ba124bcfdcf806d11024594629"
+    },
+    {
+      "pair": "p02-baseline",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p02-baseline.json",
+      "raw_receipt_sha256": "f5dce1e29d3947f55fabfc054014f3e732b69599508c330f59cd0ae123ac4811"
+    },
+    {
+      "pair": "p02-candidate",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p02-candidate.json",
+      "raw_receipt_sha256": "9c6c18ea194529cd275207610e4143eccfa6bbca50df8c69f86b443687f78190"
+    },
+    {
+      "pair": "p03-baseline",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p03-baseline.json",
+      "raw_receipt_sha256": "635204b407f2e02f11497a569e60423a8950ea08ceb1991a0f5f2729d776dfb6"
+    },
+    {
+      "pair": "p03-candidate",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p03-candidate.json",
+      "raw_receipt_sha256": "366ecc63de634b96bc3cfb3eccd3b945784852fa9024d9d79a4d79adf006ea73"
+    },
+    {
+      "pair": "p04-baseline",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p04-baseline.json",
+      "raw_receipt_sha256": "7687d9a3d02c3fc041249cbb53869e4968d11b53529a6292bf4af25ba1f1d26d"
+    },
+    {
+      "pair": "p04-candidate",
+      "passed": true,
+      "integrity": true,
+      "receipt": "p04-candidate.json",
+      "raw_receipt_sha256": "47db4d2661aac36d9d8c520568b6c107e4c2baa5a5faf3c2e1660a6f323daa37"
+    }
+  ],
+  "limits": [
+    "Four matched task pairs are bounded behavioral observations.",
+    "Effective model settings and native hook events remain unknown where the exec event stream omits them.",
+    "Usage may omit child-session attribution; wall time includes shared-host effects and supports no productivity claim.",
+    "Original failed/invalid pair is retained separately; source corrections preceded this fresh freeze.",
+    "The healthy no-authored-form criterion does not prove absence of every other kind of process overhead."
+  ],
+  "comparison": "inconclusive: both arms passed all4 tasks",
+  "healthy_no_authored_form": "passed in both arms; automatic freshness evidence permitted",
+  "heldout": "Same independently prepared variation replayed after prior successful scoring and review. Its outcome informed no repair; this is not a newly unseen holdout.",
+  "retained_prior_failures": [
+    "first-native-pair/retained-results.json",
+    "native-v2/healthy-overhead.json"
+  ]
+}

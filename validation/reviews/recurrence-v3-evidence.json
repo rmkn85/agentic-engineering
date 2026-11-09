@@ -1,0 +1,32 @@
+{
+  "base": "4cdeefd11dd415512d691f4bf5a6197132141123",
+  "failure_evidence": "validation/reviews/reflection-failure-evidence.md",
+  "files": {
+    "validation/trials/recurrence/host-integration/final-source-receipt.json": "8cb895b002862a25740ea5d37d81614b1c4920af2333502eb19e252c0a7bc25d",
+    "validation/trials/recurrence/interpretation.md": "be458cf151e7af35227536b0106694980b3599cb7954543c7864e2a879630442",
+    "validation/trials/recurrence/native-v3/index.json": "6a2d2255b95c7cc42150e0c95f1029eced42a37307ad7b3779ba784692ee4fb6",
+    "validation/trials/recurrence/native-v3/p01-baseline.json": "8806b583205d843b97871a8720d1fa44771538dfefc9bf9787ebbab477b7f563",
+    "validation/trials/recurrence/native-v3/p01-candidate.json": "ce19bebf34c14b6233fd8b1faa5a3b0be10f7b94aba497b399903bee4f9d78ae",
+    "validation/trials/recurrence/native-v3/p02-baseline.json": "7952ad49145b9fcd4b4dddf67e55c37eebf64062b13bbd47f5da94f6998a871f",
+    "validation/trials/recurrence/native-v3/p02-candidate.json": "130f5c57d4f08d72ff74576aeda9f4e8521946310edf1a21d8f0bae3ddb15f4f",
+    "validation/trials/recurrence/native-v3/p03-baseline.json": "7e9c618bba8f72d13ed284ed8c13c0fa856cc6fdda715e93a6e92c67f4098c9b",
+    "validation/trials/recurrence/native-v3/p03-candidate.json": "602a9b89d97864971b9ef5ccb8c3ce578d34af42e35ceddadf1d9bcbd31f8824",
+    "validation/trials/recurrence/native-v3/p04-baseline.json": "3b9672f7a70624229af76bdcf636a87e1953a900fa9551533ac32ff8c4b84e01",
+    "validation/trials/recurrence/native-v3/p04-candidate.json": "9270b098e7819a5612702d6106b4fb416aa6a42c5349665ec0a122e656bb1b80"
+  },
+  "framing": "validation/reviews/reflection-frame.json",
+  "input_hashes": {
+    "failure_evidence": "649436ba12a1db9b198a9555fa318f0146f77c9e8ddeadd92076c7d8561a7ddb",
+    "framing": "a87fc8c4495a42ae811275c29324c41b5513cb8a28d08b503f7582905b7f63e7",
+    "request": "4b0e1d8898c4714c6d2b60a5a0696c6cc36cce70806b329559029a5388a37e2e"
+  },
+  "report": {
+    "path": "validation/reviews/recurrence-v3/report.md",
+    "sha256": "8e5af6729cf0e468142bfcf38df054433796374892481e2702411cdbb42c5519"
+  },
+  "request": "validation/reviews/reflection-request.md",
+  "reviewed_commit": "6d9287fa50c7df97c307cc243c4e0a0057380cde",
+  "schema": "methodology-review/v1",
+  "scope": "Final frozen native outcomes, semantic completion, matched settings, explicitly assisted final-source lifecycle proof and public privacy; no superiority claim",
+  "verdict": "accepted"
+}
