@@ -52,7 +52,7 @@ def append(audit, row):
 
 def host_controls():
     home = Path(os.environ.get('CODEX_HOME', str(Path.home() / '.codex')))
-    files = [home / 'config.toml', home / 'hooks.json']
+    files = [home / 'config.toml', home / 'hooks.json', home / 'AGENTS.md', home / 'AGENTS.override.md']
     files += sorted((home / 'rules').glob('*.rules'))
     return {str(p.relative_to(home)): digest(p) for p in files if p.is_file()}
 
@@ -95,7 +95,7 @@ def preflight(repository, codex='codex', trust_receipt=None):
 def exclude_trial_assets(corpus, source, builder, evaluator):
     """Export operating instructions without the experiment's scored oracles."""
     before = tree_hash(corpus)
-    excluded_paths = {'validation/trials'}
+    excluded_paths = {'validation', 'tools/tests'}
     for asset in (builder, evaluator):
         if asset.is_relative_to(source):
             excluded_paths.add(asset.relative_to(source).as_posix())

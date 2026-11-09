@@ -24,8 +24,8 @@ fixtures and external evaluators. Native execution uses maintained activities:
 ./tools/make recurrence-score AUDIT=/private/trial/audit
 ```
 
-The optional trust receipt reports native review of configured hooks; it never
-grants trust. Run each frozen fixture once. A retry or externally repaired fixture
+The optional trust receipt reports `native_hook_trust: "confirmed"` and the
+reviewed `hook_config_sha256`; it never grants trust. Run each frozen fixture once. A retry or externally repaired fixture
 needs a new preparation and an explicit assisted/regression interpretation.
 Logs, exact patches, final workspace identities, observed settings and usage
 remain outside the public corpus. A mechanical calibration without a completed

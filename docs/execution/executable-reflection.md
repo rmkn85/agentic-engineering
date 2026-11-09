@@ -102,6 +102,10 @@ outside worker repositories. Compare accepted consumer behavior, erroneous
 completion, corrective actions, assistance and available cost observations.
 Retain negative and interrupted attempts; a healthy contrast tests unnecessary
 process work. Held-out cases cease being held out after they inform a repair.
+Instruction exports exclude `validation` and `tools/tests`, including derived
+solutions in tests and review reports; export receipts retain the removed hashes.
+Global Codex instruction-file identities are bound alongside configuration and
+rules, so a changed surrounding instruction stack invalidates a frozen run.
 
 These mechanisms operate within a cooperative, reviewed workflow. They cannot
 defend against an actor replacing policy, checks and receipts together, judge

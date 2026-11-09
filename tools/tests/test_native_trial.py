@@ -176,6 +176,31 @@ class NativeTrialTests(unittest.TestCase):
         rows = [json.loads(line) for line in (self.audit / 'attempts.jsonl').read_text().splitlines()]
         self.assertEqual(rows[-1]['status'], 'initial_state_changed')
 
+    def test_export_excludes_derived_solutions_and_review_evidence(self):
+        for name in ('tools/tests/test_fixture.py', 'validation/reviews/repair.md'):
+            path = self.source / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('The exact solved outcome and expected repair')
+        subprocess.run(['git', 'add', '.'], cwd=self.source, check=True)
+        subprocess.run(['git', '-c', 'user.name=Trial', '-c', 'user.email=trial@example.invalid',
+                        '-c', 'commit.gpgsign=false', 'commit', '-qm', 'fixture solution assets'], cwd=self.source, check=True)
+        self.ref = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=self.source, text=True).strip()
+        spec = self.prepare()
+        for name in ('tools/tests/test_fixture.py', 'validation/reviews/repair.md'):
+            self.assertFalse((self.repo / '.agentic-engineering' / name).exists())
+            self.assertIn(name, spec['instruction_export']['excluded_files'])
+
+    def test_global_instruction_change_invalidates_host_identity(self):
+        # A disposable fake host is a deterministic fixture, not a native run.
+        home = self.base / 'fake-host'; home.mkdir()
+        instructions = home / 'AGENTS.md'; instructions.write_text('Original global instructions')
+        with mock.patch.dict('os.environ', {'CODEX_HOME': str(home)}):
+            before = trial.host_controls()
+            self.assertIn('AGENTS.md', before)
+            self.assertEqual(before['AGENTS.md'], trial.digest(instructions))
+            instructions.write_text('Different global instructions')
+            self.assertNotEqual(before, trial.host_controls())
+
     def test_postrun_external_repair_cannot_be_scored_as_autonomous(self):
         self.prepare()
         trial.append(self.audit, {'phase': 'run', 'status': 'completed',

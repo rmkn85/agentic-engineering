@@ -1,0 +1,10 @@
+{
+  "id": "native-trial-global-instructions",
+  "rule": "Frozen host identity includes global instruction content",
+  "file": "tools/native_trial.py",
+  "find": ", home / 'AGENTS.md', home / 'AGENTS.override.md'",
+  "replace": "",
+  "tests": [
+    "tools.tests.test_native_trial.NativeTrialTests.test_global_instruction_change_invalidates_host_identity"
+  ]
+}

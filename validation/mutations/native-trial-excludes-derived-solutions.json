@@ -1,0 +1,10 @@
+{
+  "id": "native-trial-excludes-derived-solutions",
+  "rule": "Derived test solutions are absent from the worker instruction export",
+  "file": "tools/native_trial.py",
+  "find": "excluded_paths = {'validation', 'tools/tests'}",
+  "replace": "excluded_paths = {'validation'}",
+  "tests": [
+    "tools.tests.test_native_trial.NativeTrialTests.test_export_excludes_derived_solutions_and_review_evidence"
+  ]
+}
