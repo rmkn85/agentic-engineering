@@ -1,7 +1,9 @@
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 
 
@@ -47,8 +49,32 @@ class HygieneTests(unittest.TestCase):
         result = self.run_tool("--strict")
         self.assertEqual(result.returncode, 1)
         self.assertIn("merged branch not deleted: done-topic", result.stdout)
-        self.assertIn("extra worktree", result.stdout)
+        self.assertNotIn("worktree", result.stdout)  # one fresh worktree is active parallel work
         self.assertNotIn("just-started", result.stdout)
+
+    def add_worktree(self, name):
+        path = Path(self.temp.name) / name
+        self.git("worktree", "add", "-q", str(path), "-b", name)
+        return path
+
+    def test_worktree_older_than_a_day_fails(self):
+        path = self.add_worktree("stale")
+        admin = Path(self.temp.name) / "repo" / ".git" / "worktrees" / "stale" / "commondir"
+        old = time.time() - 30 * 3600
+        os.utime(admin, (old, old))
+        result = self.run_tool("--strict")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn(f"extra worktree {path} is 30h old", result.stdout)
+        self.assertEqual(self.run_tool("--strict", "--max-worktree-hours", "48").returncode, 0)
+
+    def test_more_worktrees_than_the_cap_fail(self):
+        for n in range(3):
+            self.add_worktree(f"lane{n}")
+        self.assertEqual(self.run_tool("--strict").returncode, 0)
+        self.add_worktree("lane3")
+        result = self.run_tool("--strict")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("4 extra worktrees exceed the cap of 3", result.stdout)
 
     def test_dated_process_records_and_tracked_scratch(self):
         self.commit("docs/plans/2026-10-28-rollout.md", "x")

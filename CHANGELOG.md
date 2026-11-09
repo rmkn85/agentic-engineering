@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- `make hygiene` now fails on a worktree older than 24 hours or on more than
+  three at once, and no longer reports a fresh worktree within that cap. Git
+  write safety asks for a short branch in the main checkout by default and a
+  worktree only for colliding concurrent writers, landed the same day;
+  rationale in `references/trunk-based-agent-worktrees-2026-11.md`.
+
 - Work is ranked: keep running systems up, then make failures explain
   themselves, then deliver new results (AGENTS.md step 2). Direct delivery's
   70/30 feature bias now yields to that order. A step-4 sentence duplicating
