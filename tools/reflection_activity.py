@@ -18,11 +18,15 @@ def main(args=None):
     activity = args[0]
     action, fields = ACTIVITIES[activity]
     optional = {'TRUST_RECEIPT': '--trust-receipt'} if activity in ('recurrence-run', 'recurrence-preflight') else {}
+    if activity in ('recurrence-run', 'recurrence-preflight', 'recurrence-smoke'):
+        optional['CODEX'] = '--codex'
     values = {}
     for argument in args[1:]:
         key, separator, value = argument.partition('=')
         if not separator or key not in {**fields, **optional} or key in values or not value or '\x00' in value or '\n' in value:
             raise ValueError('invalid, extra or duplicate activity parameter')
+        if key == 'CODEX' and not Path(value).is_absolute():
+            raise ValueError('CODEX must be an absolute executable path')
         values[key] = str(Path(value).resolve())
     if not set(fields) <= set(values):
         raise ValueError('activity requires exactly ' + ', '.join(fields))

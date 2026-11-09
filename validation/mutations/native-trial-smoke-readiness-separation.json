@@ -1,0 +1,10 @@
+{
+  "id": "native-trial-smoke-readiness-separation",
+  "rule": "A no-tool model reply cannot hide an independently failed sandbox probe",
+  "file": "tools/native_trial.py",
+  "find": "    row['read_only_sandbox_probe'] = observed.get('read_only_sandbox_probe', {'status': 'unknown'})",
+  "replace": "    row['read_only_sandbox_probe'] = {'status': 'passed'}",
+  "tests": [
+    "tools.tests.test_native_trial.NativeTrialTests.test_model_smoke_success_does_not_hide_sandbox_failure"
+  ]
+}

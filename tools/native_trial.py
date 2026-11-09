@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Native, fresh-session trials. Private execution material stays outside the corpus.
 
-No sandbox, trust, rules, or user-config overrides are supplied to Codex. A
-preflight observes prerequisites; it cannot grant hook trust or prove adherence.
+Trial launches preserve inherited sandbox, trust, rules and user configuration.
+Preflight also tests a stricter read-only sandbox with managed requirements;
+it cannot grant hook trust or prove workspace writes or adherence.
 """
 from __future__ import annotations
 import argparse
@@ -56,6 +57,29 @@ def host_controls():
     files += sorted((home / 'rules').glob('*.rules'))
     return {str(p.relative_to(home)): digest(p) for p in files if p.is_file()}
 
+def read_only_sandbox_probe(repository, codex):
+    """Test command startup only; no model request or workspace write."""
+    probe = {'status': 'unknown', 'scope': 'read_only_command_startup',
+             'workspace_write_execution_proven': False}
+    if not sys.platform.startswith('linux') or not Path('/bin/true').is_file():
+        return dict(probe, reason='unsupported_platform')
+    try:
+        help_result = subprocess.run([codex, 'sandbox', '--help'], capture_output=True,
+                                     text=True, check=False, timeout=15)
+        flags = ('--permission-profile', '--include-managed-config', '--cd')
+        if help_result.returncode or not all(flag in help_result.stdout for flag in flags):
+            return dict(probe, reason='unsupported_cli', help_returncode=help_result.returncode,
+                        help_stdout=help_result.stdout, help_stderr=help_result.stderr)
+        args = [codex, 'sandbox', '--permission-profile', ':read-only',
+                '--include-managed-config', '-C', str(repository), '--', '/bin/true']
+        probe['argv'] = args
+        result = subprocess.run(args, capture_output=True, text=True, check=False, timeout=15)
+        return dict(probe, status='passed' if result.returncode == 0 else 'failed',
+                    returncode=result.returncode, stdout=result.stdout, stderr=result.stderr)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return dict(probe, reason=type(exc).__name__)
+
+
 def preflight(repository, codex='codex', trust_receipt=None):
     repository = Path(repository).resolve()
     version = command([codex, '--version'])
@@ -88,9 +112,11 @@ def preflight(repository, codex='codex', trust_receipt=None):
             'discovered_files': {p.name if p.parent == home else str(p.relative_to(repository)): digest(p) for p in discovery},
             'hook_config_present': hooks.exists(), 'native_hook_trust': 'reported_confirmed' if trust else 'unknown',
             'hook_invocation_observed': False,
+            'read_only_sandbox_probe': read_only_sandbox_probe(repository, codex),
             'trust_receipt_sha256': digest(trust_receipt) if trust else None,
             'limitations': ['Cached availability is not a successful model request.',
-                            'Discovery and trust receipts do not prove hooks executed.']}
+                            'Discovery and trust receipts do not prove hooks executed.',
+                            'Read-only command startup does not prove model tool use or workspace writes.']}
 
 def exclude_trial_assets(corpus, source, builder, evaluator):
     """Export operating instructions without the experiment's scored oracles."""
@@ -192,6 +218,8 @@ def run(audit, codex='codex', trust_receipt=None):
     append(audit, attempt)
     if not attempt['host_controls_match']:
         attempt.update(status='host_controls_changed'); append(audit, attempt); return attempt
+    if check.get('read_only_sandbox_probe', {}).get('status') == 'failed':
+        attempt.update(status='sandbox_preflight_failed'); append(audit, attempt); return attempt
     if not (check['cli_available'] and check['required_cli_flags'] and check.get('ephemeral_supported', False) and check['authenticated']) or check['cached_model_available'] is False:
         attempt.update(status='preflight_failed'); append(audit, attempt); return attempt
     if check['hook_config_present'] and check['native_hook_trust'] != 'reported_confirmed':
@@ -335,7 +363,10 @@ def smoke(repository, audit, codex='codex'):
             item = event.get('item', {})
             if item.get('type') == 'agent_message' and item.get('text', '').strip() == 'NATIVE_PREFLIGHT_OK':
                 row['expected_reply_observed'] = True
-    row['feasible'] = row['status'] == 'completed' and row['expected_reply_observed']
+    row['model_request_feasible'] = row['status'] == 'completed' and row['expected_reply_observed']
+    row['read_only_sandbox_probe'] = observed.get('read_only_sandbox_probe', {'status': 'unknown'})
+    row['model_tool_execution_proven'] = False
+    row['workspace_write_execution_proven'] = False
     append(audit, row); write(audit / 'smoke-receipt.json', row)
     return row
 

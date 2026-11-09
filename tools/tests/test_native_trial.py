@@ -103,10 +103,69 @@ class NativeTrialTests(unittest.TestCase):
             return subprocess.CompletedProcess(args, 0)
         with mock.patch.object(trial, 'preflight', return_value={'hook_config_present':False,'native_hook_trust':'unknown'}), mock.patch.object(trial.subprocess, 'run', side_effect=fake_run):
             result = trial.smoke(self.source, audit)
-        self.assertTrue(result['feasible'])
+        self.assertTrue(result['model_request_feasible'])
+        self.assertNotIn('feasible', result)
+        self.assertFalse(result['model_tool_execution_proven'])
+        self.assertFalse(result['workspace_write_execution_proven'])
         self.assertFalse(result['hook_adoption_proven'])
         self.assertIsNone(result['runtime_settings']['effort'])
         self.assertTrue((audit / 'stderr.log').exists())
+
+    def test_read_only_probe_preserves_managed_policy_and_failure_evidence(self):
+        help_result = subprocess.CompletedProcess([], 0, '--permission-profile --include-managed-config --cd', '')
+        failed = subprocess.CompletedProcess([], 1, '', 'sandbox startup denied')
+        with mock.patch.object(trial.sys, 'platform', 'linux'), mock.patch.object(trial.subprocess, 'run', side_effect=[help_result, failed]) as run:
+            result = trial.read_only_sandbox_probe(self.source, '/pinned/codex')
+        self.assertEqual(result['status'], 'failed')
+        self.assertEqual(result['stderr'], 'sandbox startup denied')
+        self.assertEqual(run.call_args.args[0], ['/pinned/codex', 'sandbox', '--permission-profile',
+                         ':read-only', '--include-managed-config', '-C', str(self.source), '--', '/bin/true'])
+        self.assertFalse(result['workspace_write_execution_proven'])
+
+    def test_read_only_probe_success_is_only_command_startup(self):
+        help_result = subprocess.CompletedProcess([], 0, '--permission-profile --include-managed-config --cd', '')
+        with mock.patch.object(trial.sys, 'platform', 'linux'), mock.patch.object(trial.subprocess, 'run', side_effect=[help_result, subprocess.CompletedProcess([], 0, '', '')]):
+            result = trial.read_only_sandbox_probe(self.source, 'codex')
+        self.assertEqual(result['status'], 'passed')
+        self.assertEqual(result['scope'], 'read_only_command_startup')
+        self.assertFalse(result['workspace_write_execution_proven'])
+
+    def test_unsupported_or_unobserved_probe_is_unknown(self):
+        with mock.patch.object(trial.sys, 'platform', 'darwin'), mock.patch.object(trial.subprocess, 'run') as run:
+            self.assertEqual(trial.read_only_sandbox_probe(self.source, 'codex')['status'], 'unknown')
+            run.assert_not_called()
+        with mock.patch.object(trial.sys, 'platform', 'linux'):
+            for outcome in (subprocess.CompletedProcess([], 0, 'old CLI help', ''), OSError('unavailable'), subprocess.TimeoutExpired('codex', 15)):
+                with self.subTest(outcome=outcome), mock.patch.object(trial.subprocess, 'run', side_effect=outcome if isinstance(outcome, Exception) else [outcome]):
+                    self.assertEqual(trial.read_only_sandbox_probe(self.source, 'codex')['status'], 'unknown')
+
+    def test_sandbox_failure_refuses_model_launch_and_retains_attempt(self):
+        self.prepare()
+        preflight = {'host_controls': trial.host_controls(), 'cli_available': True,
+                     'required_cli_flags': True, 'ephemeral_supported': True, 'authenticated': True,
+                     'cached_model_available': True, 'hook_config_present': False,
+                     'read_only_sandbox_probe': {'status': 'failed', 'returncode': 1, 'stderr': 'sandbox startup denied'}}
+        with mock.patch.object(trial, 'preflight', return_value=preflight), mock.patch.object(trial.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0)) as run:
+            result = trial.run(self.audit, '/pinned/codex')
+            run.assert_not_called()
+        self.assertEqual(result['status'], 'sandbox_preflight_failed')
+        self.assertFalse((self.audit / 'launch.json').exists())
+        retained = json.loads((self.audit / 'preflight.json').read_text())
+        self.assertEqual(retained, preflight)
+        rows = [json.loads(s) for s in (self.audit / 'attempts.jsonl').read_text().splitlines()]
+        self.assertEqual([r['status'] for r in rows], ['started', 'sandbox_preflight_failed'])
+
+    def test_model_smoke_success_does_not_hide_sandbox_failure(self):
+        observed = {'hook_config_present': False, 'native_hook_trust': 'unknown',
+                    'read_only_sandbox_probe': {'status': 'failed'}}
+        def fake_run(args, **kwargs):
+            kwargs['stdout'].write(json.dumps({'type':'item.completed','item':{'type':'agent_message','text':'NATIVE_PREFLIGHT_OK'}}) + '\n')
+            return subprocess.CompletedProcess(args, 0)
+        with mock.patch.object(trial, 'preflight', return_value=observed), mock.patch.object(trial.subprocess, 'run', side_effect=fake_run):
+            result = trial.smoke(self.source, self.base / 'smoke')
+        self.assertTrue(result['model_request_feasible'])
+        self.assertEqual(result['read_only_sandbox_probe']['status'], 'failed')
+        self.assertFalse(result['model_tool_execution_proven'])
 
     def test_hooks_require_native_trust_without_launch(self):
         self.prepare()
