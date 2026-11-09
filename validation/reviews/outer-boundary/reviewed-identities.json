@@ -1,0 +1,18 @@
+{
+  "base": "4313609",
+  "files": {
+    "docs/execution/executable-reflection.md": "89fdc7b6cc38cafeb2f4a729530a286a50fbfe1b71fa5c9f7b2cc2f74365a867",
+    "tools/README.md": "68bb3114e2074927e5dc4b38b1278ea1261cd5b402e4203a3a5a05f055ba9ff9",
+    "tools/native_boundary.py": "969e0d42320d41b394637e4312f216c890cfbd2a549a0f7f37cfc487feddfd26",
+    "tools/native_trial.py": "e775cc2e61e38a60165d26b76c8072d5c1dba8a82e4c4e927372799238cfbbb1",
+    "tools/reflection_activity.py": "41e2be957e19d99e0115018eeaa9c0cd86b207b2feac98e61998a55b4e40dabc",
+    "tools/tests/test_native_boundary.py": "c0c8c99afb1392136e6b1e0065eb5885abd3028cdf660096ea1daa4ebfcdb958",
+    "tools/tests/test_native_trial.py": "fe5e654466ee3c3b622d27246bc30cb04e1813f4a2f2538fb07374a73fbb1f67",
+    "tools/tests/test_reflection_activity.py": "ef394b1d40f24ac03280f211f2dc3dfa2339e937af0442bc6995180ce65cbf72",
+    "validation/findings.jsonl": "4fb8a2abea99a0fc807285430cf50d78866ecb58cf3b183ce4ce5e231e7e82bb",
+    "validation/mutations/native-boundary-observations.json": "b51ea373b506b20d964077757c185556d1a3d903e17f9bf92726cece949a2d7c",
+    "validation/mutations/native-trial-frozen-boundary.json": "ad3b4c006d49e8f416ffc57cfd7b81b11cd90885069d76c5fb9b3e54e64f774d",
+    "validation/mutations/native-trial-outer-boundary-guard.json": "81892a8645b1bd79ef88f984ed72bf7fb3bf434feeefe0a2cbc4a052459a788c"
+  },
+  "reviewed_commit": "7bc6568aa355509cfa6d2a6807bc9dce7aca786d"
+}
