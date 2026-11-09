@@ -1,0 +1,10 @@
+{
+  "id": "native-trial-frozen-boundary",
+  "rule": "Run selects the prepared boundary rather than silently returning to native",
+  "file": "tools/native_trial.py",
+  "find": "    boundary = frozen_boundary['mode']",
+  "replace": "    boundary = 'native'",
+  "tests": [
+    "tools.tests.test_native_trial.NativeTrialTests.test_outer_launch_uses_only_frozen_mode_and_accepts_new_namespace"
+  ]
+}

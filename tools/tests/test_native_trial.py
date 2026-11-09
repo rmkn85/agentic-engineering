@@ -34,6 +34,97 @@ class NativeTrialTests(unittest.TestCase):
         return trial.prepare(self.source, self.ref, FIXTURE, scenario, self.repo, self.audit,
                              'baseline', 'pair-1', FIXTURE, self.ref, self.ref)
 
+    def outer_prepare(self):
+        frozen = {'mode': 'outer-codex-sandbox', 'status': 'verified', 'signature_sha256': 'stable',
+                  'mount_namespace': 'mnt:[prepare]'}
+        with mock.patch.object(trial.native_boundary, 'observe', return_value=frozen):
+            trial.prepare(self.source, self.ref, FIXTURE, 'healthy-small-change', self.repo, self.audit,
+                          'baseline', 'pair-1', FIXTURE, self.ref, self.ref, boundary='outer-codex-sandbox')
+        return frozen
+
+    def test_failed_outer_prepare_retains_observation_before_build(self):
+        failed = {'mode': 'outer-codex-sandbox', 'status': 'failed', 'checks': {'root_readonly': False}}
+        with mock.patch.object(trial.native_boundary, 'observe', return_value=failed):
+            with self.assertRaisesRegex(ValueError, 'outer execution boundary unavailable'):
+                trial.prepare(self.source, self.ref, FIXTURE, 'healthy-small-change', self.repo, self.audit,
+                              'baseline', 'pair-1', FIXTURE, self.ref, self.ref, boundary='outer-codex-sandbox')
+        self.assertFalse(self.repo.exists())
+        self.assertFalse((self.audit / 'corpus').exists())
+        observation = self.audit / 'prepare-boundary.json'
+        self.assertEqual(json.loads(observation.read_text()), failed)
+        row = json.loads((self.audit / 'attempts.jsonl').read_text())
+        self.assertEqual(row['boundary_sha256'], trial.digest(observation))
+
+    def test_outer_boundary_failed_or_changed_retains_each_attempt_without_launch(self):
+        frozen = self.outer_prepare()
+        observations = [{'mode': frozen['mode'], 'status': 'failed'},
+                        dict(frozen, signature_sha256='changed')]
+        with mock.patch.object(trial, 'preflight', side_effect=[
+                {'execution_boundary': observed, 'host_controls': trial.host_controls(),
+                 'cli_available': True, 'required_cli_flags': True, 'ephemeral_supported': True,
+                 'authenticated': True, 'cached_model_available': True, 'hook_config_present': False}
+                for observed in observations]) as preflight, \
+             mock.patch.object(trial.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0)) as launch:
+            results = []
+            for _ in observations:
+                results.append(trial.run(self.audit))
+                launch.assert_not_called()
+        for result, observed in zip(results, observations):
+            self.assertEqual(result['status'], 'execution_boundary_failed')
+            path = self.audit / result['preflight_file']
+            self.assertEqual(trial.digest(path), result['preflight_sha256'])
+            self.assertEqual(json.loads(path.read_text())['execution_boundary'], observed)
+        self.assertEqual(preflight.call_args.args[-1], 'outer-codex-sandbox')
+        self.assertFalse((self.audit / 'launch.json').exists())
+
+    def test_outer_launch_uses_only_frozen_mode_and_accepts_new_namespace(self):
+        frozen = self.outer_prepare()
+        check = {'execution_boundary': dict(frozen, mount_namespace='mnt:[run]'),
+                 'host_controls': trial.host_controls(), 'cli_available': True, 'required_cli_flags': True,
+                 'ephemeral_supported': True, 'authenticated': True, 'cached_model_available': True,
+                 'hook_config_present': False, 'read_only_sandbox_probe': {'status': 'not_applicable'}}
+        with mock.patch.object(trial, 'preflight', return_value=check) as preflight, \
+             mock.patch.object(trial.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0)) as launch:
+            self.assertEqual(trial.run(self.audit)['status'], 'completed')
+        preflight.assert_called_once_with(self.repo, 'codex', None, 'outer-codex-sandbox')
+        args = launch.call_args.args[0]
+        self.assertEqual(args[args.index('--sandbox') + 1], 'danger-full-access')
+        self.assertFalse(any('bypass' in arg for arg in args))
+        with self.assertRaises(SystemExit):
+            trial.main(['run', '--audit', str(self.audit), '--boundary', 'native'])
+
+    def test_outer_preflight_skips_nested_probe_and_smoke_guard_refuses_launch(self):
+        observed = subprocess.CompletedProcess([], 0, '--json --model --cd --ephemeral', '')
+        with mock.patch.object(trial, 'command', return_value=observed), \
+             mock.patch.object(trial.native_boundary, 'observe', return_value={'status': 'failed'}), \
+             mock.patch.object(trial, 'read_only_sandbox_probe') as probe:
+            check = trial.preflight(self.source, boundary='outer-codex-sandbox')
+            probe.assert_not_called()
+        self.assertEqual(check['read_only_sandbox_probe']['status'], 'not_applicable')
+        with mock.patch.object(trial, 'preflight', return_value=check), mock.patch.object(trial.subprocess, 'run') as launch:
+            result = trial.smoke(self.source, self.base / 'smoke', boundary='outer-codex-sandbox')
+            launch.assert_not_called()
+        self.assertEqual(result['status'], 'execution_boundary_failed')
+        self.assertFalse(result['model_request_feasible'])
+        self.assertEqual(result['preflight_sha256'], trial.digest(self.base / 'smoke/preflight.json'))
+
+    def test_verified_outer_smoke_omits_inner_sandbox_without_claiming_tools(self):
+        observed = {'execution_boundary': {'status': 'verified'}, 'hook_config_present': False,
+                    'native_hook_trust': 'unknown', 'read_only_sandbox_probe': {'status': 'not_applicable'}}
+        def fake_run(args, **kwargs):
+            self.assertEqual(args[args.index('--sandbox') + 1], 'danger-full-access')
+            self.assertNotIn('-s', args)
+            kwargs['stdout'].write(json.dumps({'type': 'item.completed', 'item': {
+                'type': 'agent_message', 'text': 'NATIVE_PREFLIGHT_OK'}}) + '\n')
+            return subprocess.CompletedProcess(args, 0)
+        with mock.patch.object(trial, 'preflight', return_value=observed), \
+             mock.patch.object(trial.subprocess, 'run', side_effect=fake_run):
+            result = trial.smoke(self.source, self.base / 'smoke', boundary='outer-codex-sandbox')
+        self.assertTrue(result['model_request_feasible'])
+        self.assertEqual(result['read_only_sandbox_probe']['status'], 'not_applicable')
+        self.assertFalse(result['model_tool_execution_proven'])
+        self.assertFalse(result['workspace_write_execution_proven'])
+
     def test_frozen_sources_prompt_and_independent_consumer(self):
         spec = self.prepare()
         self.assertEqual(spec['source_commits'], {'baseline': self.ref, 'candidate': self.ref})
@@ -81,6 +172,7 @@ class NativeTrialTests(unittest.TestCase):
                      'cached_model_available': True, 'hook_config_present': False, 'host_controls': trial.host_controls()}
         def fake_run(args, **kwargs):
             self.assertEqual(args[:3], ['codex', 'exec', '--json'])
+            self.assertNotIn('--sandbox', args)
             self.assertIn('--ephemeral', args)
             self.assertIn('model_reasoning_effort="medium"', args)
             self.assertFalse(any(a.startswith('--ignore') or 'bypass' in a for a in args))

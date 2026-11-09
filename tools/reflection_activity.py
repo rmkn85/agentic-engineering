@@ -3,6 +3,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+MODES = ('native', 'outer-codex-sandbox')
+
 ACTIVITIES = {
     'recurrence-smoke': ('smoke', {'ROOT': '--repository', 'AUDIT': '--audit'}),
     'recurrence-run': ('run', {'AUDIT': '--audit'}),
@@ -20,6 +22,8 @@ def main(args=None):
     optional = {'TRUST_RECEIPT': '--trust-receipt'} if activity in ('recurrence-run', 'recurrence-preflight') else {}
     if activity in ('recurrence-run', 'recurrence-preflight', 'recurrence-smoke'):
         optional['CODEX'] = '--codex'
+    if activity in ('recurrence-preflight', 'recurrence-smoke'):
+        optional['BOUNDARY'] = '--boundary'
     values = {}
     for argument in args[1:]:
         key, separator, value = argument.partition('=')
@@ -27,7 +31,12 @@ def main(args=None):
             raise ValueError('invalid, extra or duplicate activity parameter')
         if key == 'CODEX' and not Path(value).is_absolute():
             raise ValueError('CODEX must be an absolute executable path')
-        values[key] = str(Path(value).resolve())
+        if key == 'BOUNDARY':
+            if value not in MODES:
+                raise ValueError('BOUNDARY must be a supported execution boundary')
+            values[key] = value
+        else:
+            values[key] = str(Path(value).resolve())
     if not set(fields) <= set(values):
         raise ValueError('activity requires exactly ' + ', '.join(fields))
     command = [sys.executable, str(Path(__file__).with_name('native_trial.py')), action]
