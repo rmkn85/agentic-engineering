@@ -232,3 +232,81 @@ class GoalControls(unittest.TestCase):
         receipt = control.read(self.root / '.agent/goal-status.json')
         self.assertFalse(receipt['met'])
         self.assertTrue(any(r['id'] == 'inputs-unavailable' for r in receipt['results']))
+
+    def test_changed_ignored_corrective_evidence_reopens_supported_resolution(self):
+        evidence = self.root / '.agent/failure.txt'
+        evidence.write_text('original consumer failure')
+        self.correction()
+        self.goal['reflection']['interventions'][0]['evidence'] = '.agent/failure.txt'
+        self.save()
+        control.require_correction(self.root, 'repetition', 'the consumer failure repeated')
+        self.run_gate()
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'verified')
+        evidence.write_text('new contradictory consumer failure')
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'stale')
+        self.assertIsNotNone(control.reflection_check(self.goal, self.root, 5,
+                              lambda root, target, timeout: ('unmet', 'new evidence requires repair')))
+        self.assertFalse(control.read(self.root / '.agent/reflection-state.json')['resolved'])
+
+    def test_intervention_specification_is_bound_but_status_labels_are_not(self):
+        self.correction()
+        self.save()
+        control.require_correction(self.root, 'repetition', 'the consumer failure repeated')
+        self.run_gate()
+        original = copy.deepcopy(self.goal)
+        for field, changed in [('hypothesis', 'a different proposed mechanism'),
+                               ('expected_effect', 'a different predicted consumer effect'), ('run', 'bad')]:
+            with self.subTest(field=field):
+                revised = copy.deepcopy(original)
+                revised['reflection']['interventions'][0][field] = changed
+                self.assertEqual(control.receipt_state(self.root, revised)[0], 'stale')
+                from unittest.mock import Mock
+                runner = Mock(return_value=('unmet', 'changed prediction has not passed'))
+                self.assertIsNotNone(control.reflection_check(revised, self.root, 5, runner))
+                self.assertFalse(control.read(self.root / '.agent/reflection-state.json')['resolved'])
+                if field != 'run':
+                    runner.assert_called_once()
+        self.goal['reflection']['interventions'][0]['status'] = 'refuted'
+        # A self-label cannot revoke or manufacture the tool's observed result.
+        self.assertEqual(control.snapshot(self.root, self.goal), control.snapshot(self.root, original))
+
+    def paired_evidence(self):
+        from tools.tests import test_outcome_control as richer
+        task = richer.fixture(self.root)
+        self.goal['acceptance'][0]['check'] = 'consumer reads exact observable result'
+        (self.root / 'Makefile').write_text('ok:\n\t@' + sys.executable +
+            ' -c \'from pathlib import Path; assert Path("src/result.txt").read_text() == "Observable result\\n"\'\n')
+        richer.prove(self.root, task)
+        richer.prove(self.root, task, 'verified')
+        task['status'] = 'done'
+        self.run_gate()
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'verified')
+        self.assertEqual(richer.oc.validate_control(task, self.root, richer.NOW), [])
+        return richer, task
+
+    def test_shared_source_regression_invalidates_both_control_routes(self):
+        richer, task = self.paired_evidence()
+        (self.root / 'src/result.txt').write_text('consumer source regressed')
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'stale')
+        self.assertIn('altered file', str(richer.oc.validate_control(task, self.root, richer.NOW)))
+
+    def test_shared_acceptance_substitution_invalidates_both_control_routes(self):
+        richer, task = self.paired_evidence()
+        self.goal['acceptance'][0]['check'] = 'substituted weaker acceptance'
+        task['acceptance'] = ['Substituted weaker acceptance']
+        self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'stale')
+        with self.assertRaises(control.ContractError):
+            control.pin_contract(self.root, self.goal)
+        self.assertIn('stale assignment authority', str(richer.oc.validate_control(task, self.root, richer.NOW)))
+
+    def test_shared_unchanged_evidence_reuse_needs_no_native_execution(self):
+        from unittest.mock import patch
+        richer, task = self.paired_evidence()
+        ordinary_before = (self.root / '.agent/goal-status.json').read_bytes()
+        richer_before = (self.root / 'proof/verified.json').read_bytes()
+        with patch.object(gate, 'run_target', side_effect=AssertionError('unexpected native execution')):
+            for _ in range(2):
+                self.assertEqual(control.receipt_state(self.root, self.goal)[0], 'verified')
+                self.assertEqual(richer.oc.validate_control(task, self.root, richer.NOW), [])
+        self.assertEqual((self.root / '.agent/goal-status.json').read_bytes(), ordinary_before)
+        self.assertEqual((self.root / 'proof/verified.json').read_bytes(), richer_before)

@@ -6,6 +6,7 @@
   "replace": "    if False:",
   "tests": [
     "tools.tests.test_goal_control.GoalControls.test_removed_consumer_cannot_hide_behind_same_goal_text_across_sessions",
-    "tools.tests.test_finish_check.FinishCheckTests.test_swapping_an_unmet_goal_needs_a_stated_reason"
+    "tools.tests.test_finish_check.FinishCheckTests.test_swapping_an_unmet_goal_needs_a_stated_reason",
+    "tools.tests.test_goal_control.GoalControls.test_shared_acceptance_substitution_invalidates_both_control_routes"
   ]
 }

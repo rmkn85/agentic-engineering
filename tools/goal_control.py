@@ -68,6 +68,15 @@ def contract(goal, root):
             'inputs': goal.get('inputs', []), 'declared_files': refs}
 
 
+def intervention_specifications(goal):
+    reflection = goal.get('reflection', {})
+    interventions = reflection.get('interventions', []) if isinstance(reflection, dict) else []
+    if not isinstance(interventions, list):
+        return interventions
+    return [{key: value for key, value in item.items() if key != 'status'}
+            if isinstance(item, dict) else item for item in interventions]
+
+
 def snapshot(root, goal):
     try:
         proc = subprocess.run(['git', 'ls-files', '-z', '--cached', '--others', '--exclude-standard'],
@@ -91,7 +100,11 @@ def snapshot(root, goal):
     refs += [file_ref(root, ref) for ref in declared(goal)]
     # Explicit local evidence is an input even under the generated-state directory.
     import re
-    for item in goal.get('acceptance', []):
+    specifications = intervention_specifications(goal)
+    evidence_items = list(goal.get('acceptance', [])) + (specifications if isinstance(specifications, list) else [])
+    for item in evidence_items:
+        if not isinstance(item, dict):
+            continue
         for token in re.findall(r"[\w./-]+", item.get('evidence', '')):
             candidate = (root / token).resolve()
             if candidate.is_relative_to(root) and candidate.is_file():
@@ -103,7 +116,8 @@ def snapshot(root, goal):
     validators = [file_ref(Path(__file__).parent, p) for p in names]
     disk_goal = read(root / '.agent/goal.json')
     disk_contract = digest(contract(disk_goal, root)) if disk_goal.get('acceptance') else None
-    return {'files': refs, 'validators': validators, 'goal_contract': disk_contract}
+    return {'files': refs, 'validators': validators, 'goal_contract': disk_contract,
+            'interventions': specifications, 'disk_interventions': intervention_specifications(disk_goal)}
 
 
 def pin_contract(root, goal):
