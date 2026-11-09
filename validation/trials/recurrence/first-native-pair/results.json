@@ -1,0 +1,22 @@
+{
+  "actual": {
+    "consumer-check": 0,
+    "check": 0,
+    "finish-check": 0
+  },
+  "canonical": {
+    "consumer-check": 0,
+    "check": 2,
+    "finish-check": 2
+  },
+  "canonical_iterable": {
+    "consumer-check": 0,
+    "check": 0,
+    "finish-check": 0
+  },
+  "broken": {
+    "consumer-check": 2,
+    "check": 2,
+    "finish-check": 2
+  }
+}

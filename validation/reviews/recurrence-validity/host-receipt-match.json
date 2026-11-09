@@ -1,0 +1,30 @@
+{
+  "trace_hash_matches": true,
+  "event_status_duration_sequence_matches": true,
+  "sequence": [
+    [
+      "sessionStart",
+      "completed"
+    ],
+    [
+      "stop",
+      "blocked"
+    ],
+    [
+      "stop",
+      "blocked"
+    ],
+    [
+      "stop",
+      "blocked"
+    ],
+    [
+      "stop",
+      "completed"
+    ],
+    [
+      "stop",
+      "completed"
+    ]
+  ]
+}

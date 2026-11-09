@@ -1,6 +1,7 @@
 # Recurrence experiment status
 
-Status on 2026-11-09: **model execution works; native tool execution is blocked**.
+Status on 2026-11-09: **native sandbox execution works; the first matched pair
+exposed two defects and corrected trials are pending**.
 The original CLI 0.156.1 attempt could not initialize its read-only native state.
 That historical failure remains in `native-smoke.json`. The follow-up
 `native-recovery.json` retains three materially different calibration attempts.
@@ -28,13 +29,43 @@ the outer sandbox masks the shared native socket directory read-only with mode
 [nested sandbox issue](https://github.com/openai/codex/issues/53799), checked
 2026-11-09. No mask, permissions, approval rule or trust control was bypassed.
 
-Four matched pairs were prepared and frozen at candidate `40daa16`, but remain
+Four matched pairs were prepared and frozen at candidate `40daa16`, and remain
 **unrun**. The independent preparer repaired one held-out fixture hook-path
 translation before scoring and retained the original; its scenario and oracle
 remained undisclosed to the coordinator. Prepared attempts and native failures
-are retained privately. Before scoring, confirm command readiness in a supported
-native environment, freeze any revised candidate and keep all arms on the same
-settings. The evaluator and its source must remain outside the worker corpus.
+are retained privately. These preparations were superseded, not scored. The
+evaluator and its source remain outside the worker corpus.
+
+The subsequent calibration used the already enforced outer sandbox as the
+execution boundary. The [official app-server documentation](https://learn.chatgpt.com/docs/app-server)
+defines `externalSandbox` for this arrangement. The native CLI used its explicit
+inner `danger-full-access` selection within that existing isolated environment,
+as scoped by the [noninteractive documentation](https://learn.chatgpt.com/docs/non-interactive-mode).
+The parent and model-issued command observed the same outer namespace; root and
+socket restrictions, approval policy and hook trust remained enforced. This
+required no privileged access. The earlier conclusion that a normal terminal was
+required was incorrect.
+
+The opt-in runner checks the expected containment before launch and freezes its
+observations and exact settings. This is an environment check, not a hostile-host
+attestation. Missing or changed observations stop execution. Default execution
+still uses the native sandbox. No socket mask or filesystem permission was changed.
+
+Candidate `7bc6568` and baseline `4cdeefd` were frozen with all four tasks before
+the first pair ran through native `codex exec`, using fresh `gpt-6.1-sol`/Medium
+sessions. Both produced working consumer outputs. The baseline passed the frozen
+assertions. The candidate failed integrity after following an audit instruction
+to overwrite the embedded dependency handoff. Separately, the evaluator replaced
+its valid implementation with a narrower canned positive control, breaking valid
+iterator coverage. Independent reproduction isolated both causes; see the
+[retained first-pair review](first-native-pair/verdict.md) and
+[original result summary](first-native-pair/retained-results.json).
+
+The original failed candidate remains failed. It is not evidence of comparative
+superiority or of a candidate product regression. The reusable audit ownership
+boundary and evaluator positive control were corrected at `8093943`; independently
+reviewed, newly frozen runs are in progress. The remaining three original pairs were not launched. Automatic truthful
+completion remains unknown and requires separate semantic review.
 
 Deterministic regression tests exercise contract retention, stale evidence,
 correction transitions, adapter subprocess behavior, fixture calibration and

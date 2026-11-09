@@ -1,0 +1,22 @@
+{
+  "prefix_boundary_retains_project_files": [
+    "shared/methodology-extra/README.md",
+    "shared/methodology2/a.py",
+    "HANDOFF.md"
+  ],
+  "malformed_rejected": {
+    "": "rejected",
+    ".": "rejected",
+    "..": "rejected",
+    "../shared": "rejected",
+    "shared/../local": "rejected",
+    "shared//methodology": "rejected",
+    "/shared": "rejected",
+    "shared/": "rejected",
+    "./shared": "rejected",
+    "None": "rejected",
+    "2": "rejected",
+    "non-list": "rejected"
+  },
+  "absent_empty_preserve_files": true
+}
