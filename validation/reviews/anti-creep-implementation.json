@@ -1,0 +1,25 @@
+{
+  "base": "3b1ae2b98d8fab655ed8cdb8687f15de18722f41",
+  "failure_evidence": "validation/reviews/anti-creep/failure.md",
+  "files": {
+    ".github/workflows/verify.yml": "99d5b2fc7269772d94f889e8489aadba9b2a3f123900d3f2907384a29ca2f149",
+    "Makefile": "cdaee4bffcab4647f5517ed96ab98d57dab4bf8d27c3d5cdeda55c5101fd4287",
+    "tools/check_review.py": "c0087f287f36e29809e4e3e51f5edc105a4c44c869c804330d2014f77cd30929",
+    "tools/work_audit.py": "004ed657346a4b6a0a4c33d1942f874cff4296a07ffb9a0344513e29b8d6d1f5"
+  },
+  "framing": "validation/reviews/anti-creep/frame.json",
+  "input_hashes": {
+    "failure_evidence": "e1c38ec299f60e9e713013ca536de64a1ebdd4f817ab16e3ee2abbffebff1f3f",
+    "framing": "6c0dd009e1c6042cbfc66464fda5bc34a0b5f00e5e643ec3866d8c88371352ae",
+    "request": "a8c3710b07e36550a1e32426bf4acae8fa2a7977103c5fdc1a8806a65393f864"
+  },
+  "report": {
+    "path": "validation/reviews/anti-creep/report.md",
+    "sha256": "31db24b307e6bb3285ac2260202bf69c20ebcceb7198e4053f58538fa2da86f4"
+  },
+  "request": "validation/reviews/anti-creep/request.md",
+  "reviewed_commit": "a38032b1a75d0625d21bffb44bd3545fe01d97c9",
+  "schema": "methodology-review/v1",
+  "scope": "AE self-audit gate, line-weighted records measure, and review scope narrowed to guard surfaces",
+  "verdict": "accepted"
+}

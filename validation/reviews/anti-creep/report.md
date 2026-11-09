@@ -24,3 +24,8 @@ BEGIN FINDINGS
 {"severity": "minor", "target": "tools/work_audit.py:68", "problem": "Classing validation/mutations/ as test moves 69 of this change's own 240 added lines out of records; with them as records the change measures about 57% records/process.", "reproduction": "git diff --numstat origin/main...HEAD classified with work_audit.kind -> test 120, records 63, product 51, process 6", "scope": "in"}
 {"severity": "minor", "target": "docs/execution/executable-reflection.md:70", "problem": "The documented review-trigger rule omits tools that check_review.py gates, and neither covers hook or allow-list configuration.", "reproduction": "Compared docs sentence with CONTROLS in tools/check_review.py:21", "scope": "in"}
 END FINDINGS
+
+## Follow-up review of a38032b
+Blocker fixed: check_review flags all 7 guard files (.claude/settings.json, .codex/hooks.json, configs/allowed-activities.json, configs/guidance-budget.json, tools/check-fresh.py, tools/check-outcome-controls.py, tools/check_hygiene.py), rc=1. .agent/audit.json override fixed: force-added file needs review, rc=1. --since bad ref fixed: fails closed, rc=1 ('HEAD~1 --' and '--all' also rejected; --since HEAD passes as an empty change). Evidence-data false positive partly fixed: app/results and app/logs now product; app/reports/definitions.yaml still records via the pre-existing RECORDS pattern (reports/, research/, docs/), which this change makes merge-blocking. Moving records to other folder names still evades, minor. Tests, 5/5 mutations, findings --strict and audit-self pass.
+Additional minor finding: tools/work_audit.py:61 older RECORDS pattern counts product data under reports/, research/ or docs/ as records.
+VERDICT: accepted
