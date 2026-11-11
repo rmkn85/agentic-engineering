@@ -7,20 +7,17 @@ checkout, for example `../agentic-engineering`.
 ## What this repository delivers
 [One paragraph: the user outcome it owns, and what it does not own.]
 
-## Every task, in this order
-1. **Focus.** Run `python3 AE/tools/work_audit.py --root .` and do its FOCUS line
-   first, unless the user names a different task. It reads this
-   repository's history, so it works the same for every agent.
-2. **Goal.** Write the outcome and the checks that prove it in
-   `.agent/goal.json` (`python3 AE/tools/finish_check.py --help`).
-3. **Change behaviour.** Progress is changed behaviour that a check proves.
-   Records, handoffs and process changes support it: replace them instead of
-   appending, and keep them a small share of commits.
-4. **Prove.** Run [the cheapest check that proves the goal: command]. Fix what
-   fails; a skipped test is unfinished work.
-5. **Finish.** Run `python3 AE/tools/finish_check.py --root .`. If a real
-   blocker remains, mark the item blocked with the reason and the reflection.
-   Do executable work now; "next steps" are only for work you cannot do.
+## Shared method and native bindings
+
+Apply [the shared contributor core](contributor-core.md), including preservation
+of architectural decisions. Copy it beside this entry or update this link to
+the reviewed local snapshot. Keep product authority and native commands local.
+
+- Audit: `python3 AE/tools/work_audit.py --root .`.
+- Goal: `.agent/goal.json` (`python3 AE/tools/finish_check.py --help`).
+- Prove: [the cheapest check that proves the goal: command].
+- Finish: `python3 AE/tools/finish_check.py --root .`; a real blocker needs its
+  reason and reflection in the goal record.
 
 ## Commands
 [Build, test and run commands. List the local ones agents may run without

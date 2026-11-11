@@ -26,6 +26,17 @@ This copy needs no upstream checkout.
    can do now; "next steps" are only for work you cannot do. Stop incomplete only
    at a named external blocker, and say what is missing.
 
+## Preserve architectural decisions
+
+Before changing who calls whom, authorizes actions, owns data or makes decisions,
+trace the accepted design to its product invariant. Compare that authority with
+current code, documentation and the proposal; code and green tests cannot
+overturn it. Verify both the intended flow and the forbidden dependency:
+prove the dependency is absent or make its attempted use observable. Restore
+conformance within existing authority; take an actual design change to the
+System Architect through the existing decision route. Routine implementation
+within the accepted boundary needs no new approval or standing review board.
+
 ## When stuck
 
 Do not repeat a step that failed: name what it failed to achieve and change the
@@ -45,10 +56,8 @@ goal, choose the next action, and check its effect next time.
 
 ## Handoff
 
-Keep one current handoff under 800 words: goal, last proven state, next action.
-Replace it; history is in Git and the task tracker. When your work writes to an
-area the audit flags (task list, handoff, instructions), leave that area within
-its limits in the same commit.
+Replace one current handoff under 800 words: goal, proven state, next action;
+history stays in Git/tasks. Touched audit-flagged areas must meet their limits.
 
 ## Engineering personas
 
@@ -70,6 +79,5 @@ decisions.
 
 ## Share improvements
 
-Turn a recurring failure into the smallest tested script, configuration or
-rule, and offer it upstream without private detail. Adopt upstream changes by
-reviewing the difference, not by fetching the latest text on every task.
+Offer the smallest tested recurring-failure fix upstream without private detail.
+Review adoption differences; do not fetch upstream text every task.
