@@ -1,5 +1,14 @@
 # Agentic Engineering continuation
 
+Architectural decision preservation now has one canonical rule in
+[`templates/contributor-core.md`](../../templates/contributor-core.md#preserve-architectural-decisions).
+The operating corpus and adoption entry template reference it. Boundary changes
+recover accepted product invariants, compare design/code/proposal, and verify
+both intended flow and forbidden dependencies. Actual design changes follow the
+existing System Architect route; routine implementation gains no new gate.
+Template consolidation offsets the added runtime text. Regression checks prove
+tooling and guidance budgets, not model adherence or downstream product behavior.
+
 The long-running delivery update is ready for native adoption through the
 [outcome-control contract](../adoption/outcome-controls.md). The controls add no
 always-loaded checklist; the consolidated feasibility work refines one existing
