@@ -1,4 +1,4 @@
-# Opt-in native Codex routing preset. Policy: 2026-11-07; source audit: 2026-10-04.
+# Opt-in native Codex routing preset. Policy: 2026-11-17; source audit: 2026-10-04.
 # EXAMPLE to merge, not an installer. Preserve permissions and unrelated settings.
 # A saved app selection is not a dispatch plan; these defaults do not choose
 # the executor, model/effort or number of workers for the next outcome.
@@ -6,7 +6,7 @@
 # Match the actual CLI/app backend and inspect effective custom roles.
 # No native model allowlist, per-worker budget or exact billing cap is installed.
 
-model = "gpt-6.1-sol"
+model = "gpt-6.2-sol"
 model_reasoning_effort = "medium"
 service_tier = "default"
 # Permission policy is separate from model routing. For an owner-approved
@@ -47,12 +47,12 @@ work and keep tightly coupled judgment local. Select the executor and useful
 agent count for the next outcome, including zero new agents; a saved app model
 selection or changed default does not replace this choice. Choose capability, effort,
 context, lifetime and autonomy independently. Use Luna low for usage monitoring,
-Git operations and CI-log triage, Luna medium for bounded coding, and Sol 6.1
+Git operations and CI-log triage, Luna medium for bounded coding, and Sol 6.2
 medium for sustained engineering. Use Terra 6.1 low/medium for bounded visual
 or browser review, synthesis, handoffs and scoped fixes, according to judgment.
 Check its claims against the actual artifact; stills do not prove motion or human
 acceptance. This does not authorize desktop control or change all agent defaults.
-Use Astra medium/high for extremely creative
+Use Astra 6.2 medium/high for extremely creative
 or complex graphics, architecture or academic reasoning. High needs a specific
 reason tied to unresolved uncertainty, not project size. Execute settled plans;
 reopen decisions on new evidence of infeasibility, requirement conflict, material
