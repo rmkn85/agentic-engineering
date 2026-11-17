@@ -8,7 +8,7 @@ The broader decision order—deterministic operation → cheapest capable worker
 
 ## Named model and effort policy
 
-Routing policy reviewed **2026-11-07**; the earlier evidence/prices below retain their original review date, **2026-10-04**. This table is the canonical model/effort policy; entry instructions link here instead of maintaining another table. These are repository operating defaults, not a universal optimum, a native Codex allowlist, or measured savings. No additional policy file or custom-agent installation is needed. Owner constraints apply, subject to higher-priority runtime rules. Validate support in the live client/account once per run; do not silently substitute a new model when a named choice is unavailable.
+Routing policy reviewed **2026-11-17**. Check the actual dispatch tool for the next assignment. Apply these defaults when supported. Preserve explicit owner selections on resume. If a default is unavailable, use an authorized capable predecessor at the same effort and identify the fallback. An unavailable mandatory model requires a decision. Keep working owners on their current task until a change would improve the remaining outcome.
 
 | Assignment | Deliberate selection | Boundary |
 | --- | --- | --- |
@@ -17,11 +17,11 @@ Routing policy reviewed **2026-11-07**; the earlier evidence/prices below retain
 | Focused implementation, tests against a clear contract, localized diagnosis or review needing judgment | `gpt-6-luna` / `medium` | Normal coding-worker starting point, including implementation against an accepted plan |
 | Same bounded problem requiring deeper edge-case reasoning or hypothesis checking | `gpt-6-luna` / `high` | State the particular reasoning need; do not raise effort for a large batch merely because it is large |
 | Bounded visual/browser review, synthesis, handoff writing or scoped fixes | `gpt-6.1-terra` / `low` or `medium` according to judgment needed | Ground claims in the actual artifact and authoritative facts; image interpretation does not prove motion, interaction or human acceptance; escalate coupled or unresolved decisions |
-| Sustained engineering, cross-boundary implementation, reasoning with substantial execution, or synthesis beyond a bounded Luna assignment | `gpt-6.1-sol` / `medium` | Normal main coding/orchestration and substantial engineering-worker choice |
-| Difficult coupled debugging, consequential correctness review or deeper analysis | `gpt-6.1-sol` / `high` | A specific unresolved decision, not a blanket reviewer setting |
-| Extremely creative or complex decisions: demanding graphics, advanced architecture, or comprehension of difficult academic work | `gpt-6-astra` / `medium`, or `high` for the specific coupled reasoning need | A bounded specialist outcome; hand implementation, tests, publication and monitoring back to the appropriate executor |
+| Sustained engineering, implementation across interfaces, or orchestration | `gpt-6.2-sol` / `medium` | Default for a new engineering assignment |
+| Difficult debugging or consequential correctness review | `gpt-6.2-sol` / `high` | Identify the unresolved reasoning problem |
+| Hard architecture decisions, scientific interpretation or demanding visual design | `gpt-6.2-astra` / `medium`, or justified `high` | Return the decision and its evidence to the implementation owner |
 
-**Baseline pairs:** Luna at `low|medium|high`, Terra 6.1 at `low|medium`, Sol 6.1 at `medium|high`, Astra at `medium|high` for the demanding decisions above. These choices do not require a new approval prompt. Do not default an entire graphics, research or engineering project to its strongest specialist. `xhigh|max` requires explicit scoped owner authorization. **Ultra is forbidden except under the current explicit instruction to exhaust allowance before reset**, as defined below. A model's availability, default effort or a worker's old configuration grants no exception.
+Choose among the pairs above without a routine approval prompt. `xhigh|max` requires explicit scoped owner authorization. **Ultra requires a current explicit instruction to exhaust allowance before reset**, subject to the stop conditions below.
 
 Terra's [official model guidance](https://learn.chatgpt.com/docs/models) and [model page](https://developers.openai.com/api/docs/models/gpt-6.1-terra), reviewed 2026-10-27, identify visual understanding, computer use and clear writing as intended strengths. This supports a scoped trial, not a claim that Terra is better at runtime engineering or cheaper per accepted task. Keep engineering ownership with Sol and routine extraction/monitoring with tools or Luna. Computer-use capability grants no additional permission; preserve each project's desktop and data boundaries. The API page lists image input, not native video input: sampled frames cannot establish continuous motion acceptance.
 
@@ -46,7 +46,7 @@ context, autonomy and lifetime separately: more effort grants neither broader sc
 nor permission to redesign an accepted plan. Project size, duration, parallelism and
 a reviewer title do not establish a need for High. Long repetitive implementation
 can stay on the ordinary execution route; a small coupled correctness question can
-justify High directly. Preserve Sol 6.1/Medium as the orchestration baseline and
+justify High directly. Use the table's Sol/Medium orchestration baseline and
 Luna/Medium as the fallback child setting; explicit dispatch still selects the pair.
 
 Execute settled decisions. Reopen one when new evidence establishes infeasibility,
@@ -135,13 +135,15 @@ OpenAI's [GPT-6 practical guide](https://openai.com/index/practical-guide-buildi
 
 The [Luna](https://developers.openai.com/api/docs/models/gpt-6-luna) and [Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol) API pages list Medium as their default. The separate [Codex subagents guide](https://learn.chatgpt.com/docs/agent-configuration/subagents) recommends High as an explicit Luna starting setting and Low for Astra. This repository deliberately tries Luna Medium/Low for bounded work; that is an economy policy requiring acceptance checks, not a claim about Codex's universal default. [Astra's model page](https://developers.openai.com/api/docs/models/gpt-6-astra) documents its supported effort levels.
 
-Standard API text prices on the review date, per million tokens:
+The [GPT-6.2 announcement](https://openai.com/index/introducing-gpt-6-2-astra-sol/) reports improved coding efficiency for Sol and stronger visual and professional work for Astra. It also reports omitted blockers in two evaluations. At handoff, name any missing input or failed tool and the acceptance check it prevented. Keep stable instructions in the prompt prefix and append task updates. Compare elapsed time, rework and usage on an accepted deliverable before claiming local savings.
+
+Standard short-context API text prices per million tokens. GPT-6.2 rates checked 2026-11-17:
 
 | Model | Input | Cached input | Output |
 | --- | ---: | ---: | ---: |
-| Luna | $0.10 | $0.01 | $0.50 |
-| Sol | $2.00 | $0.10 | $10.00 |
-| Astra | $10.00 | $1.00 | $50.00 |
+| Luna (2026-10-04) | $0.10 | $0.01 | $0.50 |
+| [Sol 6.2](https://developers.openai.com/api/docs/models/gpt-6.2-sol) | $2.00 | $0.10 | $10.00 |
+| [Astra 6.2](https://developers.openai.com/api/docs/models/gpt-6.2-astra) | $8.00 | $0.40 | $40.00 |
 
 These rates do not convert subscription credits, include all service/tool/long-context charges, or predict token counts at a given effort. At equal uncached input/output volumes, Sol's listed rates are 20 times Luna's. A hypothetical 80 Luna / 20 Sol mix with equal tokens per assignment would therefore put about 83% of worker model spend in Sol. Assignment share and spending share are different. Likewise, changing a Luna main agent to Sol is a capability upgrade, not intrinsically a cost reduction; measure the whole accepted workflow, including coordinator usage, caching, retries and repairs.
 
@@ -235,8 +237,8 @@ Choose role, lifetime, model and autonomy separately. These roles describe respo
 
 | Role | Ownership and continuation | Routing default |
 | --- | --- | --- |
-| Portfolio/integration orchestrator | Retains overall goals and integration state; keeps authorized outcomes moving, delegates independent epics and resolves shared dependencies. Continues until the requested programme is accepted or a genuine boundary prevents progress. | Sol 6.1 / Medium; prefer its larger supported economical context for coupled state, verified in the current client. Offload noisy routine work. |
-| Autonomous epic owner | Owns a domain from requirements through implementation, qualification, receiving-consumer use and acceptance. Retains its worktree and context, chooses next steps, resolves routine blockers, pivots and delegates authorized scoped work. A checkpoint or subordinate result does not end the epic. | Sol 6.1 / Medium for sustained engineering; request a specialist for a specific demanding decision while retaining ownership. |
+| Portfolio/integration orchestrator | Retains overall goals and integration state; keeps authorized outcomes moving, delegates independent epics and resolves shared dependencies. Continues until the requested programme is accepted or a genuine boundary prevents progress. | Sol / Medium; prefer its larger supported economical context for coupled state, verified in the current client. Offload noisy routine work. |
+| Autonomous epic owner | Owns a domain from requirements through implementation, qualification, receiving-consumer use and acceptance. Retains its worktree and context, chooses next steps, resolves routine blockers, pivots and delegates authorized scoped work. A checkpoint or subordinate result does not end the epic. | Sol / Medium for sustained engineering; request a specialist for a specific demanding decision while retaining ownership. |
 | Persistent steering reviewer | Retains goals, acceptance, prior corrections and their effects. Reviews meaningful delivery checkpoints or an explicitly requested schedule, challenges drift and ineffective loops, and follows corrections through. It is low traffic and does not gate every owner action or duplicate implementation. | Tools/Luna collect observations; Sol for ordinary cross-boundary review, Astra / Medium or justified High for demanding strategic, creative or complex judgment. A designated stronger reviewer still obeys scoped model/effort authorization. |
 | Bounded specialist/reviewer | Resolves one consequential uncertainty or independently checks an artifact; returns the decision, evidence and limitations to its owner. | Choose Sol or Astra by the actual reasoning need, not the reviewer title. Return routine execution to the appropriate worker. |
 | Short execution worker | Completes one clear extraction, data-heavy operation, patch, check or diagnostic. Isolates noisy working context, returns a compact usable result, then stops or awaits a specific follow-up. | Deterministic tools first; Luna / Low for routine work, Medium for bounded coding. |

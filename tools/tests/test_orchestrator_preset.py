@@ -19,7 +19,7 @@ class OrchestratorPresetTests(unittest.TestCase):
             cls.config = tomllib.load(stream)
 
     def test_root_has_explicit_policy_baseline(self):
-        self.assertEqual(self.config["model"], "gpt-6.1-sol")
+        self.assertEqual(self.config["model"], "gpt-6.2-sol")
         self.assertEqual(self.config["model_reasoning_effort"], "medium")
 
     def test_worker_fallback_does_not_inherit_root_effort(self):
