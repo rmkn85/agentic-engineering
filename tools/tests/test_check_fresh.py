@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -107,6 +108,23 @@ class FreshTests(unittest.TestCase):
         result = fresh.exercise(self.source, [sys.executable, "-V"], self.base, 10)
         self.assertEqual(result["state"], "failed")
         self.assertEqual((execution / "keep").read_text(), "pre-existing")
+
+    @unittest.skipUnless(os.name == "posix", "POSIX termination semantics")
+    def test_sigterm_reaps_its_command_and_keeps_the_cancelled_receipt(self):
+        child = ("import os,signal,time; print(os.getpid(), flush=True); "
+                 "os.kill(os.getppid(), signal.SIGTERM); time.sleep(5)")
+        run = subprocess.run([sys.executable, fresh.__file__, "--source", str(self.source),
+                              "--", sys.executable, "-c", child],
+                             env=self.env, capture_output=True, text=True, timeout=10)
+        self.assertEqual(run.returncode, 128 + signal.SIGTERM, run.stderr)
+        result = json.loads(run.stdout)
+        self.assertEqual(result["reason"], "trial_cancelled")
+        self.assertEqual(result["state"], "failed")
+        output = Path(result["evidence_directory"])
+        self.assertEqual(result, json.loads((output / "receipt.json").read_text()))
+        self.assertFalse((output / "execution").exists())
+        with self.assertRaises(ProcessLookupError):
+            os.kill(int(Path(result["scenarios"][0]["log"]).read_text()), 0)
 
     def test_cleanup_failure_preserves_command_failure_and_log(self):
         with mock.patch.object(fresh.shutil, "rmtree", side_effect=OSError("busy")):

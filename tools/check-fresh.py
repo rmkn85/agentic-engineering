@@ -53,7 +53,7 @@ def run(command: list[str], cwd: Path, env: dict[str, str], log: Path,
             raise TrialFailure("required_executable_unavailable") from error
         try:
             code = process.wait(timeout=timeout)
-        except subprocess.TimeoutExpired as error:
+        except (subprocess.TimeoutExpired, KeyboardInterrupt) as error:
             if os.name == "posix":
                 try:
                     os.killpg(process.pid, signal.SIGKILL)
@@ -62,6 +62,8 @@ def run(command: list[str], cwd: Path, env: dict[str, str], log: Path,
             else:
                 process.kill()
             process.wait()
+            if isinstance(error, KeyboardInterrupt):
+                raise
             raise TrialFailure("command_timeout") from error
     if code:
         raise TrialFailure(f"command_exit_{code}")
@@ -148,6 +150,8 @@ def exercise(source: Path, command: list[str], output: Path, timeout: int) -> di
         if git(source, env, "rev-parse", "HEAD") != candidate:
             raise TrialFailure("source_advanced_during_trial")
         receipt["state"] = "passed"
+    except KeyboardInterrupt as error:
+        receipt.update(reason="trial_cancelled", signal=int(error.args[0]) if error.args else signal.SIGINT)
     except (TrialFailure, OSError) as error:
         receipt["reason"] = str(error) if isinstance(error, TrialFailure) else "trial_io_failure"
         if receipt["scenarios"]:
@@ -200,8 +204,14 @@ def main(argv=None) -> int:
         result.setdefault("reason", "receipt_write_failed")
         result["evidence_error"] = "receipt_write_failed"
     print(json.dumps(result, sort_keys=True))
+    if "signal" in result:
+        return 128 + result["signal"]
     return 0 if result["state"] == "passed" else 1
 
 
 if __name__ == "__main__":
+    def cancel(signum, frame):
+        raise KeyboardInterrupt(signum)
+
+    signal.signal(signal.SIGTERM, cancel)
     raise SystemExit(main())
