@@ -14,7 +14,7 @@ Use the actual repository-owned **source-only** check instead of `make check` wh
 
 The helper invokes that exact command in two disposable clones: the candidate directly, and its parent followed by a fast-forward to the candidate. The latter retains untracked and ignored sentinel files. Each native invocation gets a new home/config/cache location without inherited credentials or import paths. The original checkout is never switched, cleaned, reset, committed or pushed. Uncommitted source and missing parent history fail rather than receiving a pass for another state.
 
-The result records candidate/tree, stale base, command, per-scenario status and native duration, and total wall duration. Complete command logs and receipt JSON stay in a newly allocated temporary directory. Success is compact; failure includes at most 3,000 bytes from the decisive log. Retain useful evidence in the existing owner record; local temporary output and CI logs have their normal retention, not a new durable evidence service. No artifact upload is needed to see the verdict.
+The result records candidate/tree, stale base, command, per-scenario status and native duration, and total wall duration. Complete command logs and receipt JSON stay in a newly allocated temporary directory. The command removes its two checkouts and isolated homes on success, failure and handled timeout. An interrupted job may leave its private execution directory for runner recovery. Success is compact; failure includes at most 3,000 bytes from the decisive log. Retain useful evidence in the existing owner record; local temporary output and CI logs have their normal retention, not a new durable evidence service. No artifact upload is needed to see the verdict.
 
 ## Scope and limits
 

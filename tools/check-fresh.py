@@ -10,6 +10,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import shutil
 import signal
 import subprocess
 import tempfile
@@ -82,8 +83,12 @@ def exercise(source: Path, command: list[str], output: Path, timeout: int) -> di
                "state": "failed", "command": command, "scenarios": [],
                "limits": ["not_remote_auth", "not_model_or_IDE_trial",
                           "not_dependency_install_or_deployment", "not_a_sandbox"]}
+    work = output / "execution"
+    owns_work = False
     try:
-        env = environment(output / "control-home")
+        work.mkdir(mode=0o700)
+        owns_work = True
+        env = environment(work / "control-home")
         source = Path(git(source, env, "rev-parse", "--show-toplevel"))
         candidate = git(source, env, "rev-parse", "HEAD")
         tree = git(source, env, "rev-parse", "HEAD^{tree}")
@@ -96,11 +101,11 @@ def exercise(source: Path, command: list[str], output: Path, timeout: int) -> di
         for scenario in ("cold", "stale"):
             row = {"name": scenario, "state": "failed"}
             receipt["scenarios"].append(row)
-            clone = output / scenario
+            clone = work / scenario
             log = output / f"{scenario}-clone.log"
             row["log"] = str(log)
             run(["git", "clone", "--no-local", "--no-hardlinks", "--no-checkout",
-                 str(source), str(clone)], output, env, log, timeout)
+                 str(source), str(clone)], work, env, log, timeout)
             git(clone, env, "checkout", "--detach", candidate if scenario == "cold" else parent)
             sentinels = {}
             if scenario == "stale":
@@ -120,7 +125,7 @@ def exercise(source: Path, command: list[str], output: Path, timeout: int) -> di
                      "--no-overwrite-ignore", candidate], clone, env, log, timeout)
             if git(clone, env, "rev-parse", "HEAD") != candidate:
                 raise TrialFailure("candidate_mismatch")
-            native_env = environment(output / f"{scenario}-home")
+            native_env = environment(work / f"{scenario}-home")
             # Each clone is its own primary candidate, not the caller's workspace.
             if os.environ.get("GITHUB_ACTIONS") == "true":
                 native_env.update(GITHUB_ACTIONS="true", GITHUB_SHA=candidate,
@@ -155,6 +160,14 @@ def exercise(source: Path, command: list[str], output: Path, timeout: int) -> di
             except OSError:
                 # Losing diagnostics must not erase the original failure.
                 receipt["evidence_error"] = "failure_log_unavailable"
+    finally:
+        if owns_work:
+            try:
+                shutil.rmtree(work)
+            except OSError:
+                receipt.update(check_state=receipt["state"], state="failed",
+                               cleanup_error="trial_scratch_retained")
+                receipt.setdefault("reason", "trial_scratch_retained")
     receipt["wall_seconds"] = round(time.monotonic() - started, 3)
     return receipt
 
