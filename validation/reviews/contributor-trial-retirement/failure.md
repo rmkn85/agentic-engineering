@@ -1,0 +1,1 @@
+Reported failure: each cold/stale contributor check leaves two full cloned repositories and isolated homes, including successful runs. These are disposable run resources; retained logs and outcomes remain useful evidence. This report establishes the lifecycle problem, not a measured storage total.

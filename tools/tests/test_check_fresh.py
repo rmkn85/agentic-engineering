@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -52,6 +53,7 @@ class FreshTests(unittest.TestCase):
         result = self.exercise()
         self.assertEqual(result["state"], "passed", result)
         self.assertEqual(result["candidate"], self.git("rev-parse", "HEAD"))
+        self.assertFalse((Path(result["scenarios"][0]["log"]).parent / "execution").exists())
         self.assertEqual([r["retained_local_files"] for r in result["scenarios"]], [0, 2])
         self.assertNotEqual(result["candidate"], result["stale_base"])
         self.assertEqual(self.git("status", "--porcelain"), "")
@@ -92,10 +94,44 @@ class FreshTests(unittest.TestCase):
         log = Path(result["scenarios"][0]["log"])
         self.assertIn("original diagnostic", log.read_text())
         self.assertIn("original diagnostic", result["failure_excerpt"])
+        self.assertFalse((log.parent / "execution").exists())
 
     def test_timeout_is_failure(self):
         result = self.exercise("import time; time.sleep(60)", timeout=1)
         self.assertEqual(result["reason"], "command_timeout")
+        self.assertFalse((Path(result["scenarios"][0]["log"]).parent / "execution").exists())
+
+    def test_existing_execution_directory_is_preserved(self):
+        execution = self.base / "execution"
+        execution.mkdir()
+        (execution / "keep").write_text("pre-existing")
+        result = fresh.exercise(self.source, [sys.executable, "-V"], self.base, 10)
+        self.assertEqual(result["state"], "failed")
+        self.assertEqual((execution / "keep").read_text(), "pre-existing")
+
+    @unittest.skipUnless(os.name == "posix", "POSIX termination semantics")
+    def test_sigterm_reaps_its_command_and_keeps_the_cancelled_receipt(self):
+        child = ("import os,signal,time; print(os.getpid(), flush=True); "
+                 "os.kill(os.getppid(), signal.SIGTERM); time.sleep(5)")
+        run = subprocess.run([sys.executable, fresh.__file__, "--source", str(self.source),
+                              "--", sys.executable, "-c", child],
+                             env=self.env, capture_output=True, text=True, timeout=10)
+        self.assertEqual(run.returncode, 128 + signal.SIGTERM, run.stderr)
+        result = json.loads(run.stdout)
+        self.assertEqual(result["reason"], "trial_cancelled")
+        self.assertEqual(result["state"], "failed")
+        output = Path(result["evidence_directory"])
+        self.assertEqual(result, json.loads((output / "receipt.json").read_text()))
+        self.assertFalse((output / "execution").exists())
+        with self.assertRaises(ProcessLookupError):
+            os.kill(int(Path(result["scenarios"][0]["log"]).read_text()), 0)
+
+    def test_cleanup_failure_preserves_command_failure_and_log(self):
+        with mock.patch.object(fresh.shutil, "rmtree", side_effect=OSError("busy")):
+            result = self.exercise("raise SystemExit(7)")
+        self.assertEqual(result["reason"], "command_exit_7")
+        self.assertEqual(result["cleanup_error"], "trial_scratch_retained")
+        self.assertTrue(Path(result["scenarios"][0]["log"]).is_file())
 
     def test_native_check_cannot_rewrite_tracked_feature_to_manufacture_pass(self):
         result = self.exercise("from pathlib import Path; Path('value.txt').write_text('changed')")
