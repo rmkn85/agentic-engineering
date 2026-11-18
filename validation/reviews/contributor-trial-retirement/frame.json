@@ -1,0 +1,38 @@
+{
+  "payload": {
+    "schema": 1,
+    "request_sha256": "aa0adbabf71102364f7950bd2195d7d4b7cd614febbc88b490d5751ccdb0a1a2",
+    "failure_sha256": "1204185688b36f24e9ba5209ac8030ec6ba031c1fba862c1a8b55ea7bb6e3b40",
+    "frame": {
+      "criteria": [
+        {
+          "id": "C1",
+          "requirement": "Disposable check clones and isolated homes retire automatically on ordinary completion",
+          "check": "Inspect lifecycle ownership and execute checks demonstrating both cold/stale allocations disappear while logs and outcome remain."
+        },
+        {
+          "id": "C2",
+          "requirement": "Failures and timeouts retire owned disposable resources and preserve diagnostics",
+          "check": "Inspect exception handling and focused tests exercising nonzero exit and timeout with retained logs and outcomes."
+        },
+        {
+          "id": "C3",
+          "requirement": "Deletion stays confined to resources owned by the check run",
+          "check": "Inspect path construction and retirement boundaries; focused verification must preserve siblings, caller source and retained evidence."
+        },
+        {
+          "id": "C4",
+          "requirement": "Cancellation handling has an honest supported boundary",
+          "check": "Inspect interruption cleanup and termination limitations; do not infer abrupt process-kill cleanup from normal failure tests."
+        },
+        {
+          "id": "C5",
+          "requirement": "Verification reflects actual lifecycle behavior without weakening existing checks",
+          "check": "Compare changed tests and implementation against baseline and run focused regressions plus the review gate."
+        }
+      ],
+      "discrepancies": []
+    }
+  },
+  "sha256": "a181e67e4821d0d8cc1ec59be2177a1a47dcd2fa93c403fc428670d35579b852"
+}

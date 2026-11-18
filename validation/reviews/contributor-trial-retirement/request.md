@@ -1,0 +1,1 @@
+The operator requests automatic retirement of disposable contributor-check CI storage without a recurring agent. Preserve the useful check outcome and diagnostic evidence while retiring disposable clones and isolated homes. Review success, failure, timeout and cancellation boundaries, safe deletion scope and test fidelity.

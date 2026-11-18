@@ -1,0 +1,1 @@
+{"child_group_stop_called": true, "child_stop_called": false, "execution_removed": true, "interrupt_propagated": false, "method": "mocked child and Git identity; no real child process", "reason": "trial_cancelled", "receipt_written": false, "wait_calls": 2}

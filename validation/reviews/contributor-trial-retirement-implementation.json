@@ -1,0 +1,21 @@
+{
+  "schema": "methodology-review/v1",
+  "verdict": "accepted",
+  "request": "validation/reviews/contributor-trial-retirement/request.md",
+  "failure_evidence": "validation/reviews/contributor-trial-retirement/failure.md",
+  "framing": "validation/reviews/contributor-trial-retirement/frame.json",
+  "input_hashes": {
+    "request": "aa0adbabf71102364f7950bd2195d7d4b7cd614febbc88b490d5751ccdb0a1a2",
+    "failure_evidence": "1204185688b36f24e9ba5209ac8030ec6ba031c1fba862c1a8b55ea7bb6e3b40",
+    "framing": "749f1d49ed2be053f552e795b75c04b1fe8fde6174850ca14a365b55b3dbd068"
+  },
+  "report": {
+    "path": "validation/reviews/contributor-trial-retirement/report.md",
+    "sha256": "0b3811cbce3b99455f126cf215de1021a9ab04bf888cab49ee7f68200888c296"
+  },
+  "files": {
+    "tools/check-fresh.py": "e3a8cb60f5e1138e534e7d6e68aeb78de118ce0bb3471395e0cabda2ed0102a0",
+    "tools/tests/test_check_fresh.py": "795679069dfa7d5a5d2638e983ea2e0352dd68fcbd37a7a0ee32179a8857a643",
+    "docs/adoption/fresh-source-trials.md": "811ae9d2de5527696cf85011c9d18e9a1e0a990acb4e914f95b4e8237fe05d26"
+  }
+}
