@@ -48,6 +48,10 @@ The core regression suite remains Python 3.9+/Git only, with no external package
 
 ## Caveman scoped writing
 
+For ordinary chat handoffs, use the [handoff procedure](../execution/observation-economy.md#chat-handoffs)
+or the [shared contributor core](../../templates/contributor-core.md#handoff) in a
+project with a self-contained copy.
+
 The reviewed source is
 [`bad48a0e1df55e05e3f52249afa35ecc1909ee76`](https://github.com/JuliusBrussee/caveman/tree/bad48a0e1df55e05e3f52249afa35ecc1909ee76).
 Review covered the selected

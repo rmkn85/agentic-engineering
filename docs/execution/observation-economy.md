@@ -106,12 +106,12 @@ evidence after source changes; `observation-recall.py` does not infer freshness.
 
 ## Chat handoffs
 
-Lead with the requested action, verified user-visible result, or remaining gap.
-Include the scope, constraints, and acceptance a fresh recipient needs to act
-without reconstructing the request. State each decisive fact once and link to
-its source when available. Before sending, cut details the recipient can omit
-and still take the same authorized action or reach the same conclusion. Keep
-the evidence identity and anything that changes the acceptance check.
+Lead with the action authorized now, its authority limit, and the result to
+return. For a status handoff, lead with the verified user-visible result or gap.
+Give a fresh recipient the scope and acceptance needed to act. State each
+decisive fact once. Keep later-phase runbooks and signed evidence in their
+existing review or record. Carry its reference and any identifier needed to
+act or verify. Cut details that leave scope, authority, and acceptance intact.
 
 Give each action one reachable owner. If a request arrives again, check the
 existing assignment or send before forwarding it. Route distinct actions to

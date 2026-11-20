@@ -56,6 +56,11 @@ goal, choose the next action, and check its effect next time.
 
 ## Handoff
 
+For a chat handoff, lead with the action authorized now or the verified result.
+Include only the limit, scope, check and identifier needed to act or verify.
+Keep later phases, prior attempts and signed evidence in the existing review.
+Link to that review.
+
 Replace one current handoff under 800 words: goal, proven state, next action;
 history stays in Git/tasks. Touched audit-flagged areas must meet their limits.
 
