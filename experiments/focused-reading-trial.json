@@ -1,0 +1,104 @@
+{
+  "tested_on": "2026-11-20",
+  "guidance": {
+    "path": "docs/execution/read-once-write-once.md",
+    "candidate_git_blob": "42894947a7cd1c26c111dcefd6f9b48611412e92"
+  },
+  "method": "Two fresh readers each received one packet and the same questions, with the expected answers and variant labels withheld. For each case, the full packet gives the whole source fixture or verbose prompt, and the focused packet gives the owning section, summary with source handles, or condensed recurring prompt. The recovery control gives both readers the whole relevant procedure. The standing-prompt case reuses the four outbox situations and supplies the same situation text to both readers.",
+  "requested_model_and_effort": "gpt-6.1-terra / low",
+  "measurement": "Count whitespace-separated words in the material read for each case. Shared questions and unchanged routing situations are excluded from both totals. Synthetic fixtures measure words presented and recipient readback, with account usage and real schedule behavior unmeasured.",
+  "expected": {
+    "restart": "Workload supervisor restarts services; boot manager restarts supervisor; cite restart ownership.",
+    "recovery": "Retain original failure evidence, keep recovery pending without host operator authorization, restore dead supervisor through authorized boot manager, verify authenticated consumer read and record original/recovered state.",
+    "isolation": "Services write only own staging; deployment coordinator alone replaces pointer after authenticated candidate read; rollback selects previously verified pointer; cite I-4.",
+    "decision": "Architecture owner, rationale limiting collisions/stale state, max three and 24-hour life, separate worktree only for colliding concurrent writers, owning decision H-4.",
+    "history": "3 commits, 2 exact repeated messages e10/e25 and distinct f31; exact IDs retrieve original signatures and Native-Trace trailers.",
+    "standing": "catalog: checker/owner receives grouped three paths, reason, same-candidate contract check and retains path approvals; queue: no resend; reopen: report pending with blocker and evidence; audit: authorized replacement plus independent reviewer, substantive check, policy criterion and shared evidence."
+  },
+  "material_word_counts": {
+    "restart": {
+      "full": 171,
+      "focused": 17
+    },
+    "recovery": {
+      "full": 74,
+      "focused": 74
+    },
+    "isolation": {
+      "full": 109,
+      "focused": 40
+    },
+    "decision": {
+      "full": 98,
+      "focused": 28
+    },
+    "history": {
+      "full": 56,
+      "focused": 36
+    },
+    "standing": {
+      "full": 162,
+      "focused": 51
+    }
+  },
+  "total_material_words": {
+    "full": 670,
+    "focused": 246
+  },
+  "cases": [
+    {
+      "id": "restart",
+      "question": "For a routine ownership query, who restarts an individual service and who restarts the supervisor? State the next conclusion and cite the source.",
+      "full": "Installed service reference. Use the supported image manifest for restore and verify its scope against the environment. Hosts run a service-only identity. Store installation logs in the runner's artifact directory. Maintenance schedules can overlap with consumer reads and must use the operator's local procedure.\nRestart ownership (service-guide.md#restart-ownership). The workload supervisor restarts individual service processes. The boot manager restarts the workload supervisor.\nRecover a stopped service (service-guide.md#terminated-service). Check the supervisor's health before taking action and retain its current failure record. If the supervisor is healthy, use its authorized scoped service restart route. If the supervisor itself is dead, only the host operator may authorize a boot-manager restart of the supervisor. Verify an authenticated consumer read after recovery, then record the original and recovered state. When host authorization is unavailable, preserve the evidence and leave recovery pending.\nUpgrade inventories and dependency choices are owned by the release coordinator. Locate persisted state using the catalog. Consult the endpoint table to plan a new consumer and carry the verification result back to the same incident.",
+      "focused": "Restart ownership (service-guide.md#restart-ownership). The workload supervisor restarts individual service processes. The boot manager restarts the workload supervisor."
+    },
+    {
+      "id": "recovery",
+      "question": "The supervisor has stopped and no host authorization is available. What do you do now, whose authority is needed, and what verifies recovery?",
+      "full": "Recover a stopped service (service-guide.md#terminated-service). Check the supervisor's health before taking action and retain its current failure record. If the supervisor is healthy, use its authorized scoped service restart route. If the supervisor itself is dead, only the host operator may authorize a boot-manager restart of the supervisor. Verify an authenticated consumer read after recovery, then record the original and recovered state. When host authorization is unavailable, preserve the evidence and leave recovery pending.",
+      "focused": "Recover a stopped service (service-guide.md#terminated-service). Check the supervisor's health before taking action and retain its current failure record. If the supervisor is healthy, use its authorized scoped service restart route. If the supervisor itself is dead, only the host operator may authorize a boot-manager restart of the supervisor. Verify an authenticated consumer read after recovery, then record the original and recovered state. When host authorization is unavailable, preserve the evidence and leave recovery pending."
+    },
+    {
+      "id": "isolation",
+      "question": "Who can write staging and replace the active pointer, when is replacement allowed, and what is the rollback exception? Cite the source.",
+      "full": "Spec I-4 defines lifecycle endpoints, manifests, two fixture formats, and recovery examples. Clients authenticate with the approved reader identity. The article also describes development-only mock transport and the nightly archive schedule. Examples use decorative request IDs and list their calendar time only for test reproducibility.\nSpec I-4, write isolation. Each service may write to its own assigned staging directory. Only the deployment coordinator may replace the current pointer, after an authenticated read confirms the candidate. During rollback, the coordinator may select the previously verified pointer.\nThe manifest is mandatory for every published export and names its media encoding, candidate identity, and creation event. The maintenance coordinator answers archive questions.",
+      "focused": "Spec I-4, write isolation. Each service may write to its own assigned staging directory. Only the deployment coordinator may replace the current pointer, after an authenticated read confirms the candidate. During rollback, the coordinator may select the previously verified pointer."
+    },
+    {
+      "id": "decision",
+      "question": "Draft the shortest self-contained handoff of the worktree limit decision for a routine reader. Retain the decision authority, why, both limits, the exception and the owning reference.",
+      "full": "There were two workshops and a diagram review. The first survey had five alternatives and listed hardware-independent checkout costs. The second workshop prototyped two branch naming schemes. This record includes detailed comparison notes to explain why earlier proposals did not ship. The minutes are retained for provenance, including discussion of day boundaries, branch names, and screen layouts.\nDecision H-4 (decisions/H-4.md). The architecture owner limited worktrees to three and 24 hours to contain collisions and stale state. A separate worktree is reserved for colliding concurrent writers.\nRoutine changelog entries should preserve published operating limits. The original decision remains authoritative.",
+      "focused": "Decision H-4 (decisions/H-4.md). The architecture owner limited worktrees to three and 24 hours to contain collisions and stale state. A separate worktree is reserved for colliding concurrent writers."
+    },
+    {
+      "id": "history",
+      "question": "Give the routine history count, exact duplicate commit IDs, the distinct commit, and the route to inspect original signatures and Native-Trace trailers if needed.",
+      "full": "Commit e10: Keep a stable integration owner. Plan the handoff around the existing maintenance window and restore the cached validation evidence. Native-Trace: r15. Commit e25: Keep a stable integration owner. Plan the handoff around the existing maintenance window and restore the cached validation evidence. Native-Trace: r15. Commit f31: Reconcile ownership after the verifier changes. Native-Trace: r19.",
+      "focused": "Keep a stable integration owner — two exact messages, commits e10 and e25. Reconcile ownership after the verifier changes — commit f31. For signed records and Native-Trace trailers, retrieve the original commit by its listed ID."
+    },
+    {
+      "id": "standing",
+      "question": "Using the supplied prompt and unchanged routing situations, state who gets each action or report (or receives no resend), the critical acceptance, and any authority that cannot transfer. For the status case report whether acceptance is verified and why.",
+      "shared_situations": "experiments/chat-handoff-trial.json#/outbox_trial/cases (id and situation fields)",
+      "full": "At each recurrence assess the next action from the current task. The work and its owner have authority from the task. First consider delivery state and whether someone already acknowledged the same authorized action. If the prior assignment was acknowledged and the action, evidence and constraints remain unchanged, keep the old assignment with no second dispatch. Keep responsibility with the same owner in that unchanged case. When there was a failed delivery, contact the authorized reachable replacement with the exact constraint and check. If a distinct independent approval role is required, keep that review with its own reviewer and the same record rather than transferring approval to the implementer. For an acceptance report, use the user-visible evidence. If that evidence is missing or a check is blocked, leave acceptance pending and state the missing prerequisite or stop evidence. Keep the current owner and local approvals on grouped admission and use the same candidate verification. Reuse the existing record so evidence is attributable.",
+      "focused": "Route from the current task. Keep an acknowledged assignment with no resend while action, evidence and constraints are unchanged. Reroute failed delivery to the authorized reachable replacement. Keep independent approval with its reviewer and shared evidence record. Report substantive acceptance or its pending evidence. Preserve grouped-scope owners, approvals and same-candidate verification."
+    }
+  ],
+  "fresh_recipient_readback": {
+    "restart": "Both readers recovered both restart responsibilities and the section reference.",
+    "recovery": "Both readers kept recovery pending with evidence retained and host-operator authorization required. Both identified authenticated consumer read-back. The focused reader also explicitly retained the original and recovered state. Both received the full relevant procedure.",
+    "isolation": "Both readers recovered service-local staging scope, coordinator-only pointer writes, post-authentication condition and verified rollback target.",
+    "decision": "Both readers named the deciding role, rationale, two limits, concurrent-writer exception, and authority reference.",
+    "history": "Both readers recovered the e10/e25 repeat group and distinct f31. The focused view directed the reader back to the original commits by ID to inspect signatures and trailers. Original records are outside the grouped display.",
+    "standing": "Both readers routed all four cases to the same people or withheld a duplicate. They preserved pending acceptance, check identity, retained ownership and independent audit authority at the routing level. Both left exact audit acceptance details implicit in the short routing reply, so this replay supports the routing decision only. Use full recipient action and acceptance checks before replacing a live prompt."
+  },
+  "same_file_read_twice_control": "The routine restart question used 17 instead of 171 words. The execution question still used the full 74-word procedure, so the narrower routine read did not set a limit on recovery evidence.",
+  "changelog_check": {
+    "file": "CHANGELOG.md",
+    "entry": "worktree hygiene",
+    "base": "7c8057c98a95862b35b51343d003ba3fb8c95352",
+    "base_words": 57,
+    "candidate_words": 40,
+    "retained": "24 hours, at most three worktrees, omit fresh worktrees within limits, default short branch in the main checkout, colliding concurrent writer exception, same-day landing, rationale reference"
+  }
+}
