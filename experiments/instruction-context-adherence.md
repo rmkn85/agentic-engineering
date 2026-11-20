@@ -206,6 +206,8 @@ for the same questions and checks the resulting actions and preserved authority.
 The [current-action handoff replay](current-action-handoff-trial.json) checks
 whether fresh senders under the repository defaults or copied core draft shorter
 messages that preserve the current action, authority and required result.
+The [default writing replay](default-writing-trial.json) uses both entries to
+check replies and engineering artifacts for brevity, precise scope and formats.
 
 On a fresh host/task, try one representative evidence-producing assignment through the normal router, without pasting the skill body into the prompt. Check that the agent finds the actual skill path, reads applicable repository instructions and retains detailed evidence outside its return message. The return must identify tested scope/revision, verdict, checks, limitations and retrievable evidence. Give the orchestrator a real unresolved claim: it should inspect the relevant evidence or request a targeted follow-up, while leaving unrelated logs unopened. A missing visual/input check must remain incomplete even if a command exited successfully.
 

@@ -1,0 +1,292 @@
+{
+  "tested_on": "2026-11-20",
+  "base_revision": "70d33271ba9310d7096f88974fcd2438b43a9fc7",
+  "candidate_guidance_git_blobs": {
+    "AGENTS.md": "efdd1d5589c8f77eda3ef54368fbaa4d15d5f9b7",
+    "docs/agent-corpus/README.md": "05f062d3403bc71190aeb3b2b83e519670322de6",
+    "templates/contributor-core.md": "c9c48ca355d5d51863c7e59c0abd1bff7ca9ea59"
+  },
+  "trial": {
+    "setup": "Three fresh senders read the supplied normal entry and its required guidance, then drafted the eight identical cases. The portable profile used a small project entry and a standalone copy of the shared core. Sender instructions did not name any style or target message length. The paths opened are sender reports.",
+    "sender_task": "Draft the requested communication for each independent case, preserving the requested output format in each body.",
+    "requested_model_and_effort": "gpt-6.1-terra / low",
+    "measurement": "Count whitespace-delimited words in message bodies after removing leading Markdown heading and list markers. Count exact-format probes separately. Treat a lost authorization, requirement, safety instruction, or required format as a regression even when a draft is shorter.",
+    "limitations": "One sender per entry variant and an isolated, offline drafting trial. The previous handoff policy already produced concise output. Aggregate counts describe these samples. Installed host use, live operations, and account usage were outside scope."
+  },
+  "cases": [
+    {
+      "id": "reply",
+      "request": "Answer the release owner's question: can the signed-in operator reopen a saved export?",
+      "facts": "A signed-in desktop operator reopened the original saved export and its data matched the saved record. Evidence is `replays/desktop-7.json`. Tablet is unverified. The whole suite counted 810 tests and a certificate was regenerated. The release owner asked only about this user journey."
+    },
+    {
+      "id": "handoff",
+      "request": "Write the chat handoff to the storage control owner for the next action.",
+      "facts": "Review R-22 has the signed decision, detailed storage recovery runbook and possible later live cutover. Right now use only read-only control metadata to determine whether the complete configured store set, including journals and sidefiles, can be isolated together and surfaced read-only. No changes to live storage are authorized. Report the mechanism, affected services and authority to exclude current and returning writers, or the specific missing control, in R-22. The runbook describes disposable rehearsal, verified snapshots and separately authorized cutover."
+    },
+    {
+      "id": "task",
+      "request": "Draft the task record using exactly the fields Title, Owner, and Acceptance, in that order.",
+      "facts": "Assign the Import owner to repair duplicate accounting during resume. On resuming a stopped import using the existing local fixture, each input must produce exactly one row. The report must identify the same run before stop and after resume. Production is outside this test. The prior attempt used internal samples and is already in the task history."
+    },
+    {
+      "id": "spec",
+      "request": "Write the specification using MUST and MUST NOT for the two requirements. Keep the specified boundary exact.",
+      "facts": "If a completed operation ID is submitted again within 30 s inclusive, the service returns the saved result and does not execute the operation again. Preserve the term 'operation ID'. No behavior for a request after that interval has been authorized for this specification. A check exists in `tests/replay_boundary.test`."
+    },
+    {
+      "id": "commit",
+      "request": "Draft a commit with conventional subject prefix `fix(import):`, a reason in its body, and the exact final trailer `Trace-Ref: IMP-21` separated by a blank line.",
+      "facts": "Resume now uses the original operation ID because constructing a new ID caused repeated input to be counted as a new row. The fix is local to import resume. The trace trailer is required. There were earlier dry runs and an unrelated draft design, already recorded elsewhere."
+    },
+    {
+      "id": "deployment",
+      "request": "Write an operator note with the headings Scope, Before, Action, Verify, and Rollback, in that order. This is operator-facing prose for an approved change plan.",
+      "facts": "Target is the test catalog. Applying removes the previous writable index. Require explicit approval and verify the protected snapshot before applying. Stop if either is missing. Exact apply command `catalogctl apply --target test --revision catalog-v2`. Exact verification command `catalogctl verify --target test --revision catalog-v2`. If verification fails, run `catalogctl restore --target test --snapshot pre-upgrade`, then verify the restored index before resuming writes. This is a draft, not approval to run anything."
+    },
+    {
+      "id": "changelog",
+      "request": "Draft the changelog under `### Fixed` with one bullet.",
+      "facts": "On import resume the status view now preserves the original operation ID, so previously completed rows are not duplicated. This applies to local import replay. The entry finally closes out three internal tickets and a previous prototype."
+    },
+    {
+      "id": "requested_detail",
+      "request": "The requester asks for exactly two complete sentences. First explain the scope of the accepted evidence, then explain in full why the unresolved question needs another check.",
+      "facts": "A source unit test accepts a mocked response without opening the browser. Actual desktop keyboard focus remains unverified. To verify it, run the exact command `make focus-check` against the rendered desktop dialog and observe where focus goes after dismissal."
+    }
+  ],
+  "acceptance": {
+    "reply": [
+      "answers yes for signed-in desktop and the original export",
+      "data matches",
+      "exact evidence path",
+      "tablet remains unverified"
+    ],
+    "handoff": [
+      "read-only control metadata",
+      "complete set including journals and sidefiles",
+      "isolate together and expose read-only",
+      "live storage stays untouched",
+      "return mechanism, affected services and writer exclusion authority or missing control",
+      "R-22 retains later runbook and signed evidence; no rehearsal or cutover assigned now"
+    ],
+    "task": [
+      "exact field names and order",
+      "Import owner",
+      "resume stopped import using local fixture",
+      "exactly one row per input",
+      "same run before stop and after resume",
+      "no production"
+    ],
+    "spec": [
+      "MUST return saved result",
+      "MUST NOT execute again",
+      "same completed operation ID",
+      "30 s inclusive",
+      "no invented expiry behavior"
+    ],
+    "commit": [
+      "starts fix(import):",
+      "operation ID and duplicate reason",
+      "exact Trace-Ref: IMP-21 at end with blank separator"
+    ],
+    "deployment": [
+      "exact headings and order",
+      "test catalog and removal risk",
+      "explicit approval and verify snapshot before apply",
+      "stop if either missing",
+      "three exact commands",
+      "if verification fails restore, verify restored index before resuming writes"
+    ],
+    "changelog": [
+      "heading ### Fixed and one bullet",
+      "original operation ID on resume",
+      "previous rows not duplicated",
+      "local import replay scope"
+    ],
+    "requested_detail": [
+      "exactly two complete sentences",
+      "mocked source acceptance scoped",
+      "desktop keyboard focus remains unverified",
+      "exact make focus-check",
+      "observe focus after dismissal in rendered dialog"
+    ]
+  },
+  "profiles": {
+    "prior": {
+      "guidance_opened": [
+        "AGENTS.md",
+        "docs/agent-corpus/README.md",
+        "templates/contributor-core.md",
+        "docs/execution/observation-economy.md"
+      ],
+      "body_words": 325,
+      "drafts": [
+        {
+          "id": "reply",
+          "body": "Yes. A signed-in desktop operator reopened the original saved export, and its data matched the saved record. Evidence: `replays/desktop-7.json`. Tablet remains unverified.",
+          "body_words": 22
+        },
+        {
+          "id": "handoff",
+          "body": "Storage control owner (Operator): Use read-only control metadata to determine whether the complete configured store set, including journals and sidefiles, can be isolated together and surfaced read-only. No changes to live storage are authorized.\n\nIn R-22, report the mechanism, affected services, and authority to exclude current and returning writers, or identify the specific missing control. R-22 contains the signed decision and recovery runbook.",
+          "body_words": 63
+        },
+        {
+          "id": "task",
+          "body": "Title: Repair duplicate accounting during import resume\nOwner: Import owner\nAcceptance: Using the existing local fixture, resume a stopped import and verify that each input produces exactly one row. The report must identify the same run before the stop and after the resume. Production is outside this test.",
+          "body_words": 48
+        },
+        {
+          "id": "spec",
+          "body": "If a completed operation ID is submitted again within 30 seconds inclusive, the service MUST return the saved result.\n\nIf a completed operation ID is submitted again within 30 seconds inclusive, the service MUST NOT execute the operation again.\n\nCheck: `tests/replay_boundary.test`.",
+          "body_words": 41
+        },
+        {
+          "id": "commit",
+          "body": "fix(import): preserve operation ID on resume\n\nReuse the original operation ID when resuming an import because a new ID caused repeated input to be counted as a new row.\n\nTrace-Ref: IMP-21",
+          "body_words": 31
+        },
+        {
+          "id": "deployment",
+          "body": "## Scope\n\nApply revision `catalog-v2` to the test catalog. Applying removes the previous writable index.\n\n## Before\n\nObtain explicit approval and verify the protected snapshot. Stop if either is missing.\n\n## Action\n\nRun `catalogctl apply --target test --revision catalog-v2`.\n\n## Verify\n\nRun `catalogctl verify --target test --revision catalog-v2`.\n\n## Rollback\n\nIf verification fails, run `catalogctl restore --target test --snapshot pre-upgrade`. Verify the restored index before resuming writes.",
+          "body_words": 62
+        },
+        {
+          "id": "changelog",
+          "body": "### Fixed\n\n- Local import replay now preserves the original operation ID on resume, preventing previously completed rows from being duplicated.",
+          "body_words": 19
+        },
+        {
+          "id": "requested_detail",
+          "body": "The accepted evidence is a source unit test that accepts a mocked response without opening the browser. Actual desktop keyboard focus remains unverified, so run `make focus-check` against the rendered desktop dialog and observe where focus goes after dismissal.",
+          "body_words": 39
+        }
+      ]
+    },
+    "current": {
+      "guidance_opened": [
+        "AGENTS.md",
+        "docs/agent-corpus/README.md",
+        "templates/contributor-core.md",
+        "docs/execution/observation-economy.md"
+      ],
+      "body_words": 319,
+      "drafts": [
+        {
+          "id": "reply",
+          "body": "Yes. A signed-in desktop operator reopened the original saved export, and its data matched the saved record (`replays/desktop-7.json`). Tablet remains unverified.",
+          "body_words": 21
+        },
+        {
+          "id": "handoff",
+          "body": "Storage control owner: Use read-only control metadata to determine whether the complete configured store set, including journals and sidefiles, can be isolated together and surfaced read-only. No live storage changes are authorized. In R-22, report the mechanism, affected services, and authority to exclude current and returning writers, or identify the specific missing control. R-22 holds the signed decision and recovery runbook.",
+          "body_words": 61
+        },
+        {
+          "id": "task",
+          "body": "Title: Repair duplicate accounting during import resume\nOwner: Import owner\nAcceptance: Using the existing local fixture, resume a stopped import and verify that each input produces exactly one row. The report identifies the same run before stop and after resume. Production is outside this test.",
+          "body_words": 45
+        },
+        {
+          "id": "spec",
+          "body": "1. If a completed operation ID is submitted again within 30 s inclusive, the service MUST return the saved result.\n2. If a completed operation ID is submitted again within 30 s inclusive, the service MUST NOT execute the operation again.\n\nCheck: `tests/replay_boundary.test`.",
+          "body_words": 41
+        },
+        {
+          "id": "commit",
+          "body": "fix(import): preserve operation ID on resume\n\nReuse the original operation ID because constructing a new ID caused repeated input to be counted as a new row.\n\nTrace-Ref: IMP-21",
+          "body_words": 28
+        },
+        {
+          "id": "deployment",
+          "body": "Scope\n\nApply `catalog-v2` to the test catalog. Applying removes the previous writable index.\n\nBefore\n\nRequire explicit approval and verify the protected snapshot. Stop if either is missing.\n\nAction\n\nRun `catalogctl apply --target test --revision catalog-v2`.\n\nVerify\n\nRun `catalogctl verify --target test --revision catalog-v2`.\n\nRollback\n\nIf verification fails, run `catalogctl restore --target test --snapshot pre-upgrade`, then verify the restored index before resuming writes.",
+          "body_words": 62
+        },
+        {
+          "id": "changelog",
+          "body": "### Fixed\n\n- Local import replay now preserves the original operation ID in the status view on resume, preventing previously completed rows from being duplicated.",
+          "body_words": 23
+        },
+        {
+          "id": "requested_detail",
+          "body": "The source unit test accepts a mocked response without opening the browser. Desktop keyboard focus remains unverified because the test does not exercise the rendered dialog; run `make focus-check` against it and observe where focus goes after dismissal.",
+          "body_words": 38
+        }
+      ]
+    },
+    "portable": {
+      "guidance_opened": [
+        "AGENTS.md",
+        "contributor-core.md"
+      ],
+      "body_words": 304,
+      "drafts": [
+        {
+          "id": "reply",
+          "body": "Yes. A signed-in desktop operator reopened the original saved export, and its data matched the saved record. Evidence: `replays/desktop-7.json`. Tablet remains unverified.",
+          "body_words": 22
+        },
+        {
+          "id": "handoff",
+          "body": "Storage control owner: use read-only control metadata to determine whether the complete configured store set, including journals and sidefiles, can be isolated together and surfaced read-only. No live storage changes are authorized. In R-22, report the mechanism, affected services, and authority to exclude current and returning writers, or identify the specific missing control. R-22 contains the signed decision and recovery runbook.",
+          "body_words": 61
+        },
+        {
+          "id": "task",
+          "body": "Title: Repair duplicate accounting during import resume\nOwner: Import owner\nAcceptance: Using the existing local fixture, stop and resume an import; each input produces exactly one row, and the report identifies the same run before stop and after resume. Production is outside this test.",
+          "body_words": 44
+        },
+        {
+          "id": "spec",
+          "body": "If a completed operation ID is submitted again within 30 s inclusive, the service MUST return the saved result.\nThe service MUST NOT execute the operation again for that submission.\n\nCheck: `tests/replay_boundary.test`.",
+          "body_words": 32
+        },
+        {
+          "id": "commit",
+          "body": "fix(import): reuse original operation ID on resume\n\nConstructing a new operation ID caused repeated input to count as a new row. Reuse the original ID during import resume.\n\nTrace-Ref: IMP-21",
+          "body_words": 30
+        },
+        {
+          "id": "deployment",
+          "body": "Scope\n\nTest catalog. Applying removes the previous writable index.\n\nBefore\n\nObtain explicit approval and verify the protected snapshot. Stop if either is missing.\n\nAction\n\nRun `catalogctl apply --target test --revision catalog-v2`.\n\nVerify\n\nRun `catalogctl verify --target test --revision catalog-v2`.\n\nRollback\n\nIf verification fails, run `catalogctl restore --target test --snapshot pre-upgrade`. Verify the restored index before resuming writes.",
+          "body_words": 57
+        },
+        {
+          "id": "changelog",
+          "body": "### Fixed\n\n- Local import replay now preserves the original operation ID on resume, preventing previously completed rows from being duplicated.",
+          "body_words": 19
+        },
+        {
+          "id": "requested_detail",
+          "body": "The source unit test accepts a mocked response without opening the browser. Actual desktop keyboard focus remains unverified because the test does not exercise the rendered dialog; run `make focus-check` against it and observe where focus goes after dismissal.",
+          "body_words": 39
+        }
+      ]
+    }
+  },
+  "observations": {
+    "reply_and_handoff": "Both revised profiles answered the desktop result directly and retained tablet uncertainty. The feasibility drafts retained read-only scope, the live-change limit and the requested result in the owning review.",
+    "tasks_specs_and_commits": "Revised drafts retained the task fields, test scope, exact 30 s inclusive boundary, MUST and MUST NOT obligations, conventional commit subject and unchanged trailer.",
+    "deployment": "The initial case specified heading names but left Markdown level implicit. The previous draft used Markdown headings and both revised drafts used plain labels. A separate exact-format probe required Markdown level 2. Both fresh revised entries produced the exact headings in order, the approval and snapshot gate, the three commands and the restore-before-resume sequence.",
+    "changelog": "All drafts used the heading and single bullet. The portable initial bullet omitted the status-view locus. A focused portable probe that made the locus an explicit requirement retained it.",
+    "requested_detail": "Both revised profiles used the requested two sentences, left focus unverified and retained the exact follow-up test and observation."
+  },
+  "exact_format_probe": {
+    "case": {
+      "id": "deployment_exact",
+      "request": "Draft the operator note with these exact Markdown headings in order: `## Scope`, `## Before`, `## Action`, `## Verify`, `## Rollback`. Use full sentences for approval, stop and rollback instructions so their order and conditions are clear.",
+      "facts": "Target is the test catalog. Applying removes the previous writable index. Require explicit approval and verify the protected snapshot before applying. Stop if either is missing. Exact apply command `catalogctl apply --target test --revision catalog-v2`. Exact verification command `catalogctl verify --target test --revision catalog-v2`. If verification fails, run `catalogctl restore --target test --snapshot pre-upgrade`, then verify the restored index before resuming writes. This is a draft, not approval to run anything."
+    },
+    "repository": "## Scope\n\nThe target is the test catalog. Applying removes the previous writable index.\n\n## Before\n\nObtain explicit approval and verify the protected snapshot before applying. Stop if either is missing.\n\n## Action\n\nAfter approval and snapshot verification, run:\n\n```sh\ncatalogctl apply --target test --revision catalog-v2\n```\n\n## Verify\n\nRun:\n\n```sh\ncatalogctl verify --target test --revision catalog-v2\n```\n\n## Rollback\n\nIf verification fails, run:\n\n```sh\ncatalogctl restore --target test --snapshot pre-upgrade\n```\n\nVerify the restored index before resuming writes.",
+    "portable": "## Scope\n\nThis draft covers the test catalog. Applying removes the previous writable index.\n\n## Before\n\nObtain explicit approval and verify the protected snapshot before applying. Stop if either is missing.\n\n## Action\n\nAfter approval and snapshot verification, run:\n\n```sh\ncatalogctl apply --target test --revision catalog-v2\n```\n\n## Verify\n\nRun:\n\n```sh\ncatalogctl verify --target test --revision catalog-v2\n```\n\n## Rollback\n\nIf verification fails, run `catalogctl restore --target test --snapshot pre-upgrade`, then verify the restored index before resuming writes.\n\nThis draft does not approve running any command."
+  },
+  "exact_scope_probe": {
+    "case": {
+      "id": "changelog_exact_scope",
+      "request": "Write the changelog under `### Fixed` with exactly one bullet. State that the change is in the status view for local import replay. Keep that scope explicit.",
+      "facts": "On import resume the status view now preserves the original operation ID, so previously completed rows are not duplicated. This applies to local import replay. The entry finally closes out three internal tickets and a previous prototype."
+    },
+    "portable": "### Fixed\n\n- The status view for local import replay now preserves the original operation ID on resume, preventing duplicate completed rows."
+  }
+}
