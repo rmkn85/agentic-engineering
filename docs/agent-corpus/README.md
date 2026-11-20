@@ -2,7 +2,7 @@
 
 Read this **default operating corpus**, then load deeper guidance only for the current decision.
 
-Use the five [engineering personas](../../templates/contributor-core.md#engineering-personas) in assignments, handoffs and reports. Select the role from the current responsibility; ordinary service restoration is an Operator concern handled by engineering.
+Select the [engineering persona](../../templates/contributor-core.md#engineering-personas) by responsibility in assignments, handoffs and reports. Engineering handles service restoration as Operator. Apply the [handoff procedure](../execution/observation-economy.md#chat-handoffs) when drafting chat assignments or handoffs.
 
 ## Execution kernel
 
@@ -87,7 +87,7 @@ See [instruction/context adherence experiments](../../experiments/instruction-co
 | Designing logging/telemetry/crash evidence/self-monitoring | [`../runtime/diagnostic-feedback.md`](../runtime/diagnostic-feedback.md) and, for dead-target evidence, [`../runtime/postmortem-bundles.md`](../runtime/postmortem-bundles.md) |
 | Establishing browser/native E2E test capability or choosing proof surfaces | [`../runtime/e2e-readiness.md`](../runtime/e2e-readiness.md) |
 | Diagnosing a crash/failure/noisy runtime artifact | use [`../../skills/diagnosing-runtime-failure/SKILL.md`](../../skills/diagnosing-runtime-failure/SKILL.md) and follow the smallest diagnostic artifact first |
-| Chat handoffs, recoverable evidence, compact receipts | [Observation economy](../execution/observation-economy.md) |
+| Recoverable evidence and compact receipts | [Observation economy](../execution/observation-economy.md) |
 | Preserving unfinished work and retiring disposable execution resources | [Resource lifecycle](../execution/resource-lifecycle.md) |
 | Faults, resource limits, uncertain context, review disagreement or recovery | [`../execution/bounded-recovery.md`](../execution/bounded-recovery.md) |
 | Efficiency control-plane decision order | [`../principles/efficiency-control-plane.md`](../principles/efficiency-control-plane.md) |

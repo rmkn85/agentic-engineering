@@ -1,0 +1,170 @@
+{
+  "tested_on": "2026-11-20",
+  "base_revision": "a75f69070f1972d4b864ef3fe6e00a0c8216e153",
+  "candidate_guidance_git_blobs": {
+    "docs/agent-corpus/README.md": "d7fe0e0a3886533333218abbf21246196753783f",
+    "docs/execution/observation-economy.md": "8d41bccedd1666913cf2514ad0c169287e7668b2",
+    "templates/contributor-core.md": "9d99607fe74702c073198474283e6f6bbcadea39"
+  },
+  "mechanism": "The repository default corpus explicitly routes drafting to the existing handoff procedure. The portable contributor core embeds the decision rule for projects without an upstream checkout. The separate Caveman adapter's scoped review and commit selection does not supply this route.",
+  "trial": {
+    "sender_task": "Use the provided project entry and default guidance. For each case, draft the outgoing chat message you would send to the named recipient now. Report the draft and the guidance paths opened.",
+    "recipient_task": "Given only each message, identify current action, exact authorized scope and excluded effects, required result and fallback, owning evidence record, and any missing fact. Identify whether a later phase is authorized when relevant.",
+    "setup": "Fresh isolated senders received identical neutral case notes, before seeing any sample rewrite, word target or rubric. The repository pair read the previous and revised default entries. The portable pair read the same minimal project entry and the old or revised self-contained contributor core. Two fresh readers received one message per case with repository versions alternated; a third read the revised portable messages. Guidance paths are sender reports.",
+    "measurement": "Whitespace-delimited body words. Each revised message must use fewer words than its paired previous sender draft and preserve action, authority and required result in the fresh readback. Review lookup to retrieve named evidence is ordinary execution. Lookup to infer the assigned action, authority or selected identity is a miss.",
+    "requested_model_and_effort": "gpt-6.1-terra / low",
+    "robustness": "Predefined exact-identity contrast. A reader must stop when two possible records exist and the review does not identify which is authorized. A reader that receives the authorized ID must select exactly that record.",
+    "limitations": "A single draft per case and entry variant in the matched trial. The prior repository sender voluntarily opened the optional handoff section. The paired results support this specific drafting and recipient replay with explicit entry reads. Installed downstream loading, standing prompt replacement, live operations and account usage were outside the trial."
+  },
+  "cases": [
+    {
+      "id": "feasibility",
+      "notes": "The task follows a review of whether the recovery path can protect the current source. An earlier inspection found storage paths but did not establish that writers had lost access. The signed decision and history are in review R-17, and the original recovery remains pending. First, using authorized configuration or read-only control metadata only, determine whether every configured primary store, including journals and sidefiles, can be isolated together and exposed read-only to an isolated recovery environment. Leave the live stores untouched. Record the supported mechanism, affected services, and whose authority can exclude current and returning writers, or identify the exact missing control. Put the result in R-17. If feasibility is established, the later runbook tests the supported mechanism with disposable storage, including a held writer, a returning writer, an independently writable copy, and an authenticated read. It retains the source inventory and the recovery record. A possible live cutover would require its own explicit authorization and accounting for subsequent writes. These later steps stay in the existing review.",
+      "retained_in_review": {
+        "id": "R-17",
+        "items": [
+          "signed feasibility decision",
+          "conditional disposable-storage rehearsal runbook",
+          "live cutover authorization boundary",
+          "original pending recovery record"
+        ]
+      },
+      "expected": {
+        "current_action": "Read-only feasibility check for complete primary inventory including journals and sidefiles as one protected set, with read-only exposure to isolated recovery.",
+        "authority_limit": "Use authorized configuration or read-only control metadata only. No live store action, rehearsal or cutover is assigned now. Cutover requires separate actual authorization.",
+        "result": "In R-17, record supported mechanism and service scope, authority to exclude existing and returning writers, or the specific missing control.",
+        "retention": "R-17 retains the signed decision, later runbook and separate cutover authority."
+      }
+    },
+    {
+      "id": "startup",
+      "notes": "The installed service still refers to an interrupted deployment. Review D-24 contains its exact operation identity, the earlier stable selection and pending target, the version history, and a signed decision assigning diagnostics to the deployment controller and application fixes to their owning team. Status and enrollment were queried previously and show the same pending operation. Neither response contains a startup cause. The predecessor restore would target the earlier selection, so leave it idle and keep the original journal and primary data intact. Please use only the enrolled API, with process metadata out of scope, to find the earliest durable launch, admission, or readiness stage and return its actual error. If the API did not retain that evidence, propose the smallest controller diagnostic for review. Route a confirmed store-admission or application failure to the application owner and keep the corroborating output with the existing review.",
+      "retained_in_review": {
+        "id": "D-24",
+        "items": [
+          "exact interrupted-operation identity",
+          "version and API response history",
+          "signed ownership decision",
+          "original journal and data-protection requirements"
+        ]
+      },
+      "expected": {
+        "current_action": "Diagnose the installed deployment via enrolled API. Locate the earliest durable launch, admission or readiness failure.",
+        "authority_limit": "API only, outside process metadata. Preserve original journal and primary data. Leave predecessor restore idle.",
+        "result": "Return actual error and stage. If evidence is absent, propose the smallest controller diagnostic for review. Route confirmed store/application failures to their owner.",
+        "retention": "D-24 retains exact operation identity and signed evidence."
+      }
+    }
+  ],
+  "paired_senders": [
+    {
+      "entry": "repository",
+      "guidance_opened": [
+        "AGENTS.md",
+        "docs/agent-corpus/README.md",
+        "docs/execution/observation-economy.md"
+      ],
+      "variant": "previous",
+      "messages": [
+        {
+          "id": "feasibility",
+          "to": "Storage control owner",
+          "body": "Please determine whether every configured primary store, including journals and sidefiles, can be isolated together and exposed read-only to an isolated recovery environment. Use authorized configuration or read-only control metadata only, and leave the live stores untouched.\n\nRecord the supported mechanism, affected services, and whose authority can exclude both current and returning writers in review R-17; if a control is missing, identify it precisely. Earlier inspection found storage paths but did not establish that writers had lost access. R-17 contains the signed decision and history, and the original recovery remains pending.\n\nIf feasibility is established, retain the later disposable-storage tests and source inventory in the existing review. A live cutover requires separate explicit authorization and accounting for subsequent writes.",
+          "body_words": 119
+        },
+        {
+          "id": "startup",
+          "to": "Deployment controller owner",
+          "body": "Please use the enrolled API to find the earliest durable launch, admission, or readiness stage for the interrupted deployment and return its actual error in review D-24. Process metadata is out of scope. If the API did not retain that evidence, propose the smallest controller diagnostic for review.\n\nThe installed service still refers to the pending operation. Previous status and enrollment responses showed that same operation but did not contain a startup cause. D-24 contains the exact operation identity, earlier stable selection, pending target, version history, and signed ownership decision.\n\nLeave the predecessor restore idle and preserve the original journal and primary data. Route a confirmed store-admission or application failure to the application owner, and retain corroborating output with D-24.",
+          "body_words": 120
+        }
+      ]
+    },
+    {
+      "entry": "repository",
+      "guidance_opened": [
+        "AGENTS.md",
+        "docs/agent-corpus/README.md",
+        "docs/execution/observation-economy.md"
+      ],
+      "variant": "revised",
+      "messages": [
+        {
+          "id": "feasibility",
+          "to": "Storage control owner",
+          "body": "Please determine whether every configured primary store, including journals and sidefiles, can be isolated together and exposed read-only to an isolated recovery environment. Use only authorized configuration or read-only control metadata, and leave the live stores untouched. Record the supported mechanism, affected services, and whose authority can exclude current and returning writers—or the exact missing control—in review R-17. An earlier inspection found storage paths but did not establish that writers had lost access. R-17 retains the signed decision, history, and later recovery runbook; the original recovery remains pending.",
+          "body_words": 88
+        },
+        {
+          "id": "startup",
+          "to": "Deployment controller owner",
+          "body": "Please use only the enrolled API to find the earliest durable launch, admission, or readiness stage for the interrupted deployment in review D-24, and return its actual error with corroborating output in that review. Process metadata is out of scope. Prior status and enrollment queries show the same pending operation but no startup cause. If the API retained no such evidence, propose the smallest controller diagnostic for review. Route any confirmed store-admission or application failure to the application owner. Leave the predecessor restore idle and preserve the original journal and primary data. D-24 contains the operation identity, deployment history, and signed ownership decision.",
+          "body_words": 103
+        }
+      ]
+    },
+    {
+      "entry": "portable",
+      "guidance_opened": [
+        "AGENTS.md",
+        "contributor-core.md"
+      ],
+      "variant": "previous",
+      "messages": [
+        {
+          "id": "feasibility",
+          "to": "Storage control owner",
+          "body": "Please determine whether the current source can be protected for recovery. Using authorized configuration or read-only control metadata only, establish whether every configured primary store, including journals and sidefiles, can be isolated together and exposed read-only to an isolated recovery environment. Leave the live stores untouched.\n\nRecord in review R-17 the supported mechanism, affected services, and whose authority can exclude current and returning writers, or identify the exact missing control. R-17 contains the signed decision and history; the original recovery remains pending. The earlier path inspection did not establish that writers had lost access.\n\nIf feasibility is established, keep the later disposable-storage runbook test in R-17: test a held writer, a returning writer, an independently writable copy, and an authenticated read, while retaining the source inventory and recovery record. Any live cutover requires separate explicit authorization and accounting for subsequent writes.",
+          "body_words": 141
+        },
+        {
+          "id": "startup",
+          "to": "Deployment controller owner",
+          "body": "Please identify the startup failure for the interrupted deployment recorded in review D-24. Use only the enrolled API, with process metadata out of scope, to find the earliest durable launch, admission, or readiness stage and return its actual error. Status and enrollment have already been queried and show the same pending operation; neither response contains a startup cause.\n\nD-24 contains the exact operation identity, earlier stable selection, pending target, version history, and signed ownership decision. Leave the predecessor restore idle because it would target the earlier selection, and preserve the original journal and primary data.\n\nKeep corroborating output with D-24. If the API did not retain the needed evidence, propose the smallest controller diagnostic for review. Route a confirmed store-admission or application failure to the application owner.",
+          "body_words": 127
+        }
+      ]
+    },
+    {
+      "entry": "portable",
+      "guidance_opened": [
+        "AGENTS.md",
+        "contributor-core.md"
+      ],
+      "variant": "revised",
+      "messages": [
+        {
+          "id": "feasibility",
+          "to": "Storage control owner",
+          "body": "Please determine whether every configured primary store, including journals and sidefiles, can be isolated together and exposed read-only to an isolated recovery environment. Use only authorized configuration or read-only control metadata, and leave the live stores untouched.\n\nRecord in R-17 the supported mechanism, affected services, and whose authority can exclude current and returning writers, or identify the exact missing control. R-17 contains the signed decision and history; the original recovery remains pending.",
+          "body_words": 72
+        },
+        {
+          "id": "startup",
+          "to": "Deployment controller owner",
+          "body": "Please use the enrolled API to find the earliest durable launch, admission, or readiness stage for the interrupted deployment and return its actual error in D-24. Process metadata is out of scope. Prior status and enrollment responses show the same pending operation but contain no startup cause.\n\nIf the API did not retain the evidence, propose the smallest controller diagnostic for review. Route a confirmed store-admission or application failure to the application owner and retain corroborating output in D-24. Leave the predecessor restore idle and preserve the original journal and primary data. D-24 identifies the operation and records the signed ownership decision.",
+          "body_words": 102
+        }
+      ]
+    }
+  ],
+  "recipient_observations": {
+    "repository_previous": "Both readers recovered the current scope, authority and result. The feasibility draft carried additional future-phase context. The startup draft carried version and prior operation history.",
+    "repository_revised": "Both readers recovered the current action, authority limit, required result or fallback, and existing review reference without clarification. The feasibility reader treated later execution as unauthorized. The startup reader limited diagnosis to the enrolled API and left the predecessor restore idle.",
+    "portable_revised": "The reader recovered read-only feasibility, whole store scope, mechanism or specific missing control and responsible writer-exclusion authority in R-17. The startup reader recovered enrolled API scope, excluded process metadata and restore, retained journal/data, exact stage and error, reviewed fallback and the D-24 ownership boundary.",
+    "control": "The reader withheld selection when D-29 listed both runs without approval. Given the authorized run-q4, the other reader selected only that run and returned the requested stage and error contract."
+  },
+  "portable_pilot": {
+    "body_words": [
+      112,
+      127
+    ],
+    "finding": "The first portable draft still repeated prior attempts and version history. The revision explicitly retains those with the existing review and admits only the identifiers and checks required for action or verification."
+  },
+  "contrast": {
+    "id": "exact-identity",
+    "unsafe": "Two pending launches have the same service name and version. Use the read-only enrolled API to return the earliest durable error for the approved launch. The API requires an exact run ID and both launch IDs are visible. Review D-29 lists both launches but has no indication which one was approved.",
+    "actionable": "Two pending launches have the same service name and version. Review D-29 authorizes only launch `run-q4`. Use that exact ID in the read-only enrolled API to return the earliest durable stage and actual startup error.",
+    "expected": "Stop and request the approved run identity when it is missing. Use run-q4 only when the review explicitly authorizes it."
+  }
+}
