@@ -11,6 +11,21 @@ A useful target is:
 5. persist the decision and hashes
 6. freeze it until a dependency change explicitly invalidates it
 
+## Retrieve the part that answers the question
+
+For a recurring question, use the owning section and retain a stable reference.
+Name who decided, why, and any conditions that affect the next action. Read the
+full procedure when executing it or when the selected section cannot establish
+the required authority, exceptions, or steps.
+
+Group exact repeats in routine history displays with a count and each commit
+identity. Use the original commit and trailers when checking provenance.
+
+Before shortening a recurring prompt, replay its existing routing cases. Count
+words read on each path and check that a fresh recipient takes the same action
+with the same authority, prerequisites, and acceptance. Include a case that
+needs deeper retrieval.
+
 ## Decision ledger
 
 A compact machine-readable record can include:

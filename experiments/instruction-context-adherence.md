@@ -199,6 +199,11 @@ Include a genuine unavailable-prerequisite variant: complete independent authori
 
 ### Portable routing and handoff check
 
+The [ordinary chat handoff replay](chat-handoff-trial.json) measures what fresh
+recipients recover from each message, message length, and repeated sends.
+The [focused reading replay](focused-reading-trial.json) measures words presented
+for the same questions and checks the resulting actions and preserved authority.
+
 On a fresh host/task, try one representative evidence-producing assignment through the normal router, without pasting the skill body into the prompt. Check that the agent finds the actual skill path, reads applicable repository instructions and retains detailed evidence outside its return message. The return must identify tested scope/revision, verdict, checks, limitations and retrievable evidence. Give the orchestrator a real unresolved claim: it should inspect the relevant evidence or request a targeted follow-up, while leaving unrelated logs unopened. A missing visual/input check must remain incomplete even if a command exited successfully.
 
 Also check one small task that should not activate the workflow, and an absent optional skill checkout. Keep startup delivery, behavior and resource measurements separate. After compaction, verify that a continuation uses the recorded next action and preserves unfinished acceptance rather than restarting completed work or declaring success. Run this subset when portability or retention is the uncertainty; it is not a required matrix for every wording edit.

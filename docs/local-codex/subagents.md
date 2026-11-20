@@ -255,7 +255,7 @@ For concurrent writers, use [separate worktrees and an integration owner](../col
 
 ### Handoff and retained context
 
-Use the return contract in [`efficient-execution`](../../skills/efficient-execution/SKILL.md) and distinguish accepted product progress from supporting evidence under the [outcome scorecard](../measurement/metrics.md#outcome-and-complete-operation-scorecard). A launch handoff should make these fields explicit when they matter, in addition to the mandatory dispatch receipt:
+Use the [chat handoff contract](../execution/observation-economy.md#chat-handoffs) and the return contract in [`efficient-execution`](../../skills/efficient-execution/SKILL.md). Distinguish accepted product progress from supporting evidence under the [outcome scorecard](../measurement/metrics.md#outcome-and-complete-operation-scorecard). A launch handoff should make these fields explicit when they matter, in addition to the mandatory dispatch receipt:
 
 ```text
 Outcome and concrete artifact:
