@@ -48,6 +48,13 @@ The core regression suite remains Python 3.9+/Git only, with no external package
 
 ## Caveman scoped writing
 
+The [default writing policy](../agent-corpus/README.md#default-writing) and the
+[portable core](../../templates/contributor-core.md#default-writing) apply
+Caveman's concise writing to chat and persisted engineering prose. The pinned
+[upstream chat skill](https://github.com/JuliusBrussee/caveman/blob/bad48a0e1df55e05e3f52249afa35ecc1909ee76/skills/caveman/SKILL.md)
+describes the source style and its session rules. The adapter below provides
+the explicit review and commit recipes.
+
 For ordinary chat handoffs, use the [handoff procedure](../execution/observation-economy.md#chat-handoffs)
 or the [shared contributor core](../../templates/contributor-core.md#handoff) in a
 project with a self-contained copy.

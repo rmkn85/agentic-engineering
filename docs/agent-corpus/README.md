@@ -4,6 +4,10 @@ Read this **default operating corpus**, then load deeper guidance only for the c
 
 Select the [engineering persona](../../templates/contributor-core.md#engineering-personas) by responsibility in assignments, handoffs and reports. Engineering handles service restoration as Operator. Apply the [handoff procedure](../execution/observation-economy.md#chat-handoffs) when drafting chat assignments or handoffs.
 
+## Default writing
+
+Use [Caveman](../../templates/contributor-core.md#default-writing) for all agent-authored communication. Lead with the answer or action. Cut filler and repetition. Preserve exact facts, requirement strength, uncertainty, literals and required formats. Expand only for safety, precision or requested detail.
+
 ## Execution kernel
 
 1. **Work backward from purpose and preserve constraints.** Before selecting tasks, research or tools, recover the controlling user outcome, proven capability and remaining gap from authoritative records, then choose work that advances it. Use [delivery steering](../../skills/steering-delivery/SKILL.md) before substantial selection or replanning; readiness alone is not priority, and explicit user priorities remain controlling. Narrower interim checks do not remove product invariants or required final acceptance; only an authorized scope change does. Human-facing interface work inherits accessibility and comprehension requirements even when the request omits them. Establish the requirement's authority; separate desired behavior, observed behavior, assumptions and design choices. For integrated work, follow [direct delivery](../execution/direct-delivery.md): keep one current contract, reconcile user corrections, and verify a connected scenario before multiplying variants. Use precise technical language without changing obligation strength or inventing missing criteria.
@@ -24,9 +28,7 @@ Make and execute justified in-scope corrections without routine approval or anot
 
 ## Completion boundary
 
-For implementation tasks, own the requested outcome, not the first successful subtask. Progress updates and coherent commits are checkpoints, not permission to stop.
-
-Before every final response, compare the request (including later clarifications) with actual state and verification evidence. Ask: **Does necessary work remain that I can perform now with available tools and authorization?** If yes, perform it instead of finalizing; do not wait for another "continue".
+Own implementation through the requested outcome. Treat updates and commits as checkpoints. Before every final response, compare the full request, including later clarifications, against state and evidence. Perform remaining authorized work with available tools now.
 
 Discovered work required for that outcome belongs to the current task. Carry it through implementation, integration, verification and repair; do not present executable required work as "next steps". Keep optional improvements out of scope and respect explicit planning-only, no-deploy, stop and approval boundaries.
 

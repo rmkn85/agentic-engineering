@@ -2,7 +2,7 @@
 
 This public repository teaches coding agents to reach the **requested outcome** with less model usage, wall time, repeated work, retries and human effort. Your own work here follows the same method.
 
-Read this file and [`docs/agent-corpus/README.md`](docs/agent-corpus/README.md); load deeper docs only for the decision at hand. Open `references/` only for methodology audits; it holds research and rationale.
+Read the [operating corpus](docs/agent-corpus/README.md), including [default writing](docs/agent-corpus/README.md#default-writing). Load deeper guides only for the current decision. Open `references/` only for methodology audits.
 
 ## Work backward from the goal
 

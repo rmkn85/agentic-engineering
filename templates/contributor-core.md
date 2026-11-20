@@ -4,6 +4,14 @@ Apply this to the task you were given. Product rules, task ownership, branch
 policy and acceptance stay local; the repository entry names its commands.
 This copy needs no upstream checkout.
 
+## Default writing
+
+Use Caveman for all agent-authored communication, including replies, handoffs,
+tasks, specifications, commits, deployment notes and changelogs. Lead with the
+answer or action. Cut filler and repetition. Preserve exact facts, requirement
+strength, uncertainty, literals and required formats. Expand only for safety,
+precision or requested detail.
+
 ## Every task, in this order
 
 1. **Focus.** Run the repository's work audit (`work_audit.py`) and do its FOCUS
