@@ -104,20 +104,27 @@ existing run/handoff to the tested source/candidate and compare it with the
 current candidate before reusing the result. A valid old log remains historical
 evidence after source changes; `observation-recall.py` does not infer freshness.
 
-## Worker handoffs
+## Chat handoffs
 
-Workers should normally return:
+Lead with the requested action, verified user-visible result, or remaining gap.
+Include the scope, constraints, and acceptance a fresh recipient needs to act
+without reconstructing the request. State each decisive fact once and link to
+its source when available. Before sending, cut details the recipient can omit
+and still take the same authorized action or reach the same conclusion. Keep
+the evidence identity and anything that changes the acceptance check.
 
-```text
-result / decision
-changed scope
-validation status
-compact evidence references
-limitations / untested scope
-open decisions
-```
+Give each action one reachable owner. If a request arrives again, check the
+existing assignment or send before forwarding it. Route distinct actions to
+their owners and link to the same review or decision. Send each handoff once
+through an authorized route. Follow up when the recipient's action, blocker, or
+evidence changes or delivery fails. Keep the final report self-contained for its
+audience.
 
-Do not return the entire worker transcript or raw logs unless the coordinator needs them. Keep evidence retrievable through integration.
+### Worker handoffs
+
+In worker returns, include material scope changes, validation status, untested
+limits, and open decisions. Keep evidence retrievable through integration. Send
+full transcripts or logs only when the coordinator needs them.
 
 ## Before compaction
 

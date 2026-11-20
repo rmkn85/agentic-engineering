@@ -87,7 +87,7 @@ See [instruction/context adherence experiments](../../experiments/instruction-co
 | Designing logging/telemetry/crash evidence/self-monitoring | [`../runtime/diagnostic-feedback.md`](../runtime/diagnostic-feedback.md) and, for dead-target evidence, [`../runtime/postmortem-bundles.md`](../runtime/postmortem-bundles.md) |
 | Establishing browser/native E2E test capability or choosing proof surfaces | [`../runtime/e2e-readiness.md`](../runtime/e2e-readiness.md) |
 | Diagnosing a crash/failure/noisy runtime artifact | use [`../../skills/diagnosing-runtime-failure/SKILL.md`](../../skills/diagnosing-runtime-failure/SKILL.md) and follow the smallest diagnostic artifact first |
-| Observation/result economy, restorable evidence, compact receipts | [`../execution/observation-economy.md`](../execution/observation-economy.md) |
+| Chat handoffs, observation reuse, recoverable evidence, compact receipts | [Observation economy](../execution/observation-economy.md) |
 | Preserving unfinished work and retiring disposable execution resources | [Resource lifecycle](../execution/resource-lifecycle.md) |
 | Faults, resource limits, uncertain context, review disagreement or recovery | [`../execution/bounded-recovery.md`](../execution/bounded-recovery.md) |
 | Efficiency control-plane decision order | [`../principles/efficiency-control-plane.md`](../principles/efficiency-control-plane.md) |

@@ -1,0 +1,207 @@
+{
+  "tested_on": "2026-11-20",
+  "source": {
+    "base": "7c8057c98a95862b35b51343d003ba3fb8c95352",
+    "guidance": "docs/execution/observation-economy.md",
+    "candidate_git_blob": "a3b59129100779e7d10d76c7156cf8f6ff2981ac"
+  },
+  "method": {
+    "setup": "Two isolated senders explicitly read the respective section and received the same neutral source cases and proposed outbox. Each returned the messages it would send. Two further readers each received one version per case, with the variants alternated and source material, variant labels, and scoring criteria withheld.",
+    "sender_task": "Decide which chat messages go out now. Edit, add, remove, or reroute messages as appropriate. Return the text and recipient for every separate send.",
+    "recipient_task": "For each message, recover the exact action or supported conclusion, its scope and constraints, the check or evidence, and any authority boundary. Identify missing information that would require a lookup or clarification to understand what to do or conclude.",
+    "scoring": "A pass preserves the expected action and authority, scope, acceptance and material evidence. Routine execution and later evidence verification do not count as reconstructing a request. A duplicate send repeats the same assignment or unchanged result without a new obligation. An unnecessary retry to a failed route is counted separately. Words are whitespace-separated tokens in message bodies.",
+    "requested_model_and_effort": "gpt-6.1-terra / low for each sender and reader",
+    "limitations": "One simulated replay per version. The coordinator scored reader outputs against criteria set before the outbox trial. This exercise used explicit reads, no live deliveries, and no instruction-loading or account usage measurements."
+  },
+  "pilot": {
+    "cases": [
+      "grouped contract admission",
+      "one-owner recovery",
+      "shared decision",
+      "saved-result status",
+      "distinct implementation and independent review"
+    ],
+    "base": {
+      "sends": 6,
+      "duplicate_sends": 0,
+      "body_words": 238,
+      "actionable_messages": 5
+    },
+    "first_draft": {
+      "sends": 6,
+      "duplicate_sends": 0,
+      "body_words": 260,
+      "actionable_messages": 5
+    },
+    "observation": "Both independent-review messages named an approval rule without stating its criteria. The first draft was longer. A test-count-only completion control was correctly rejected. The revision added checking the existing send and a preservation test for cutting detail. The next trial used new cases, prior delivery state, and an explicit review criterion."
+  },
+  "outbox_trial": {
+    "expected": {
+      "catalog": "One send to Schema gate owner. Explicit 3.2 and three paths, grouped admission if needed, reason, existing approvals, same candidate and `make catalog-contract`.",
+      "queue": "Zero sends. Existing owner acknowledged the identical action and there is no material change.",
+      "reopen": "One send to Desktop Release Owner. Desktop authenticated saved archive reopen unverified, expired sign-in fixture, exact evidence pointer. No new action or unsupported acceptance.",
+      "audit": "Two sends to authorized replacement and distinct reviewer. Maintainer B sees P-9, one expired browser session, fixture, unchanged timeout, exact check and evidence. Data Reviewer sees exact single-fresh/no-expired approval rule, dependency on the accepted record, shared evidence and independent verdict. No resend to Maintainer A or self-signoff."
+    },
+    "cases": [
+      {
+        "id": "catalog",
+        "situation": "Catalog Coordinator can write to the schema gate owner and Release Observer. For version 3.2, extend grouped admission if needed to admit schema/catalog.toml, schema/catalog.generated.json and tests/catalog-contract.test together. The test still expects a retired locale override. Existing path owners approve their own changes. Verify using `make catalog-contract` on the same candidate. The Release Observer has no action. No message has been sent.",
+        "proposed": [
+          {
+            "to": "Schema gate owner",
+            "body": "Ahead of the next release, could you look at the catalog gate? The release has had a smooth week, export throughput is up, the release notes were prepared on Friday, and the last dry run was green. The declaration, generated schema, and test might need to change together. The test still mentions the locale override. Can you check that the gate admits the whole group? Let the release observer know too."
+          },
+          {
+            "to": "Release Observer",
+            "body": "Forwarding the schema gate concern in case you can pick up the catalog change in parallel. The declaration, generated schema, and test might need to land together."
+          }
+        ]
+      },
+      {
+        "id": "queue",
+        "situation": "The verified delivery log shows Worker Owner acknowledged the one authorized recovery assignment yesterday. The assignment, blocker status, evidence and recipient are unchanged. Two other teams sent copies of Recovery Decision Q-12 to the coordinator today. This is context for the assigned recovery work. Nobody asked for an acknowledgment or needs a new task.",
+        "proposed": [
+          {
+            "to": "Worker Owner",
+            "body": "Forwarding Q-12 again because the implementation team pasted it today. Please do the existing stop-and-resume replay."
+          },
+          {
+            "to": "Build Coordinator",
+            "body": "Can you also run the same stop-and-resume replay in case the worker owner has not seen Q-12?"
+          }
+        ]
+      },
+      {
+        "id": "reopen",
+        "situation": "The Desktop Release Owner requests the first downstream report. The authenticated export replay for an existing archive remains unverified because the sign-in fixture expired before reopening the archive. Reopen remains pending. The artifact replay/desktop-42.json shows the precise stop. 806 component tests passed. These facts already appeared internally and no downstream handoff has been sent. The Release Owner is asking for the acceptance status only.",
+        "proposed": [
+          {
+            "to": "Desktop Release Owner",
+            "body": "Progress update: all 806 tests passed. Great run overall; archive testing was underway. Some component checks and report metadata still need their routine follow-ups."
+          },
+          {
+            "to": "Desktop Release Owner",
+            "body": "Final: 806 component tests passed. The archive project is almost ready. No action from your side at the moment."
+          }
+        ]
+      },
+      {
+        "id": "audit",
+        "situation": "The attempt to deliver the existing replay assignment to Maintainer A failed. Maintainer B is the authorized reachable replacement. For ticket P-9, Maintainer B should replay one expired browser session in fixture one-expiry without changing the idle timeout, then run `make expiry-replay` and attach that run's record to P-9. Data Reviewer must independently review the P-9 record after it arrives, confirm only one fresh approval was accepted and that an approval from the expired session could not be reused, and record approval or a discrepancy in P-9. Maintainer B cannot sign off the audit. Both messages can be sent now.",
+        "proposed": [
+          {
+            "to": "Maintainer A",
+            "body": "Retry of P-9: replay the expired browser session and post evidence."
+          },
+          {
+            "to": "Maintainer B",
+            "body": "Can you pick up the P-9 expired-session replay and post evidence? The first message did not deliver. Please also check compliance."
+          },
+          {
+            "to": "Data Reviewer",
+            "body": "Check P-9 for compliance when you can and approve if it looks good."
+          }
+        ]
+      }
+    ],
+    "proposed": {
+      "sends": 9,
+      "body_words": 219,
+      "duplicate_sends": 4,
+      "unnecessary_retry": 1
+    },
+    "base": {
+      "sends": 4,
+      "body_words": 158,
+      "duplicate_sends": 0,
+      "actionable_messages": 3,
+      "drafts": [
+        {
+          "id": "catalog",
+          "messages": [
+            {
+              "to": "Schema gate owner",
+              "body": "For version 3.2, extend grouped admission if needed so schema/catalog.toml, schema/catalog.generated.json, and tests/catalog-contract.test can be admitted together. The test still expects a retired locale override. Existing path owners approve their own changes. Verify the same candidate with `make catalog-contract`."
+            }
+          ]
+        },
+        {
+          "id": "queue",
+          "messages": []
+        },
+        {
+          "id": "reopen",
+          "messages": [
+            {
+              "to": "Desktop Release Owner",
+              "body": "Acceptance remains unverified: the sign-in fixture expired before the existing archive could be reopened, so authenticated export replay has not been verified. Reopen is pending. The precise stop is recorded in `replay/desktop-42.json`. All 806 component tests passed."
+            }
+          ]
+        },
+        {
+          "id": "audit",
+          "messages": [
+            {
+              "to": "Maintainer B",
+              "body": "Please take the authorized P-9 replay assignment; delivery to Maintainer A failed. Replay one expired browser session in fixture `one-expiry` without changing the idle timeout, run `make expiry-replay`, and attach that run's record to P-9. Data Reviewer will independently review the record."
+            },
+            {
+              "to": "Data Reviewer",
+              "body": "After Maintainer B attaches the replay record to P-9, independently review it. Confirm that only one fresh approval was accepted and that an approval from the expired session could not be reused. Record your approval or any discrepancy in P-9."
+            }
+          ]
+        }
+      ]
+    },
+    "candidate": {
+      "sends": 4,
+      "body_words": 157,
+      "duplicate_sends": 0,
+      "actionable_messages": 4,
+      "drafts": [
+        {
+          "id": "catalog",
+          "messages": [
+            {
+              "to": "Schema gate owner",
+              "body": "For version 3.2, extend grouped admission if needed so schema/catalog.toml, schema/catalog.generated.json, and tests/catalog-contract.test can be admitted together. The test still expects a retired locale override; existing path owners approve their own changes. Verify the same candidate with `make catalog-contract`."
+            }
+          ]
+        },
+        {
+          "id": "queue",
+          "messages": []
+        },
+        {
+          "id": "reopen",
+          "messages": [
+            {
+              "to": "Desktop Release Owner",
+              "body": "Reopen acceptance remains pending: the authenticated export replay for an existing archive is unverified because the sign-in fixture expired before the archive was reopened. The precise stop is recorded in `replay/desktop-42.json`. The 806 passing component tests do not establish replay acceptance."
+            }
+          ]
+        },
+        {
+          "id": "audit",
+          "messages": [
+            {
+              "to": "Maintainer B",
+              "body": "For P-9, replay one expired browser session in fixture `one-expiry` without changing the idle timeout. Run `make expiry-replay` and attach that run's record to P-9. Delivery of the original assignment to Maintainer A failed; you are the authorized replacement."
+            },
+            {
+              "to": "Data Reviewer",
+              "body": "After the replay record arrives in P-9, independently review it. Confirm that only one fresh approval was accepted and that an approval from the expired session could not be reused. Record your approval or a discrepancy in P-9."
+            }
+          ]
+        }
+      ]
+    },
+    "recipient_readback": {
+      "catalog": "Both readers recovered the grouped paths, retained approvals, and same-candidate check. The base reader also inferred a duty to address the retired override in the test. The candidate reader treated that fact as the reason for grouped admission and assigned only the gate work.",
+      "queue": "Both plans left the acknowledged assignment alone.",
+      "reopen": "Both recipients recovered that authenticated reopening was still pending, why it stopped, and the exact evidence pointer. Neither assigned a follow-up to the status recipient.",
+      "audit": "Both plans reached the authorized replacement and the independent reviewer. The readers recovered the fixture, timeout constraint, same-run report and the exact fresh-versus-expired approval criteria."
+    },
+    "decision": "The candidate preserved all four intended sends and their recipient actions in this replay. It was one word shorter than the base for the batch. Both versions eliminated the same duplicate proposals. Treat the role-scope difference as one observed interpretation and retain the wording check. Test real chat traffic before claiming changes in duplicate sends, total costs, or usage."
+  }
+}
