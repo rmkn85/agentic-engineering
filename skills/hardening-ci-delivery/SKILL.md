@@ -5,26 +5,13 @@ description: Use when CI, self-hosted runners, artifact storage, packaging, publ
 
 # Harden CI and delivery without weakening acceptance
 
-1. **Identify the exact current candidate.** Read remote main and the current workflow/check suite. Do not diagnose from an older red run unless its SHA is intentionally under investigation.
+1. **Pinpoint the current candidate.** Check remote `main` and the active workflow run; ignore older red runs unless debugging that specific SHA.
+2. **Classify the first failed boundary:** trigger, runner, setup, test/build, cleanup, evidence transport, packaging, promotion, or live serving. Retain prior valid evidence without promoting failed stages.
+3. **Share one workflow ref & cut ceremony.** Point consumer repos at one shared workflow ref instead of drifted per-repo SHAs. Path-filter heavy integration jobs to affected code, default unit tests to temp dirs so they run offline, keep status in one tracker, and fold notes into feature PRs instead of separate handoff PRs or brittle merge-commit hash trailers.
+4. **Preserve trust & runner capacity.** Keep untrusted PRs off trusted self-hosted runners; use capability labels (`general`, `heavy`, `io-heavy`) on multi-core pools without a custom scheduler, and remove stale host labels.
+5. **Decouple tests from optional evidence transport.** Keep allowlisted logs runner-local and optional uploads `continue-on-error: true`, tolerating missing outputs. Downstream packages require immutable release assets or digest-verified deterministic rebuilds.
+6. **Eliminate false-red cleanup & keep policy executable.** Ensure post-job cache/cleanup never fails passing builds, and update workflow policy tests narrowly when patterns change.
+7. **Keep reruns idempotent & verify triggers.** Key artifact names on attempt ID without mixing source vs retry identity; verify a workflow actually ran on the target SHA.
+8. **Integrate on latest `main` & report layers separately.** Re-read `main` before writing, verify the exact head, and report source, tests, integration, packaging, deployment, and live status separately with the first blocker and retry condition.
 
-2. **Classify the first failed boundary:** trigger, runner, setup, product test/build, post-job cleanup, evidence transport, package handoff, promotion, or live serving. Keep earlier valid evidence, but do not promote a later stage to green.
-
-3. **Preserve trust boundaries and pool capacity.** One runner process is one job slot. On a multi-core host, use multiple isolated runner instances plus capability labels (`general`, `heavy`, `io-heavy`) to bound expensive concurrency without a custom scheduler. Keep trusted-main self-hosted routing separate from untrusted PR routing.
-
-4. **Preserve trust boundaries.** Keep untrusted pull requests on disposable/hosted infrastructure unless explicitly hardened. Trusted main may use a maintained ordinary-user self-hosted runner. Keep genuine cross-platform matrices on their required operating systems. Route by actual capability labels; remove stale machine-specific labels when an equivalent authorized runner can execute the job.
-
-5. **Separate tests from evidence transport.** If only optional logs/screenshots fail to upload, retain an allowlisted runner-local copy and make the redundant upload non-blocking. Evidence steps running after failure must tolerate missing outputs and must not mask the original blocker. If downstream delivery requires the package, use an immutable release asset or deterministic reconstruction verified by a digest; never silently substitute different bytes.
-
-6. **Remove false-red infrastructure.** Inspect post-job action steps. Disable unused cache/save behavior or configure a real cache path rather than allowing cleanup failure to invalidate successful product checks.
-
-7. **Keep CI policy executable.** If repository tests assert workflow structure, update those tests narrowly when the design changes; allow new exceptions only at the intended step type and keep negative cases.
-
-8. **Make reruns idempotent.** Include attempt identity where provider artifact names must be unique. Keep source/candidate identity separate from retry identity.
-
-9. **Verify the trigger.** A successful Git/API write is not proof the workflow ran. Check for a run/check suite on the exact current SHA and use a supported explicit trigger when required.
-
-10. **Integrate on latest main.** Re-read current main before each write, apply the smallest non-force change, read back the resulting head, and validate that exact source. Do not leave the fix on a hidden branch or stale checkout.
-
-11. **Report the layers separately.** State what passed: source, tests, browser/integration, package, publisher, deployment, live identity. Include the remaining first blocker and exact retry condition.
-
-For concrete GitHub Actions patterns, read `templates/github-actions/ci-delivery-resilience.md`. For deeper rationale, read `docs/execution/ci-delivery-resilience.md`.
+Patterns: `templates/github-actions/ci-delivery-resilience.md`. Rationale: `docs/execution/ci-delivery-resilience.md`.
